@@ -1,12 +1,5 @@
-# Bootstrap
-app/bootstrap*
+composer.phar
+nbproject/*
+*~
+*.swp
 
-# Symfony directories
-vendor/*
-*/logs/*
-*/cache/*
-web/uploads/*
-web/bundles/*
-
-# Configuration files
-app/config/parameters.ini
