@@ -3,8 +3,8 @@
 <phpunit bootstrap="./tests/bootstrap.php" colors="true">
 
     <testsuites>
-        <testsuite name="test suite">
-            <directory suffix="Test.php">./Tests</directory>
+        <testsuite name="D2Cache test suite">
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
 

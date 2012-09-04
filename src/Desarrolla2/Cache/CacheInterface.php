@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache;
 
-
 interface CacheInterface
 {
 
@@ -33,6 +32,7 @@ interface CacheInterface
     /**
      * 
      * @return \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
+     * @throws Exception
      */
     public function getAdapter();
 

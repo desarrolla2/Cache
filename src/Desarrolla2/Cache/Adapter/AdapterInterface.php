@@ -16,11 +16,6 @@ interface AdapterInterface
 {
 
     /**
-     * @var int
-     */
-    protected $ttl;
-
-    /**
      * Delete a value from the cache
      * 
      * @param string $key

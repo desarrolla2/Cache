@@ -13,6 +13,7 @@
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\CacheInterface;
+use Desarrolla2\Cache\Exception\AdapterNotSetException;
 
 class Cache implements CacheInterface
 {
@@ -28,7 +29,7 @@ class Cache implements CacheInterface
      */
     public function delete($key)
     {
-        $this->adapter->delete($key);
+        $this->getAdapter()->delete($key);
     }
 
     /**
@@ -36,7 +37,7 @@ class Cache implements CacheInterface
      */
     public function get($key)
     {
-        return $this->get->get($key);
+        return $this->getAdapter()->get($key);
     }
 
     /**
@@ -44,6 +45,9 @@ class Cache implements CacheInterface
      */
     public function getAdapter()
     {
+        if (!$this->adapter) {
+            throw new AdapterNotSetException('Required Adapter');
+        }
         return $this->adapter;
     }
 
@@ -52,7 +56,7 @@ class Cache implements CacheInterface
      */
     public function has($key)
     {
-        return $this->get->has($key);
+        return $this->getAdapter()->has($key);
     }
 
     /**
@@ -60,13 +64,13 @@ class Cache implements CacheInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->adapter->set($key, $value, $ttl);
+        $this->getAdapter()->set($key, $value, $ttl);
     }
 
     /**
      * {@inheritdoc } 
      */
-    public function setAdapter(Desarrolla2\Cache\Adapter\AdapterInterface $adapter)
+    public function setAdapter(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter)
     {
         $this->adapter = $adapter;
     }
