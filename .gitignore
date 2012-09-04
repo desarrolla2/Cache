@@ -1,5 +1,7 @@
-composer.phar
-nbproject/*
+/composer.phar
+/composer.lock
+/vendor
+/nbproject
 *~
 *.swp
 
