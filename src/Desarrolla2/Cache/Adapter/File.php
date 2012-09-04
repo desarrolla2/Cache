@@ -11,5 +11,9 @@
  */
 class File
 {
-    //put your code here
+   
+    /**
+     * @var int
+     */
+    protected $ttl;
 }

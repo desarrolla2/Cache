@@ -11,5 +11,9 @@
  */
 class Memcached
 {
-    //put your code here
+  
+    /**
+     * @var int
+     */
+    protected $ttl;
 }

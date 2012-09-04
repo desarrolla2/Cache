@@ -11,5 +11,9 @@
  */
 class Apc
 {
-    //put your code here
+ 
+    /**
+     * @var int
+     */
+    protected $ttl;
 }
