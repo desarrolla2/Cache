@@ -1,22 +1,21 @@
 <?php
 
 /**
- * This file is part of the perrosygatos proyect.
+ * This file is part of the D2Cache proyect.
  * 
- * Description of CacheTest
+ * Description of NotCacheTest
  *
  * @author : Daniel González Cerviño <daniel.gonzalez@ideup.com>
- * @file : CacheTest.php , UTF-8
- * @date : Sep 4, 2012 , 3:49:01 PM
+ * @file : NotCacheTest.php , UTF-8
+ * @date : Sep 5, 2012 , 6:28:37 PM
  */
 
-namespace Desarrolla2\Cache\Test;
+namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\NotCache;
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 
-class CacheTest extends \PHPUnit_Framework_TestCase
+class NotCacheTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -30,45 +29,33 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->cache = new Cache();
-    }
-
-    /**
-     * @return type
-     */
-    public function dataProvider()
-    {
-        return array(
-            array(new NotCache()),
-        );
+        $this->cache->setAdapter(new NotCache());
     }
 
     /**
      * @test
      * @dataProvider dataProvider
      */
-    public function setTest(AdapterInterface $adapter)
+    public function setTest()
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->set('key', 'value');
     }
-    
+
     /**
      * @test
      * @dataProvider dataProvider
      */
-    public function deleteTest(AdapterInterface $adapter)
+    public function deleteTest()
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->delete('key');
     }
-    
+
     /**
      * @test
      * @dataProvider dataProvider
      */
-    public function hasTest(AdapterInterface $adapter)
+    public function hasTest()
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->has('key');
     }
 
@@ -80,5 +67,4 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache->getAdapter();
     }
-
 }
