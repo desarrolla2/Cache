@@ -28,8 +28,8 @@ class Apc implements AdapterInterface
      */
     public function delete($key)
     {
-        if ($this->exists($key)) {
-            if (!apc_delete(strtolower($key))) {
+        if ($this->has($key)) {
+            if (!\apc_delete(strtolower($key))) {
                 throw new ApcCacheException('Error deleting data with the key ' . $key . ' from the APC cache.');
             }
             return true;
@@ -42,8 +42,8 @@ class Apc implements AdapterInterface
      */
     public function get($key)
     {
-        if ($this->exists($key)) {
-            if (!$data = apc_fetch(strtolower($key))) {
+        if ($this->has($key)) {
+            if (!$data = \apc_fetch(strtolower($key))) {
                 throw new ApcCacheException('Error fetching data with the key ' . $key . ' from the APC cache.');
             }
             return $data;
@@ -56,7 +56,7 @@ class Apc implements AdapterInterface
      */
     public function has($key)
     {
-        return (boolean) apc_exists(strtolower($key));
+        return (boolean) \apc_exists(strtolower($key));
     }
 
     /**
@@ -64,7 +64,7 @@ class Apc implements AdapterInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!apc_store(strtolower($key), $data, $ttl)) {
+        if (!\apc_store(strtolower($key), $data, $ttl)) {
             throw new ApcCacheException('Error saving data with the key ' . $key . ' to the APC cache.');
         }
     }
