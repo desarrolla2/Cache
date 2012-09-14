@@ -64,7 +64,7 @@ class Apc implements AdapterInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!\apc_store(strtolower($key), $data, $ttl)) {
+        if (!\apc_store(strtolower($key), $value, $ttl)) {
             throw new ApcCacheException('Error saving data with the key ' . $key . ' to the APC cache.');
         }
     }
