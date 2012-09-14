@@ -18,7 +18,7 @@ class Apc implements AdapterInterface
     /**
      * @var int
      */
-    protected $ttl;
+    protected $ttl = 3600;
 
     /**
      * {@inheritdoc } 
@@ -61,7 +61,7 @@ class Apc implements AdapterInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!apc_store(strtolower($key), $data)) {
+        if (!apc_store(strtolower($key), $data, $ttl)) {
             throw new ApcCacheException('Error saving data with the key ' . $key . ' to the APC cache.');
         }
     }
@@ -72,6 +72,14 @@ class Apc implements AdapterInterface
     public function setDefaultTtl($ttl)
     {
         $this->ttl = $ttl;
+    }
+
+    /**
+     * {@inheritdoc } 
+     */
+    public function setOption($key, $value)
+    {
+        
     }
 
 }

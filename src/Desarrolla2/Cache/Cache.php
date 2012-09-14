@@ -74,5 +74,15 @@ class Cache implements CacheInterface
     {
         $this->adapter = $adapter;
     }
+    
+    /**
+     * {@inheritdoc } 
+     */
+    public function setOption($key, $value)
+    {
+        $this->adapter->setOption($key, $value);
+    }
+    
+    
 
 }

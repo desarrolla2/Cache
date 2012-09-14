@@ -51,4 +51,12 @@ interface AdapterInterface
      * @param int $ttl
      */
     public function setDefaultTtl($ttl);
+
+    /**
+     * Set option for Adapter
+     * 
+     * @param string $key
+     * @param string $value
+     */
+    public function setOption($key, $value);
 }
