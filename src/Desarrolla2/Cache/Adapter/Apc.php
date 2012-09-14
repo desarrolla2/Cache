@@ -9,6 +9,9 @@
  * @file : Apc.php , UTF-8
  * @date : Sep 4, 2012 , 1:00:27 AM
  */
+
+namespace Desarrolla2\Cache\Adapter;
+
 use Desarrolla2\Cache\Adapter\AdapterInterface;
 use Desarrolla2\Cache\Exception\ApcCacheException;
 
