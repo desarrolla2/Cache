@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+
+notifications:
+  email:
+    - daniel.gonzalez@freelancemadrid.es
+
+before_script:
+  - wget http://getcomposer.org/composer.phar
+  - php composer.phar install
+  - apt-get install php-apc 
+  - echo "extension=apc.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - echo "apc.enabled=1" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - echo "apc.enable_cli=1" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - phpunit
