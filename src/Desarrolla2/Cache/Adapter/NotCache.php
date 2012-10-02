@@ -57,4 +57,9 @@ class NotCache implements AdapterInterface
         return;
     }
 
+    public function setOption($key, $value)
+    {
+         return;
+    }
+
 }
