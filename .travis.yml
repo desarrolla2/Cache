@@ -9,7 +9,7 @@ notifications:
     - daniel.gonzalez@freelancemadrid.es
 
 before_script:
-  - composerr install
+  - composer install
   - sudo apt-get install php-apc 
   - echo "extension=apc.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - echo "apc.enabled=1" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
