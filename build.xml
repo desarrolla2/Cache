@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Cache" default="build">
+
+    <target name="build" depends="install,prepare,pdepend,phpdoc,phpunit" description="Run all tests and build everything" />
+    
+    <target name="install" depends="composer" description="Prepare for execution" />
+
+    <target name="prepare" depends="clean" description="Prepare for build">
+        <mkdir dir="build/api"/>
+        <mkdir dir="build/code-browser"/>
+        <mkdir dir="build/coverage"/>
+        <mkdir dir="build/logs"/>
+    </target>
+    
+    <target name="composer" description="Composer install">
+        <exec executable="composer">
+            <arg value="install" />
+        </exec>
+    </target>
+
+    <target name="clean" description="Cleanup build artifacts">
+        <delete dir="build/api"/>
+        <delete dir="build/coverage"/>
+        <delete dir="build/logs"/>
+    </target>
+    
+    <target name="pdepend" description="Generate jdepend.xml and software metrics charts using PHP_Depend">
+        <exec command="pdepend --summary-xml=build/pdepend/summary.xml --jdepend-xml=app/build/logs/jdepend.xml --jdepend-chart=build/pdepend/dependencies.svg --overview-pyramid=app/build/pdepend/overview-pyramid.svg src"/>
+    </target>
+    
+    <target name="phpdoc" description="Generate API documentation using PHPDocumentor">
+        <exec command="phpdoc -o HTML:frames:earthli -d src -t build/api -ti 'Timer'"/>
+    </target>
+    
+    <target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml and clover.xml">
+        <exec passthru="true" checkreturn="true" command="phpunit -c phpunit.xml"/>
+    </target>
+
+</project>

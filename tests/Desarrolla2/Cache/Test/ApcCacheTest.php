@@ -16,7 +16,7 @@ use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter;
 use Desarrolla2\Cache\Adapter\AdapterInterface;
 
-class CacheTest extends \PHPUnit_Framework_TestCase
+class ApcCacheTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -29,6 +29,12 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
+
+            $this->markTestSkipped(
+                    'The APC extension is not available.'
+            );
+        }
         $this->cache = new Cache();
     }
 
@@ -38,7 +44,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     public function dataProvider()
     {
         return array(
-            array(new Adapter\NotCache()),
+            array(new Adapter\Apc()),
         );
     }
 
