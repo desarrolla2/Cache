@@ -25,6 +25,16 @@ class Cache implements CacheInterface
     protected $adapter;
 
     /**
+     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
+     */
+    public function __construct(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter = null)
+    {
+        if ($adapter) {
+            $this->setAdapter($adapter);
+        }
+    }
+
+    /**
      * {@inheritdoc } 
      */
     public function delete($key)
@@ -74,7 +84,7 @@ class Cache implements CacheInterface
     {
         $this->adapter = $adapter;
     }
-    
+
     /**
      * {@inheritdoc } 
      */
@@ -82,7 +92,5 @@ class Cache implements CacheInterface
     {
         $this->adapter->setOption($key, $value);
     }
-    
-    
 
 }
