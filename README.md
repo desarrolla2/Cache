@@ -53,7 +53,28 @@ ompatible autoloader.
 Use it if you will not implement any cache adapter is an adapter that will serve 
 to fool the test environments.
 
+### File
+
+Use it if you will you have dont have other cache system available in your system
+or if you like to do your code more portable.
+
+``` php
+    <?php
+    
+    use Desarrolla2\Cache\Cache;
+    use Desarrolla2\Cache\Adapter\File;
+
+
+    $adapter = new File();
+    $adapter->setDefaultTtl(3600);
+    $adapter->setOption('cacheDir', '/tmp');
+    $cache = new Cache($adapter);
+
+```
+
 ### Apc
+
+Use it if you will you have APC cache available in your system.
 
 ``` php
     <?php
@@ -75,7 +96,6 @@ new adapters if you think it appropriate.
 
 This can be a list of pending tasks.
 
-* FileAdapter
 * MemcachedAdapter
 * Other Adapters
 * More test

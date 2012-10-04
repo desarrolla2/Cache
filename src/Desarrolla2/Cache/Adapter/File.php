@@ -22,13 +22,11 @@ class File implements AdapterInterface
      * @var int
      */
     protected $ttl;
+    protected $cacheDir = '/tmp';
 
     public function __construct()
     {
-        $cacheFile = $this->getCacheFile($key);
-        if (!file_put_contents($cacheFile, serialize($data))) {
-            throw new FileCacheException('Error saving data with the key ' . $key . ' to the cache file.');
-        }
+        
     }
 
     /**
@@ -36,14 +34,10 @@ class File implements AdapterInterface
      */
     public function delete($key)
     {
-        if ($this->has($key)) {
-            $cacheFile = $this->getCacheFile($key);
-            if (!unlink($cacheFile)) {
-                throw new FileCacheException('Error deleting the file cache with key ' . $key);
-            }
-            return true;
+        $cacheFile = $this->getCacheFile($key);
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
         }
-        return false;
     }
 
     /**
@@ -67,7 +61,16 @@ class File implements AdapterInterface
     public function has($key)
     {
         $cacheFile = $this->getCacheFile($key);
-        return file_exists($cacheFile);
+        if (file_exists($cacheFile)) {
+            $time = filemtime($cacheFile);
+            if ($time) {
+                if (mktime() + $this->ttl < $time) {
+                    return true;
+                }
+            }
+        }
+        $this->delete($key);
+        return false;
     }
 
     /**
@@ -79,7 +82,6 @@ class File implements AdapterInterface
         if (!file_put_contents($cacheFile, serialize($data))) {
             throw new FileCacheException('Error saving data with the key ' . $key . ' to the cache file.');
         }
-        return $this;
     }
 
     /**
@@ -87,7 +89,7 @@ class File implements AdapterInterface
      */
     protected function getCacheFile($key)
     {
-        return $this->_cacheDir . DIRECTORY_SEPARATOR . strtolower($key) . '.cache';
+        return $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.cache';
     }
 
     /**
@@ -95,7 +97,7 @@ class File implements AdapterInterface
      */
     public function setDefaultTtl($ttl)
     {
-        
+        $this->ttl = (int) $ttl;
     }
 
     /**
@@ -103,7 +105,16 @@ class File implements AdapterInterface
      */
     public function setOption($key, $value)
     {
-        
+        switch ($key) {
+            case 'ttl':
+                $this->ttl = (int) $value;
+                break;
+            case 'cacheDir':
+                $this->cacheDir = (string) $value;
+                break;
+            default :
+                throw new Exception('option not valid ' . $key);
+        }
     }
 
 }

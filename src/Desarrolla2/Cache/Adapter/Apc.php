@@ -85,8 +85,12 @@ class Apc implements AdapterInterface
      */
     public function setOption($key, $value)
     {
-        if ($key == 'ttl') {
-            $this->ttl = (int) $value;
+        switch ($key) {
+            case 'ttl':
+                $this->ttl = (int) $value;
+                break;
+            default :
+                throw new Exception('option not valid ' . $key);
         }
     }
 
