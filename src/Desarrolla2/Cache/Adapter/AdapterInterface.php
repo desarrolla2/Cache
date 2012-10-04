@@ -46,13 +46,6 @@ interface AdapterInterface
     public function set($key, $value, $ttl = null);
 
     /**
-     * Set Default TTL 
-     * 
-     * @param int $ttl
-     */
-    public function setDefaultTtl($ttl);
-
-    /**
      * Set option for Adapter
      * 
      * @param string $key

@@ -10,10 +10,10 @@
  * @date : Sep 4, 2012 , 3:49:01 PM
  */
 
-namespace Desarrolla2\Cache\Test;
+namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter;
+use Desarrolla2\Cache\Adapter\Apc;
 use Desarrolla2\Cache\Adapter\AdapterInterface;
 
 class ApcCacheTest extends \PHPUnit_Framework_TestCase
@@ -36,6 +36,7 @@ class ApcCacheTest extends \PHPUnit_Framework_TestCase
             );
         }
         $this->cache = new Cache();
+        $this->cache = new Cache(new Apc());
     }
 
     /**
@@ -44,61 +45,58 @@ class ApcCacheTest extends \PHPUnit_Framework_TestCase
     public function dataProvider()
     {
         return array(
-            array(new Adapter\Apc()),
+            array(),
         );
     }
 
     /**
      * @test
      * @dataProvider dataProvider
-     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
      */
     public function setTest(AdapterInterface $adapter)
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->set('key', 'value');
     }
 
     /**
      * @test
      * @dataProvider dataProvider
-     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
+     */
+    public function getTest(AdapterInterface $adapter)
+    {
+        $this->cache->set('key', 'value');
+        $this->assertEcuals($this->cache->get('key'), 'value');
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+
      */
     public function deleteTest(AdapterInterface $adapter)
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->delete('key');
     }
 
     /**
      * @test
      * @dataProvider dataProvider
-     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
+
      */
     public function hasTest(AdapterInterface $adapter)
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->has('key');
+        $this->assertFalse($this->cache->has('key', 'value'));
     }
 
     /**
      * @test
      * @dataProvider dataProvider
-     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
+
      */
     public function setOptionTest(AdapterInterface $adapter)
     {
-        $this->cache->setAdapter($adapter);
         $this->cache->setOption('key', 'value');
-    }
-
-    /**
-     * @test
-     * @expectedException \Desarrolla2\Cache\Exception\AdapterNotSetException
-     */
-    public function getAdapterThrowsExceptionTest()
-    {
-        $this->cache->getAdapter();
     }
 
 }

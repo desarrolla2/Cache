@@ -75,22 +75,19 @@ class Apc implements AdapterInterface
     /**
      * {@inheritdoc } 
      */
-    public function setDefaultTtl($ttl)
-    {
-        $this->ttl = $ttl;
-    }
-
-    /**
-     * {@inheritdoc } 
-     */
     public function setOption($key, $value)
     {
         switch ($key) {
             case 'ttl':
-                $this->ttl = (int) $value;
+                $value = (int) $value;
+                if ($value < 1) {
+                    throw new ApcCacheException('ttl cant be lower than 1');
+                }
+                $this->ttl = $value;
                 break;
+
             default :
-                throw new \Exception('option not valid ' . $key);
+                throw new ApcCacheException('option not valid ' . $key);
         }
     }
 

@@ -21,13 +21,12 @@ class File implements AdapterInterface
     /**
      * @var int
      */
-    protected $ttl;
-    protected $cacheDir = '/tmp';
+    protected $ttl = 3600;
 
-    public function __construct()
-    {
-        
-    }
+    /**
+     * @var string
+     */
+    protected $cacheDir = '/tmp';
 
     /**
      * {@inheritdoc } 
@@ -64,7 +63,7 @@ class File implements AdapterInterface
         if (file_exists($cacheFile)) {
             $time = filemtime($cacheFile);
             if ($time) {
-                if (mktime() + $this->ttl < $time) {
+                if ($time + $this->ttl >= mktime()) {
                     return true;
                 }
             }
@@ -79,25 +78,9 @@ class File implements AdapterInterface
     public function set($key, $value, $ttl = null)
     {
         $cacheFile = $this->getCacheFile($key);
-        if (!file_put_contents($cacheFile, serialize($data))) {
+        if (!file_put_contents($cacheFile, serialize($value))) {
             throw new FileCacheException('Error saving data with the key ' . $key . ' to the cache file.');
         }
-    }
-
-    /**
-     * Get the specified cache file
-     */
-    protected function getCacheFile($key)
-    {
-        return $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.cache';
-    }
-
-    /**
-     * {@inheritdoc } 
-     */
-    public function setDefaultTtl($ttl)
-    {
-        $this->ttl = (int) $ttl;
     }
 
     /**
@@ -107,14 +90,26 @@ class File implements AdapterInterface
     {
         switch ($key) {
             case 'ttl':
-                $this->ttl = (int) $value;
+                $value = (int) $value;
+                if ($value < 1) {
+                    throw new FileCacheException('ttl cant be lower than 1');
+                }
+                $this->ttl = $value;
                 break;
             case 'cacheDir':
                 $this->cacheDir = (string) $value;
                 break;
             default :
-                throw new \Exception('option not valid ' . $key);
+                throw new FileCacheException('option not valid ' . $key);
         }
+    }
+
+    /**
+     * Get the specified cache file
+     */
+    protected function getCacheFile($key)
+    {
+        return $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.php.cache';
     }
 
 }

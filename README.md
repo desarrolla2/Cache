@@ -66,7 +66,7 @@ or if you like to do your code more portable.
 
 
     $adapter = new File();
-    $adapter->setDefaultTtl(3600);
+    $adapter->setOption('ttl', 3600);
     $adapter->setOption('cacheDir', '/tmp');
     $cache = new Cache($adapter);
 
@@ -84,7 +84,7 @@ Use it if you will you have APC cache available in your system.
 
 
     $adapter = new Apc();
-    $adapter->setDefaultTtl(3600);
+    $adapter->setOption('ttl', 3600);
     $cache = new Cache($adapter);
 
 ```

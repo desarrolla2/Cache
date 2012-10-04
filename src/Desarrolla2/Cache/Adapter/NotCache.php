@@ -49,14 +49,6 @@ class NotCache implements AdapterInterface
         return false;
     }
 
-    /**
-     * {@inheritdoc } 
-     */
-    public function setDefaultTtl($ttl)
-    {
-        return;
-    }
-
     public function setOption($key, $value)
     {
          return;
