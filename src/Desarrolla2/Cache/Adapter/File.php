@@ -113,7 +113,7 @@ class File implements AdapterInterface
                 $this->cacheDir = (string) $value;
                 break;
             default :
-                throw new Exception('option not valid ' . $key);
+                throw new \Exception('option not valid ' . $key);
         }
     }
 

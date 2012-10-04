@@ -90,7 +90,7 @@ class Apc implements AdapterInterface
                 $this->ttl = (int) $value;
                 break;
             default :
-                throw new Exception('option not valid ' . $key);
+                throw new \Exception('option not valid ' . $key);
         }
     }
 

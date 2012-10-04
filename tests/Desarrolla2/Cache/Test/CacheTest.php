@@ -39,6 +39,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(new Adapter\NotCache()),
+            array(new Adapter\File()),
         );
     }
 
