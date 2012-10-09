@@ -63,7 +63,7 @@ class File implements AdapterInterface
         if (file_exists($cacheFile)) {
             $time = filemtime($cacheFile);
             if ($time) {
-                if ($time + $this->ttl >= mktime()) {
+                if ($time + $this->ttl >= time()) {
                     return true;
                 }
             }
