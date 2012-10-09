@@ -47,7 +47,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function hasTest()
     {
-        $value = mktime();
+        $value = time();
         $this->cache->set('key', $value);
         $this->assertTrue($this->cache->has('key', $value));
     }
@@ -58,7 +58,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function getTest()
     {
-        $value = mktime();
+        $value = time();
         $this->cache->set('key', $value);
         $this->assertEquals($this->cache->get('key'), $value);
     }
@@ -78,7 +78,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function deleteTest()
     {
-        $value = mktime();
+        $value = time();
         $this->cache->set('key2', $value);
         $this->cache->delete('key2');
     }
