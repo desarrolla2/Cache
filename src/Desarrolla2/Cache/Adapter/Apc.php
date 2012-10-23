@@ -64,7 +64,7 @@ class Apc implements AdapterInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!$ttl) {
+        if (is_null($ttl)) {
             $ttl = $this->ttl;
         }
         if (!\apc_store($key, $value, $ttl)) {
@@ -89,6 +89,7 @@ class Apc implements AdapterInterface
             default :
                 throw new ApcCacheException('option not valid ' . $key);
         }
+        return true;
     }
 
 }

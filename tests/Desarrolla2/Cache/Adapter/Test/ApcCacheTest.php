@@ -12,17 +12,12 @@
 
 namespace Desarrolla2\Cache\Adapter\Test;
 
+use Desarrolla2\Cache\Adapter\Test\AbstractCacheTest;
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Apc;
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 
-class ApcCacheTest extends \PHPUnit_Framework_TestCase
+class ApcCacheTest extends AbstractCacheTest
 {
-
-    /**
-     * @var \Desarrolla2\Cache\Cache
-     */
-    protected $cache;
 
     /**
      * setup
@@ -30,73 +25,43 @@ class ApcCacheTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
-
             $this->markTestSkipped(
                     'The APC extension is not available.'
             );
         }
-        $this->cache = new Cache();
         $this->cache = new Cache(new Apc());
     }
 
     /**
-     * @return type
+     * @return array
      */
     public function dataProvider()
     {
         return array(
-            array(),
+            array('key', 'value', 1, 0, 'value', true),
+            array('key', 'value', null, 0, 'value', true),
         );
     }
 
     /**
-     * @test
-     * @dataProvider dataProvider
+     * @return array
      */
-    public function setTest(AdapterInterface $adapter)
+    public function dataProviderForOptions()
     {
-        $this->cache->set('key', 'value');
+        return array(
+            array('ttl', 100),
+        );
     }
 
     /**
-     * @test
-     * @dataProvider dataProvider
+     * @return array
      */
-    public function getTest(AdapterInterface $adapter)
+    public function dataProviderForOptionsException()
     {
-        $this->cache->set('key', 'value');
-        $this->assertEcuals($this->cache->get('key'), 'value');
-    }
-
-    /**
-     * @test
-     * @dataProvider dataProvider
-
-     */
-    public function deleteTest(AdapterInterface $adapter)
-    {
-        $this->cache->delete('key');
-    }
-
-    /**
-     * @test
-     * @dataProvider dataProvider
-
-     */
-    public function hasTest(AdapterInterface $adapter)
-    {
-        $this->cache->has('key');
-        $this->assertFalse($this->cache->has('key', 'value'));
-    }
-
-    /**
-     * @test
-     * @dataProvider dataProvider
-
-     */
-    public function setOptionTest(AdapterInterface $adapter)
-    {
-        $this->cache->setOption('key', 'value');
+        return array(
+            array('ttl', 0, '\Desarrolla2\Cache\Exception\ApcCacheException'),
+            array('file', 100, '\Desarrolla2\Cache\Exception\ApcCacheException'),
+        );
     }
 
 }

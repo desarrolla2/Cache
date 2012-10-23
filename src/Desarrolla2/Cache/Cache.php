@@ -90,7 +90,7 @@ class Cache implements CacheInterface
      */
     public function setOption($key, $value)
     {
-        $this->adapter->setOption($key, $value);
+        return $this->adapter->setOption($key, $value);
     }
 
 }

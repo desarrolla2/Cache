@@ -39,19 +39,38 @@ class File implements AdapterInterface
         }
     }
 
+    protected function getData($key)
+    {
+        $cacheFile = $this->getCacheFile($key);
+        if (file_exists($cacheFile)) {
+            if (!$data = unserialize(file_get_contents($cacheFile))) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
+            }
+            if (!array_key_exists('value', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist');
+            }
+            if (!array_key_exists('ttl', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
+            }
+            if (!array_key_exists('time', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', time not exist');
+            }            
+            if (time() > $data['ttl'] + $data['time']) {
+                return false;
+            }
+            return $data;
+        }
+    }
+
     /**
      * {@inheritdoc } 
      */
     public function get($key)
     {
-        if ($this->has($key)) {
-            $cacheFile = $this->getCacheFile($key);
-            if (!$data = unserialize(file_get_contents($cacheFile))) {
-                throw new FileCacheException('Error reading data with the key ' . $key . ' from the cache file.');
-            }
-            return $data;
+        if ($data = $this->getData($key)) {
+            return $data['value'];
         }
-        return null;
+        return false;
     }
 
     /**
@@ -59,16 +78,9 @@ class File implements AdapterInterface
      */
     public function has($key)
     {
-        $cacheFile = $this->getCacheFile($key);
-        if (file_exists($cacheFile)) {
-            $time = filemtime($cacheFile);
-            if ($time) {
-                if ($time + $this->ttl >= time()) {
-                    return true;
-                }
-            }
+        if ($this->getData($key)) {
+            return true;
         }
-        $this->delete($key);
         return false;
     }
 
@@ -78,8 +90,16 @@ class File implements AdapterInterface
     public function set($key, $value, $ttl = null)
     {
         $cacheFile = $this->getCacheFile($key);
-        if (!file_put_contents($cacheFile, serialize($value))) {
-            throw new FileCacheException('Error saving data with the key ' . $key . ' to the cache file.');
+        if (is_null($ttl)) {
+            $ttl = $this->ttl;
+        }
+        $item = array(
+            'value' => $value,
+            'ttl'   => $ttl,
+            'time'  => time(),
+        );
+        if (!file_put_contents($cacheFile, serialize($item))) {
+            throw new FileCacheException('Error saving data with the key "' . $key . '" to the cache file.');
         }
     }
 
@@ -102,6 +122,7 @@ class File implements AdapterInterface
             default :
                 throw new FileCacheException('option not valid ' . $key);
         }
+        return true;
     }
 
     /**
