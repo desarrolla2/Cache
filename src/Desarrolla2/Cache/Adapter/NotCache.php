@@ -13,8 +13,9 @@
 namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Adapter\AdapterInterface;
+use Desarrolla2\Cache\Adapter\AbstractAdapter;
 
-class NotCache implements AdapterInterface
+class NotCache extends AbstractAdapter implements AdapterInterface
 {
 
     /**

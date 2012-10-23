@@ -13,15 +13,11 @@
 namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Adapter\AdapterInterface;
+use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\ApcCacheException;
 
-class Apc implements AdapterInterface
+class Apc extends AbstractAdapter implements AdapterInterface
 {
-
-    /**
-     * @var int
-     */
-    protected $ttl = 3600;
 
     /**
      * {@inheritdoc } 
@@ -85,7 +81,6 @@ class Apc implements AdapterInterface
                 }
                 $this->ttl = $value;
                 break;
-
             default :
                 throw new ApcCacheException('option not valid ' . $key);
         }

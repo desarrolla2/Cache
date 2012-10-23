@@ -13,15 +13,11 @@
 namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Adapter\AdapterInterface;
+use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\FileCacheException;
 
-class File implements AdapterInterface
+class File extends AbstractAdapter implements AdapterInterface
 {
-
-    /**
-     * @var int
-     */
-    protected $ttl = 3600;
 
     /**
      * @var string
@@ -36,29 +32,6 @@ class File implements AdapterInterface
         $cacheFile = $this->getCacheFile($key);
         if (file_exists($cacheFile)) {
             unlink($cacheFile);
-        }
-    }
-
-    protected function getData($key)
-    {
-        $cacheFile = $this->getCacheFile($key);
-        if (file_exists($cacheFile)) {
-            if (!$data = unserialize(file_get_contents($cacheFile))) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
-            }
-            if (!array_key_exists('value', $data)) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist');
-            }
-            if (!array_key_exists('ttl', $data)) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
-            }
-            if (!array_key_exists('time', $data)) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', time not exist');
-            }            
-            if (time() > $data['ttl'] + $data['time']) {
-                return false;
-            }
-            return $data;
         }
     }
 
@@ -131,6 +104,36 @@ class File implements AdapterInterface
     protected function getCacheFile($key)
     {
         return $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.php.cache';
+    }
+
+    /**
+     * Get data value from file cache
+     * 
+     * @param type $key
+     * @return boolean
+     * @throws FileCacheException
+     */
+    protected function getData($key)
+    {
+        $cacheFile = $this->getCacheFile($key);
+        if (file_exists($cacheFile)) {
+            if (!$data = unserialize(file_get_contents($cacheFile))) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
+            }
+            if (!array_key_exists('value', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist');
+            }
+            if (!array_key_exists('ttl', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
+            }
+            if (!array_key_exists('time', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', time not exist');
+            }
+            if (time() > $data['ttl'] + $data['time']) {
+                return false;
+            }
+            return $data;
+        }
     }
 
 }

@@ -1,13 +1,15 @@
 {
     "name": "desarrolla2/cache",
-    "description": "Provides an cache interface for several adapters",
-    "keywords": ["memcache","cache", "apc"],
+    "description": "Provides an cache interface for several adapters (Apc, File, Mencached, Mysql, ... )",
+    "keywords": ["cache", "apc","file cache", "memcached", "mysql cache"],
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/desarrolla2/Cache",
     "authors": [
     {
         "name": "Daniel González",
-        "homepage": "http://desarrolla2.com/"
+        "homepage": "http://desarrolla2.com/",
+        "role": "Developer"
     }
     ],
     "support" : {
@@ -20,7 +22,7 @@
     "autoload": 
     {
         "psr-0": {
-             "Desarrolla2\\Cache\\": "src/" 
+            "Desarrolla2\\Cache\\": "src/" 
         }
     },
     "minimum-stability": "dev"
