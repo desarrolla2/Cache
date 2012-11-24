@@ -25,7 +25,7 @@ by including
 
 You can also download it from [Github] (https://github.com/desarrolla2/Cache), 
 but no autoloader is provided so you'll need to register it with your own PSR-0 
-ompatible autoloader.
+compatible autoloader.
 
 ## Usage
 
