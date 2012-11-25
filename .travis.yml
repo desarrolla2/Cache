@@ -4,6 +4,8 @@ php:
   - 5.3
 #  - 5.4 problens with composer
 
+services: mongodb
+
 notifications:
   email:
     - daniel.gonzalez@freelancemadrid.es
