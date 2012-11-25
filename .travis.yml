@@ -12,4 +12,5 @@ notifications:
     - daniel.gonzalez@freelancemadrid.es
 
 before_script:
+  - pecl -q install mongo && echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer install
