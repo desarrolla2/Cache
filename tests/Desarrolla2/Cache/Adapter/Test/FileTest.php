@@ -18,13 +18,15 @@ use Desarrolla2\Cache\Adapter\File;
 
 class FileTest extends AbstractCacheTest
 {
+
     /**
      * setup
      */
     public function setUp()
     {
-        $this->cache = new Cache(new File());
-    }    
+        $cacheDir = '/tmp';
+        $this->cache = new Cache(new File($cacheDir));
+    }
 
     /**
      * @return array
@@ -45,8 +47,6 @@ class FileTest extends AbstractCacheTest
     {
         return array(
             array('ttl', 100),
-            array('cacheDir', 'tmp'),
-            
         );
     }
 

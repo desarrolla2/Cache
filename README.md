@@ -64,10 +64,9 @@ or if you like to do your code more portable.
     use Desarrolla2\Cache\Cache;
     use Desarrolla2\Cache\Adapter\File;
 
-
-    $adapter = new File();
+    $cacheDir = '/tmp';
+    $adapter = new File(cacheDir);
     $adapter->setOption('ttl', 3600);
-    $adapter->setOption('cacheDir', '/tmp');
     $cache = new Cache($adapter);
 
 ```

@@ -18,8 +18,9 @@ use Desarrolla2\Cache\Exception\MemcachedCacheException;
 
 class Memcached extends AbstractAdapter implements AdapterInterface
 {
+    protected $memcached;
 
-    public function __construct()
+    public function __construct($host, $port)
     {
         throw new MemcachedCacheException('this adapter is not ready yet');
     }

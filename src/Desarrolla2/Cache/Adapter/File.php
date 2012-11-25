@@ -22,7 +22,18 @@ class File extends AbstractAdapter implements AdapterInterface
     /**
      * @var string
      */
-    protected $cacheDir = '/tmp';
+    protected $cacheDir;
+
+    public function __construct($cacheDir = '/tmp')
+    {
+        $this->cacheDir = (string) $cacheDir;
+        if (!is_dir($this->cacheDir)) {
+            throw new FileCacheException($this->cacheDir . ' is not directory');
+        }
+        if(!is_writable($this->cacheDir)){
+            throw new FileCacheException($this->cacheDir . ' is not writable');
+        }
+    }
 
     /**
      * {@inheritdoc } 
@@ -88,9 +99,6 @@ class File extends AbstractAdapter implements AdapterInterface
                     throw new FileCacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
-                break;
-            case 'cacheDir':
-                $this->cacheDir = (string) $value;
                 break;
             default :
                 throw new FileCacheException('option not valid ' . $key);

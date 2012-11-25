@@ -13,12 +13,7 @@
 namespace Desarrolla2\Cache\Adapter;
 
 interface AdapterInterface
-{
-    
-    /**
-     * Constructor
-     */
-    public function __construct();
+{    
 
     /**
      * Delete a value from the cache
