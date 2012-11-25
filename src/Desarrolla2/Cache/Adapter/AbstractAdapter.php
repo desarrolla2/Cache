@@ -36,4 +36,20 @@ abstract class AbstractAdapter
         
     }
 
+    /**
+     * {@inheritdoc } 
+     */
+    public function clearCache()
+    {
+        
+    }
+
+    /**
+     * {@inheritdoc } 
+     */
+    public function dropCache()
+    {
+    
+    }
+
 }

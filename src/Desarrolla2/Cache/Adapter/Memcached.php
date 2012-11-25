@@ -18,6 +18,7 @@ use Desarrolla2\Cache\Exception\MemcachedCacheException;
 
 class Memcached extends AbstractAdapter implements AdapterInterface
 {
+
     protected $memcached;
 
     public function __construct($host, $port)

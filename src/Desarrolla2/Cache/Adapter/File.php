@@ -30,7 +30,7 @@ class File extends AbstractAdapter implements AdapterInterface
         if (!is_dir($this->cacheDir)) {
             throw new FileCacheException($this->cacheDir . ' is not directory');
         }
-        if(!is_writable($this->cacheDir)){
+        if (!is_writable($this->cacheDir)) {
             throw new FileCacheException($this->cacheDir . ' is not writable');
         }
     }
@@ -52,7 +52,7 @@ class File extends AbstractAdapter implements AdapterInterface
     public function get($key)
     {
         if ($data = $this->getData($key)) {
-            return $data['value'];
+            return $data;
         }
         return false;
     }
@@ -107,6 +107,22 @@ class File extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * {@inheritdoc } 
+     */
+    public function clearCache()
+    {
+        throw new Exception('not ready yet');
+    }
+
+    /**
+     * {@inheritdoc } 
+     */
+    public function dropCache()
+    {
+        throw new Exception('not ready yet');
+    }
+
+    /**
      * Get the specified cache file
      */
     protected function getCacheFile($key)
@@ -140,8 +156,9 @@ class File extends AbstractAdapter implements AdapterInterface
             if (time() > $data['ttl'] + $data['time']) {
                 return false;
             }
-            return $data;
+            return $data['value'];
         }
+        return false;
     }
 
 }

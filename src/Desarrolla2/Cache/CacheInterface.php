@@ -66,4 +66,14 @@ interface CacheInterface
      * @param string $value
      */
     public function setOption($key, $value);
+
+    /**
+     * clean all expired records from cache
+     */
+    public function clearCache();
+
+    /**
+     * clear all cache
+     */
+    public function dropCache();
 }

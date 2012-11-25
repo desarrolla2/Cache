@@ -95,10 +95,10 @@ new adapters if you think it appropriate.
 
 This can be a list of pending tasks.
 
+* Cleanning cache
 * MemcachedAdapter
 * Other Adapters
-* More test
 
 ## Contact
 
-You can contact with me on [twitter](https://twitter.com/desarrolla2).
+You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).

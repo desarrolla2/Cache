@@ -93,4 +93,20 @@ class Cache implements CacheInterface
         return $this->adapter->setOption($key, $value);
     }
 
+    /**
+     * {@inheritdoc } 
+     */
+    public function clearCache()
+    {
+        
+    }
+
+    /**
+     * {@inheritdoc } 
+     */
+    public function dropCache()
+    {
+        
+    }
+
 }

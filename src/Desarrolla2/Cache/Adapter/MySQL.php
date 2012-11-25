@@ -57,4 +57,20 @@ class MySQL extends AbstractAdapter implements AdapterInterface
         
     }
 
+    /**
+     * {@inheritdoc } 
+     */
+    public function clearCache()
+    {
+        throw new Exception('not ready yet');
+    }
+
+    /**
+     * {@inheritdoc } 
+     */
+    public function dropCache()
+    {
+        throw new Exception('not ready yet');
+    }
+
 }
