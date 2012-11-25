@@ -65,7 +65,7 @@ or if you like to do your code more portable.
     use Desarrolla2\Cache\Adapter\File;
 
     $cacheDir = '/tmp';
-    $adapter = new File(cacheDir);
+    $adapter = new File($cacheDir);
     $adapter->setOption('ttl', 3600);
     $cache = new Cache($adapter);
 
@@ -83,6 +83,23 @@ Use it if you will you have APC cache available in your system.
 
 
     $adapter = new Apc();
+    $adapter->setOption('ttl', 3600);
+    $cache = new Cache($adapter);
+
+```
+
+### Mongo
+
+Use it if you will you have mongodb available in your system.
+
+``` php
+    <?php
+    
+    use Desarrolla2\Cache\Cache;
+    use Desarrolla2\Cache\Adapter\Mongo;
+
+    $server = 'mongodb://localhost:27017';
+    $adapter = new Mongo($server);
     $adapter->setOption('ttl', 3600);
     $cache = new Cache($adapter);
 
