@@ -30,7 +30,7 @@
     </target>
     
     <target name="phpdoc" description="Generate API documentation using PHPDocumentor">
-        <exec command="phpdoc -o HTML:frames:earthli -d src -t build/api -ti 'Cache'"/>
+        <exec command="phpdoc -d src -t build/api"/>
     </target>
     
     <target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml and clover.xml">
