@@ -1,0 +1,55 @@
+{
+    "hash": "98cd31ddb1e099d15106207f4af72628",
+    "packages": [
+
+    ],
+    "packages-dev": [
+        {
+            "name": "desarrolla2/timer",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/desarrolla2/Timer.git",
+                "reference": "0924924b1533d374e4bc8b6b7fea1663eefaf40d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/desarrolla2/Timer/archive/0924924b1533d374e4bc8b6b7fea1663eefaf40d.zip",
+                "reference": "0924924b1533d374e4bc8b6b7fea1663eefaf40d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "time": "1350599346",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "Desarrolla2\\Timer\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel González",
+                    "homepage": "http://desarrolla2.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Provide Timer funcionality",
+            "keywords": [
+                "timer"
+            ]
+        }
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "desarrolla2/timer": 20
+    }
+}
