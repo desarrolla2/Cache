@@ -1,7 +1,8 @@
-/build
-/composer.phar
-/vendor
-/nbproject
+// .gitignore
+/build/
+composer.phar
+/vendor/
+/nbproject/
 *~
 *.swp
 
