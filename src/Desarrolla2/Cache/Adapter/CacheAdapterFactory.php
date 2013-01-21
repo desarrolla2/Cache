@@ -50,7 +50,7 @@ class CacheAdapterFactory
         /** Namespace notation of a cache adapter */
         $adapter = $config['adapter'];
         /** The ttl option for the cache adapter */
-        $ttl     = intval($config['adapter']);
+        $ttl     = intval($config['ttl']);
 
         // Validate that the options are valid    
         if (!is_array($config)) {
