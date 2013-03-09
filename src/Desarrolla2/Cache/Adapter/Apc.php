@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache proyect.
- * 
+ *
  * Description of Apc
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : Apc.php , UTF-8
  * @date : Sep 4, 2012 , 1:00:27 AM
  */
@@ -20,7 +20,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
 {
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function delete($key)
     {
@@ -34,7 +34,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function get($key)
     {
@@ -48,15 +48,24 @@ class Apc extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function has($key)
     {
-        return (boolean) \apc_exists($key);
+        if(function_exists("\apc_exists"))
+        {
+            return (boolean) \apc_exists($key);
+        }
+        else
+        {
+            $result;
+            apc_fetch($key, $result);
+            return (boolean) $result;
+        }
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function set($key, $value, $ttl = null)
     {
@@ -69,7 +78,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function setOption($key, $value)
     {
@@ -88,7 +97,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function clearCache()
     {
@@ -96,7 +105,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function dropCache()
     {
