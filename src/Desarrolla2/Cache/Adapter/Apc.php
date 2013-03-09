@@ -59,7 +59,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
         else
         {
             $result;
-            apc_fetch($key, $result);
+            \apc_fetch($key, $result);
             return (boolean) $result;
         }
     }
