@@ -24,8 +24,11 @@ class File extends AbstractAdapter implements AdapterInterface
      */
     protected $cacheDir;
 
-    public function __construct($cacheDir = '/tmp')
+    public function __construct($cacheDir = null)
     {
+        if (!$cacheDir) {
+            $cacheDir = realpath(sys_get_temp_dir());
+        }        
         $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
             throw new FileCacheException($this->cacheDir . ' is not directory');
