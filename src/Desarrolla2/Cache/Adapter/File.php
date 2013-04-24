@@ -85,7 +85,6 @@ class File extends AbstractAdapter implements AdapterInterface
         $item = array(
             'value' => $value,
             'ttl'   => $ttl,
-            'time'  => time(),
         );
         if (!file_put_contents($cacheFile, serialize($item))) {
             throw new FileCacheException('Error saving data with the key "' . $key . '" to the cache file.');
@@ -156,10 +155,7 @@ class File extends AbstractAdapter implements AdapterInterface
             if (!array_key_exists('ttl', $data)) {
                 throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
             }
-            if (!array_key_exists('time', $data)) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', time not exist');
-            }
-            if (time() > $data['ttl'] + $data['time']) {
+            if (time() > $data['ttl'] + filemtime($cacheFile)) {
                 return false;
             }
 

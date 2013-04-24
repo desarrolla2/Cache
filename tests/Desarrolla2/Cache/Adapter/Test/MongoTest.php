@@ -32,6 +32,11 @@ class MongoTest extends AbstractCacheTest
      */
     public function setUp()
     {
+        if (!class_exists('Mongo')) {
+            $this->markTestSkipped(
+                    'The Mongo extension is not available.'
+            );
+        }
         $server = 'mongodb://localhost:27017';
         $this->cache = new Cache(new Mongo($server));
     }
@@ -48,7 +53,7 @@ class MongoTest extends AbstractCacheTest
         );
     }
 
-        /**
+    /**
      * @return array
      */
     public function dataProviderForOptions()
