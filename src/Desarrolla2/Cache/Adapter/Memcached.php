@@ -28,27 +28,27 @@ class Memcached extends AbstractAdapter implements AdapterInterface
 
     public function delete($key)
     {
-
+        
     }
 
     public function get($key)
     {
-
+        
     }
 
     public function has($key)
     {
-
+        
     }
 
     public function set($key, $value, $ttl = null)
     {
-
+        
     }
 
     public function setOption($key, $value)
     {
-
+        
     }
 
 }

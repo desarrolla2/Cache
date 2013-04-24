@@ -23,7 +23,7 @@ class NotCache extends AbstractAdapter implements AdapterInterface
      */
     public function delete($key)
     {
-        return;
+        return false;
     }
 
     /**
@@ -50,9 +50,12 @@ class NotCache extends AbstractAdapter implements AdapterInterface
         return false;
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function setOption($key, $value)
     {
-         return;
+        return false;
     }
 
 }

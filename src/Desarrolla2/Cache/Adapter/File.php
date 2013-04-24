@@ -19,6 +19,9 @@ use Desarrolla2\Cache\Exception\FileCacheException;
 class File extends AbstractAdapter implements AdapterInterface
 {
 
+    const CACHE_FILE_PREFIX = '__';
+    const CACHE_FILE_SUBFIX = '.php.cache';
+
     /**
      * @var string
      */
@@ -43,7 +46,7 @@ class File extends AbstractAdapter implements AdapterInterface
      */
     public function delete($key)
     {
-        $cacheFile = $this->getCacheFile($key);
+        $cacheFile = $this->getCacheFileForKey($key);
         if (file_exists($cacheFile)) {
             unlink($cacheFile);
         }
@@ -78,13 +81,13 @@ class File extends AbstractAdapter implements AdapterInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheFile = $this->getCacheFile($key);
+        $cacheFile = $this->getCacheFileForKey($key);
         if (is_null($ttl)) {
             $ttl = $this->ttl;
         }
         $item = array(
             'value' => $value,
-            'ttl'   => $ttl,
+            'ttl' => $ttl,
         );
         if (!file_put_contents($cacheFile, serialize($item))) {
             throw new FileCacheException('Error saving data with the key "' . $key . '" to the cache file.');
@@ -124,15 +127,46 @@ class File extends AbstractAdapter implements AdapterInterface
      */
     public function dropCache()
     {
-        throw new Exception('not ready yet');
+        foreach (scandir($this->cacheDir) as $fileName) {
+            $cacheFile = $this->cacheDir .
+                    DIRECTORY_SEPARATOR .
+                    $fileName;
+            $this->deleteFile($cacheFile);
+        }
+    }
+
+    /**
+     * Delete file
+     * 
+     * @param type $cacheFile
+     */
+    protected function deleteFile($cacheFile)
+    {
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
+        }
+    }
+
+    /**
+     * Get the specified cache file
+     * 
+     * @param string $key
+     */
+    protected function getCacheFileForKey($key)
+    {
+        return $this->getCacheFile(md5($key));
     }
 
     /**
      * Get the specified cache file
      */
-    protected function getCacheFile($key)
+    protected function getCacheFile($fileName)
     {
-        return $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.php.cache';
+        return $this->cacheDir .
+                DIRECTORY_SEPARATOR .
+                self::CACHE_FILE_PREFIX .
+                $fileName .
+                self::CACHE_FILE_SUBFIX;
     }
 
     /**
@@ -144,7 +178,7 @@ class File extends AbstractAdapter implements AdapterInterface
      */
     protected function getData($key)
     {
-        $cacheFile = $this->getCacheFile($key);
+        $cacheFile = $this->getCacheFileForKey($key);
         if (file_exists($cacheFile)) {
             if (!$data = unserialize(file_get_contents($cacheFile))) {
                 throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
