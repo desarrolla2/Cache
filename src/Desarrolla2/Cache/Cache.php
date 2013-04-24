@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache proyect.
- * 
+ *
  * Description of Cache
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : Cache.php , UTF-8
  * @date : Sep 4, 2012 , 12:45:14 AM
  */
@@ -20,7 +20,7 @@ class Cache implements CacheInterface
 
     /**
      *
-     * @var Adapter\AdapterInterface 
+     * @var Adapter\AdapterInterface
      */
     protected $adapter;
 
@@ -35,7 +35,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function delete($key)
     {
@@ -43,7 +43,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function get($key)
     {
@@ -51,18 +51,19 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function getAdapter()
     {
         if (!$this->adapter) {
             throw new AdapterNotSetException('Required Adapter');
         }
+
         return $this->adapter;
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function has($key)
     {
@@ -70,7 +71,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function set($key, $value, $ttl = null)
     {
@@ -78,7 +79,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function setAdapter(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter)
     {
@@ -86,7 +87,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function setOption($key, $value)
     {
@@ -94,19 +95,19 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function clearCache()
     {
-        
+
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function dropCache()
     {
-        
+
     }
 
 }

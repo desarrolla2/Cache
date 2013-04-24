@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache proyect.
- * 
+ *
  * Description of File
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : File.php , UTF-8
  * @date : Sep 4, 2012 , 1:00:09 AM
  */
@@ -28,7 +28,7 @@ class File extends AbstractAdapter implements AdapterInterface
     {
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir());
-        }        
+        }
         $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
             throw new FileCacheException($this->cacheDir . ' is not directory');
@@ -39,7 +39,7 @@ class File extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function delete($key)
     {
@@ -50,29 +50,31 @@ class File extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function get($key)
     {
         if ($data = $this->getData($key)) {
             return $data;
         }
+
         return false;
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function has($key)
     {
         if ($this->getData($key)) {
             return true;
         }
+
         return false;
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function set($key, $value, $ttl = null)
     {
@@ -91,7 +93,7 @@ class File extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function setOption($key, $value)
     {
@@ -106,11 +108,12 @@ class File extends AbstractAdapter implements AdapterInterface
             default :
                 throw new FileCacheException('option not valid ' . $key);
         }
+
         return true;
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function clearCache()
     {
@@ -118,7 +121,7 @@ class File extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function dropCache()
     {
@@ -135,8 +138,8 @@ class File extends AbstractAdapter implements AdapterInterface
 
     /**
      * Get data value from file cache
-     * 
-     * @param type $key
+     *
+     * @param  type               $key
      * @return boolean
      * @throws FileCacheException
      */
@@ -159,8 +162,10 @@ class File extends AbstractAdapter implements AdapterInterface
             if (time() > $data['ttl'] + $data['time']) {
                 return false;
             }
+
             return $data['value'];
         }
+
         return false;
     }
 

@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache proyect.
- * 
+ *
  * Description of Memcached
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : Memcached.php , UTF-8
  * @date : Sep 4, 2012 , 1:00:33 AM
  */
@@ -28,27 +28,27 @@ class Memcached extends AbstractAdapter implements AdapterInterface
 
     public function delete($key)
     {
-        
+
     }
 
     public function get($key)
     {
-        
+
     }
 
     public function has($key)
     {
-        
+
     }
 
     public function set($key, $value, $ttl = null)
     {
-        
+
     }
 
     public function setOption($key, $value)
     {
-        
+
     }
 
 }

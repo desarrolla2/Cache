@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache proyect.
- * 
+ *
  * Description of NoCache
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : NoCache.php , UTF-8
  * @date : Sep 4, 2012 , 1:00:01 AM
  */
@@ -19,7 +19,7 @@ class NotCache extends AbstractAdapter implements AdapterInterface
 {
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function delete($key)
     {
@@ -27,7 +27,7 @@ class NotCache extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function get($key)
     {
@@ -35,7 +35,7 @@ class NotCache extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function has($key)
     {
@@ -43,7 +43,7 @@ class NotCache extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc } 
+     * {@inheritdoc }
      */
     public function set($key, $value, $ttl = null)
     {

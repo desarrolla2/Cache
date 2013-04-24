@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache proyect.
- * 
+ *
  * Description of CacheInterface
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : CacheInterface.php , UTF-8
  * @date : Sep 4, 2012 , 12:45:25 AM
  */
@@ -17,20 +17,20 @@ interface CacheInterface
 
     /**
      * Delete a value from the cache
-     * 
+     *
      * @param string $key
      */
     public function delete($key);
 
     /**
      * Retrieve the value corresponding to a provided key
-     *     
+     *
      * @param string $key
      */
     public function get($key);
 
     /**
-     * 
+     *
      * @return \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
      * @throws Exception
      */
@@ -45,23 +45,23 @@ interface CacheInterface
 
     /**
      * * Add a value to the cache under a unique key
-     * 
+     *
      * @param string $key
-     * @param mixed $value
-     * @param int $ttl
+     * @param mixed  $value
+     * @param int    $ttl
      */
     public function set($key, $value, $ttl = null);
 
     /**
      * Set Adapter interface
-     * 
+     *
      * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
      */
     public function setAdapter(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter);
 
     /**
      * Set option for Adapter
-     * 
+     *
      * @param string $key
      * @param string $value
      */

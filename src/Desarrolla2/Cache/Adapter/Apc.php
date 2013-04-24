@@ -28,8 +28,10 @@ class Apc extends AbstractAdapter implements AdapterInterface
             if (!\apc_delete($key)) {
                 throw new ApcCacheException('Error deleting data with the key "' . $key . '" from the APC cache.');
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -42,8 +44,10 @@ class Apc extends AbstractAdapter implements AdapterInterface
             if (!$data = \apc_fetch($key)) {
                 throw new ApcCacheException('Error fetching data with the key "' . $key . '" from the APC cache.');
             }
+
             return $data;
         }
+
         return null;
     }
 
@@ -52,13 +56,11 @@ class Apc extends AbstractAdapter implements AdapterInterface
      */
     public function has($key)
     {
-        if(function_exists("\apc_exists"))
-        {
+        if (function_exists("\apc_exists")) {
             return (boolean) \apc_exists($key);
-        }
-        else
-        {
+        } else {
             \apc_fetch($key, $result);
+
             return (boolean) $result;
         }
     }
@@ -92,6 +94,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
             default :
                 throw new ApcCacheException('option not valid ' . $key);
         }
+
         return true;
     }
 

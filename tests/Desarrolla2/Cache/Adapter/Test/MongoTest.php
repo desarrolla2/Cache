@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the Cache proyect.
- * 
+ *
  * Copyright (c)
- * Daniel González <daniel.gonzalez@freelancemadrid.es> 
- * 
+ * Daniel González <daniel.gonzalez@freelancemadrid.es>
+ *
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
@@ -17,10 +17,10 @@ use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Mongo;
 
 /**
- * 
+ *
  * Description of MongoTest
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : MongoTest.php , UTF-8
  * @date : Nov 25, 2012 , 1:58:13 AM
  */
@@ -47,7 +47,7 @@ class MongoTest extends AbstractCacheTest
             array('key3', 'value', 1, 2, false, false),
         );
     }
-    
+
         /**
      * @return array
      */

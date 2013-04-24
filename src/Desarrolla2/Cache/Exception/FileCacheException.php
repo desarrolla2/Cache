@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the Cache proyect.
- * 
+ *
  * Description of ApcCacheException
  *
  * @author : Daniel González Cerviño <daniel.gonzalez@ideup.com>
@@ -14,5 +14,5 @@ namespace Desarrolla2\Cache\Exception;
 
 class FileCacheException extends \Exception
 {
-    
+
 }

@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the D2Cache project.
- * 
+ *
  * Factory for different cache adapters
  *
- * @author : Ingo Theiss <ingo.theiss@i-matrixx.de> 
+ * @author : Ingo Theiss <ingo.theiss@i-matrixx.de>
  * @file : CacheAdapterFactory.php , UTF-8
  * @date : Dec 26, 2012 , 18:55:43 AM
  */
@@ -46,37 +46,37 @@ class CacheAdapterFactory
          * Not required or used at the moment.
          */
         $args = array();
-        
+
         /** Namespace notation of a cache adapter */
         $adapter = $config['adapter'];
         /** The ttl option for the cache adapter */
         $ttl     = intval($config['ttl']);
 
-        // Validate that the options are valid    
+        // Validate that the options are valid
         if (!is_array($config)) {
             throw new InvalidArgumentException('$config must be an array');
         }
-        
+
         if (!is_string($adapter)) {
-            throw new InvalidArgumentException('Parameter adapter must be namespace notation of a valid cache adapter');    
+            throw new InvalidArgumentException('Parameter adapter must be namespace notation of a valid cache adapter');
         }
 
         if (!is_int($ttl)) {
             throw new InvalidArgumentException('Parameter ttl must be an integer');
         }
-           
+
         if (!class_exists($adapter)) {
             throw new InvalidArgumentException($adapter . ' is not a valid adapter class');
         }
-        
+
         /** If we passed so far we can instantiate the concrete adapter class */
         $cacheAdapter = self::createAdapter($adapter, $args);
-        
+
         /**
          * Set ttl option
          *
          * The ttl is either the default 3600 or the value specified in the configuration.
-         * 
+         *
          * @see Desarrolla2\Bundle\RSSClientBundle\DependencyInjection\Configuration for defaults
          */
         $cacheAdapter->setOption('ttl', $ttl);
@@ -100,6 +100,7 @@ class CacheAdapterFactory
                 return new $className;
             } else {
                 $c = new \ReflectionClass($className);
+
                 return $c->newInstanceArgs($args);
             }
         } catch (\Exception $e) {

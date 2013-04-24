@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the Cache proyect.
- * 
+ *
  * Copyright (c)
- * Daniel González <daniel.gonzalez@freelancemadrid.es> 
- * 
+ * Daniel González <daniel.gonzalez@freelancemadrid.es>
+ *
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
@@ -13,10 +13,10 @@
 namespace Desarrolla2\Cache\Adapter\Test;
 
 /**
- * 
+ *
  * Description of AbstracCacheTest
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : AbstracCacheTest.php , UTF-8
  * @date : Oct 23, 2012 , 10:57:28 PM
  */
@@ -29,15 +29,15 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     protected $cache;
 
     /**
-     * 
+     *
      * @test
      * @dataProvider dataProvider
      * @param string $key
      * @param string $value
-     * @param type $ttl
-     * @param type $sleep
-     * @param type $return
-     * @param type $return
+     * @param type   $ttl
+     * @param type   $sleep
+     * @param type   $return
+     * @param type   $return
      */
     public function hasTest($key, $value, $ttl, $sleep, $return, $has)
     {
@@ -48,14 +48,14 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * 
+     *
      * @test
      * @dataProvider dataProvider
      * @param string $key
      * @param string $value
-     * @param type $ttl
-     * @param type $sleep
-     * @param type $return
+     * @param type   $ttl
+     * @param type   $sleep
+     * @param type   $return
      */
     public function getTest($key, $value, $ttl, $sleep, $return)
     {
@@ -66,12 +66,12 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * 
+     *
      * @test
      * @dataProvider dataProvider
      * @param string $key
      * @param string $value
-     * @param type $ttl
+     * @param type   $ttl
      */
     public function deleteTest($key, $value, $ttl)
     {
@@ -83,12 +83,12 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * 
+     *
      * @test
      * @dataProvider dataProviderForOptions
      * @param string $key
      * @param string $value
-     * @param type $return
+     * @param type   $return
      */
     public function setOptionTest($key, $value)
     {
