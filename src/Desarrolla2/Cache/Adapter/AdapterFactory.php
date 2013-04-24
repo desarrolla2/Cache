@@ -15,6 +15,7 @@ namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Exception\RuntimeException;
+use Desarrolla2\Cache\Adapter\NotCache;
 
 /**
  * Factory to create an concrete adapter implementaion
@@ -22,6 +23,18 @@ use Desarrolla2\Cache\Exception\RuntimeException;
  */
 class AdapterFactory
 {
+
+    /**
+     * 
+     * @param string $adapterName
+     * @param array $args
+     */
+    public static function get($adapterName = 'Desarrolla2\Cache\Adapter\NotCache', array $args = null)
+    {
+        if (!class_exists($adapterName)) {
+            throw new InvalidArgumentException($adapterName . ' is not a valid adapter class');
+        }
+    }
 
     /**
      * Create an concrete adapter
@@ -52,9 +65,7 @@ class AdapterFactory
             throw new InvalidArgumentException('Parameter ttl must be an integer');
         }
 
-        if (!class_exists($adapter)) {
-            throw new InvalidArgumentException($adapter . ' is not a valid adapter class');
-        }
+
 
         $cacheAdapter = self::createAdapter($adapter, $args);
         $cacheAdapter->setOption('ttl', $ttl);
