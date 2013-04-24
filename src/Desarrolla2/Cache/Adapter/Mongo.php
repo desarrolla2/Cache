@@ -33,9 +33,9 @@ class Mongo extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  type               $server
-     * @param  type               $options
-     * @param  type               $database
+     * @param  string             $server
+     * @param  array               $options
+     * @param  string               $database
      * @throws FileCacheException
      */
     public function __construct($server = 'mongodb://localhost:27017', $options = array('connect' => true), $database = '__cache')
@@ -85,10 +85,10 @@ class Mongo extends AbstractAdapter implements AdapterInterface
     public function set($key, $value, $ttl = null)
     {
         $item = array(
-            'key'   => $key,
+            'key' => $key,
             'value' => $value,
-            'ttl'   => $ttl,
-            'time'  => time(),
+            'ttl' => $ttl,
+            'time' => time(),
         );
         $this->delete($key);
         $this->db->items->insert($item);
@@ -115,25 +115,9 @@ class Mongo extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc }
-     */
-    public function clearCache()
-    {
-        throw new Exception('not ready yet');
-    }
-
-    /**
-     * {@inheritdoc }
-     */
-    public function dropCache()
-    {
-        throw new Exception('not ready yet');
-    }
-
-    /**
      * Get data value from file cache
      *
-     * @param  type               $key
+     * @param  string               $key
      * @return boolean
      * @throws FileCacheException
      */

@@ -1,12 +1,13 @@
 <?php
 
 /**
- * This file is part of the D2Cache project.
+ * This file is part of the Cache project.
  *
  * Factory for different cache adapters
  *
  * @author : Ingo Theiss <ingo.theiss@i-matrixx.de>
- * @file : CacheAdapterFactory.php , UTF-8
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * @file : AdapterFactory.php , UTF-8
  * @date : Dec 26, 2012 , 18:55:43 AM
  */
 
@@ -19,8 +20,9 @@ use Desarrolla2\Cache\Exception\RuntimeException;
  * Factory to create an concrete adapter implementaion
  * to be used by the Cache class.
  */
-class CacheAdapterFactory
+class AdapterFactory
 {
+
     /**
      * Create an concrete adapter
      *
@@ -29,39 +31,24 @@ class CacheAdapterFactory
      * @return CacheInterface
      * @throws InvalidArgumentException
      */
-    public static function factory($config = array())
+    public static function factory($config = array(), $args = null)
     {
-        /**
-         * Some sane default cache adapter
-         *
-         * The default is specified in the bundles Configuration class but for safety
-         * also specified here.
-         *
-         * @see Desarrolla2\Bundle\RSSClientBundle\DependencyInjection\Configuration for default adapter
-         */
-        $cacheAdapter = new NotCache();
-
-        /**
-         * Arguments for the adapter class constructor.
-         * Not required or used at the moment.
-         */
-        $args = array();
-
-        /** Namespace notation of a cache adapter */
-        $adapter = $config['adapter'];
-        /** The ttl option for the cache adapter */
-        $ttl     = intval($config['ttl']);
-
-        // Validate that the options are valid
         if (!is_array($config)) {
             throw new InvalidArgumentException('$config must be an array');
         }
-
+        if (!isset($config['adapter'])) {
+            throw new InvalidArgumentException('$config[\'adapter\'] must be set');
+        }
+        $adapter = $config['adapter'];
         if (!is_string($adapter)) {
-            throw new InvalidArgumentException('Parameter adapter must be namespace notation of a valid cache adapter');
+            throw new InvalidArgumentException('Parameter adapter must be a valid cache adapter');
         }
 
-        if (!is_int($ttl)) {
+        if (!isset($config['ttl'])) {
+            throw new InvalidArgumentException('$config[\'ttl\'] must be set');
+        }
+        $ttl = (int) $config['ttl'];
+        if (!$ttl) {
             throw new InvalidArgumentException('Parameter ttl must be an integer');
         }
 
@@ -69,16 +56,7 @@ class CacheAdapterFactory
             throw new InvalidArgumentException($adapter . ' is not a valid adapter class');
         }
 
-        /** If we passed so far we can instantiate the concrete adapter class */
         $cacheAdapter = self::createAdapter($adapter, $args);
-
-        /**
-         * Set ttl option
-         *
-         * The ttl is either the default 3600 or the value specified in the configuration.
-         *
-         * @see Desarrolla2\Bundle\RSSClientBundle\DependencyInjection\Configuration for defaults
-         */
         $cacheAdapter->setOption('ttl', $ttl);
 
         return $cacheAdapter;
@@ -96,15 +74,12 @@ class CacheAdapterFactory
     protected static function createAdapter($className, array $args = null)
     {
         try {
-            if (!$args) {
-                return new $className;
-            } else {
-                $c = new \ReflectionClass($className);
+            $c = new \ReflectionClass($className);
 
-                return $c->newInstanceArgs($args);
-            }
+            return $c->newInstanceArgs($args);
         } catch (\Exception $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
+
 }

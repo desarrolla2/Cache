@@ -98,20 +98,4 @@ class Apc extends AbstractAdapter implements AdapterInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc }
-     */
-    public function clearCache()
-    {
-        throw new Exception('not ready yet');
-    }
-
-    /**
-     * {@inheritdoc }
-     */
-    public function dropCache()
-    {
-        throw new Exception('not ready yet');
-    }
-
 }

@@ -33,7 +33,7 @@ abstract class AbstractAdapter
      */
     public function __construct()
     {
-
+        
     }
 
     /**
@@ -41,7 +41,7 @@ abstract class AbstractAdapter
      */
     public function clearCache()
     {
-
+        throw new Exception('not ready yet');
     }
 
     /**
@@ -49,7 +49,7 @@ abstract class AbstractAdapter
      */
     public function dropCache()
     {
-
+        throw new Exception('not ready yet');
     }
 
 }
