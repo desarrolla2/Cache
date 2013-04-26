@@ -34,7 +34,9 @@ class File extends AbstractAdapter implements AdapterInterface
         }
         $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
-            throw new FileCacheException($this->cacheDir . ' is not directory');
+            if (!mkdir($this->cacheDir, 0777, true)) {
+                throw new FileCacheException($this->cacheDir . ' is not directory');
+            }
         }
         if (!is_writable($this->cacheDir)) {
             throw new FileCacheException($this->cacheDir . ' is not writable');
