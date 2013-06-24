@@ -99,7 +99,7 @@ Use it if you will you have mongodb available in your system.
     use Desarrolla2\Cache\Adapter\Mongo;
 
     $server = 'mongodb://localhost:27017';
-    $adapter = new Mongo($ server);
+    $adapter = new Mongo($server);
     $adapter->setOption('ttl', 3600);
     $cache = new Cache($adapter);
 
