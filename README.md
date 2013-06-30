@@ -88,6 +88,28 @@ Use it if you will you have APC cache available in your system.
 
 ```
 
+### Memory
+
+This is the fastest cache type, since the elements are stored in memory. 
+Cache Memory such is very volatile and is removed when the process terminates.
+Also it is not shared between different processes.
+
+Memory cache have a option "limit", that limit the max items in cache.
+
+``` php
+    <?php
+    
+    use Desarrolla2\Cache\Cache;
+    use Desarrolla2\Cache\Adapter\Memory;
+
+
+    $adapter = new Apc();
+    $adapter->setOption('ttl', 3600);
+    $adapter->setOption('limit', 200);
+    $cache = new Cache($adapter);
+
+```
+
 ### Mongo
 
 Use it if you will you have mongodb available in your system.

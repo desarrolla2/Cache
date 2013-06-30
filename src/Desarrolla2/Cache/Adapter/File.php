@@ -29,16 +29,18 @@ class File extends AbstractAdapter implements AdapterInterface
 
     /**
      * Last data loaded by getData
+     * 
      * @var array 
      */
-    protected $lastData=null;
-    
+    protected $lastData = null;
+
     /**
      * Last key loaded by getData
+     * 
      * @var string 
      */
-    protected $lastKey=null;
-    
+    protected $lastKey = null;
+
     public function __construct($cacheDir = null)
     {
         if (!$cacheDir) {
@@ -47,7 +49,7 @@ class File extends AbstractAdapter implements AdapterInterface
         $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
             if (!mkdir($this->cacheDir, 0777, true)) {
-                throw new FileCacheException($this->cacheDir . ' is not directory');
+                throw new FileCacheException($this->cacheDir . ' is not writable');
             }
         }
         if (!is_writable($this->cacheDir)) {
@@ -64,10 +66,10 @@ class File extends AbstractAdapter implements AdapterInterface
         if (file_exists($cacheFile)) {
             unlink($cacheFile);
         }
-        
+
         if ($key == $this->lastKey) {
-            $this->lastKey=null;
-            $this->lastData=null;
+            $this->lastKey = null;
+            $this->lastData = null;
         }
     }
 
@@ -199,27 +201,27 @@ class File extends AbstractAdapter implements AdapterInterface
     {
         if ($key == $this->lastKey) {
             return $this->lastData;
-        } else {
-            $cacheFile = $this->getCacheFileForKey($key);
-            if (file_exists($cacheFile)) {
-                if (!$data = unserialize(file_get_contents($cacheFile))) {
-                    throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
-                }
-                if (!array_key_exists('value', $data)) {
-                    throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist');
-                }
-                if (!array_key_exists('ttl', $data)) {
-                    throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
-                }
-                if (time() > $data['ttl'] + filemtime($cacheFile)) {
-                    return false;
-                }
-                
-                $this->lastKey=$key;
-                $this->lastData=$data['value'];
-                return $data['value'];
+        }
+        $cacheFile = $this->getCacheFileForKey($key);
+        if (file_exists($cacheFile)) {
+            if (!$data = unserialize(file_get_contents($cacheFile))) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
             }
+            if (!array_key_exists('value', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist');
+            }
+            if (!array_key_exists('ttl', $data)) {
+                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
+            }
+            if (time() > $data['ttl'] + filemtime($cacheFile)) {
+                return false;
+            }
+
+            $this->lastKey = $key;
+            $this->lastData = $data['value'];
+            return $data['value'];
         }
         return false;
     }
+
 }

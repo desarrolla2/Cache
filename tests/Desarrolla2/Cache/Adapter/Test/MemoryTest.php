@@ -1,22 +1,30 @@
 <?php
 
 /**
- * This file is part of the perrosygatos proyect.
- *
- * Description of CacheTest
- *
- * @author : Daniel González Cerviño <daniel.gonzalez@ideup.com>
- * @file : CacheTest.php , UTF-8
- * @date : Sep 4, 2012 , 3:49:01 PM
+ * This file is part of the Cache proyect.
+ * 
+ * Copyright (c)
+ * Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * 
+ * This source file is subject to the MIT license that is bundled
+ * with this package in the file LICENSE.
  */
 
 namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Adapter\Test\AbstractCacheTest;
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\File;
+use Desarrolla2\Cache\Adapter\Memory;
 
-class FileTest extends AbstractCacheTest
+/**
+ * 
+ * Description of MemoryTest
+ *
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @file : MemoryTest.php , UTF-8
+ * @date : Jun 30, 2013 , 4:22:06 PM
+ */
+class MemoryTest extends AbstractCacheTest
 {
 
     /**
@@ -24,7 +32,7 @@ class FileTest extends AbstractCacheTest
      */
     public function setUp()
     {
-        $this->cache = new Cache(new File());
+        $this->cache = new Cache(new Memory());
     }
 
     /**
@@ -46,6 +54,7 @@ class FileTest extends AbstractCacheTest
     {
         return array(
             array('ttl', 100),
+            array('limit', 100),
         );
     }
 
@@ -55,8 +64,8 @@ class FileTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return array(
-            array('ttl', 0, '\Desarrolla2\Cache\Exception\FileCacheException'),
-            array('file', 100, '\Desarrolla2\Cache\Exception\FileCacheException'),
+            array('ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'),
+            array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
         );
     }
 

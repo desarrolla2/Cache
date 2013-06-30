@@ -12,6 +12,8 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
+use Desarrolla2\Cache\Exception\CacheException;
+
 /**
  *
  * Description of AbstractAdapter
@@ -34,6 +36,26 @@ abstract class AbstractAdapter
     public function __construct()
     {
         
+    }
+
+    /**
+     * {@inheritdoc }
+     */
+    public function setOption($key, $value)
+    {
+        switch ($key) {
+            case 'ttl':
+                $value = (int) $value;
+                if ($value < 1) {
+                    throw new CacheException('ttl cant be lower than 1');
+                }
+                $this->ttl = $value;
+                break;
+            default :
+                throw new CacheException('option not valid ' . $key);
+        }
+
+        return true;
     }
 
     /**
