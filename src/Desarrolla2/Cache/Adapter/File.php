@@ -12,11 +12,10 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\FileCacheException;
 
-class File extends AbstractAdapter implements AdapterInterface
+class File extends AbstractAdapter
 {
 
     const CACHE_FILE_PREFIX = '__';

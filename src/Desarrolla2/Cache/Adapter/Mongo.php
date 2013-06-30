@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\MongoCacheException;
 use Mongo as MongoBase;
@@ -25,7 +24,7 @@ use Mongo as MongoBase;
  * @file : Mongo.php , UTF-8
  * @date : Nov 12, 2012 , 1:12:12 AM
  */
-class Mongo extends AbstractAdapter implements AdapterInterface
+class Mongo extends AbstractAdapter
 {
 
     protected $db;

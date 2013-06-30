@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 
 /**
@@ -23,7 +22,7 @@ use Desarrolla2\Cache\Adapter\AbstractAdapter;
  * @file : Memory.php , UTF-8
  * @date : Jun 30, 2013 , 4:00:56 PM
  */
-class Memory extends AbstractAdapter implements AdapterInterface
+class Memory extends AbstractAdapter
 {
 
     /**
@@ -108,15 +107,4 @@ class Memory extends AbstractAdapter implements AdapterInterface
         }
         return parent::setOption($key, $value);
     }
-
-    /**
-     * 
-     * @param string $key
-     * @return string
-     */
-    protected function getKey($key)
-    {
-        return md5($key);
-    }
-
 }

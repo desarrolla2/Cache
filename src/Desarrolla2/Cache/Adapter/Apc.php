@@ -12,11 +12,10 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\ApcCacheException;
 
-class Apc extends AbstractAdapter implements AdapterInterface
+class Apc extends AbstractAdapter
 {
 
     /**

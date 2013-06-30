@@ -13,6 +13,7 @@
 namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Adapter\AdapterInterface;
 
 /**
  *
@@ -22,7 +23,7 @@ use Desarrolla2\Cache\Exception\CacheException;
  * @file : AbstractAdapter.php , UTF-8
  * @date : Oct 24, 2012 , 12:05:12 AM
  */
-abstract class AbstractAdapter
+abstract class AbstractAdapter implements AdapterInterface
 {
 
     /**
@@ -72,6 +73,16 @@ abstract class AbstractAdapter
     public function dropCache()
     {
         throw new Exception('not ready yet');
+    }
+
+    /**
+     * 
+     * @param string $key
+     * @return string
+     */
+    protected function getKey($key)
+    {
+        return md5($key);
     }
 
 }

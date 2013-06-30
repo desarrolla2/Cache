@@ -9,6 +9,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
+
 namespace Desarrolla2\Cache\Exception;
 
 /**
@@ -19,7 +20,7 @@ namespace Desarrolla2\Cache\Exception;
  * @file : MemcachedException.php , UTF-8
  * @date : Oct 24, 2012 , 12:10:58 AM
  */
-class MemcachedException extends \Exception
+class MemcacheException extends \Exception
 {
-    //put your code here
+    
 }
