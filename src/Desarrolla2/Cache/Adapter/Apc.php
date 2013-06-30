@@ -45,7 +45,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
                 throw new ApcCacheException('Error fetching data with the key "' . $key . '" from the APC cache.');
             }
 
-            return $data;
+            return unserialize($data);
         }
 
         return null;
@@ -73,7 +73,7 @@ class Apc extends AbstractAdapter implements AdapterInterface
         if (is_null($ttl)) {
             $ttl = $this->ttl;
         }
-        if (!\apc_store($key, $value, $ttl)) {
+        if (!\apc_store($key, serialize($value), $ttl)) {
             throw new ApcCacheException('Error saving data with the key "' . $key . '" to the APC cache.');
         }
     }
