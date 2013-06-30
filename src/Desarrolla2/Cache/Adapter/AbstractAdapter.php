@@ -82,7 +82,18 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     protected function getKey($key)
     {
-        return md5($key);
+        //return md5($key);
+        return $key;
+    }
+
+    protected function serialize($value)
+    {
+        return serialize($value);
+    }
+
+    protected function unserialize($value)
+    {
+        return unserialize($value);
     }
 
 }

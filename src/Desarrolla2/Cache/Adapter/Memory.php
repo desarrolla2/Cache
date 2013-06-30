@@ -42,7 +42,8 @@ class Memory extends AbstractAdapter
      */
     public function delete($key)
     {
-        unset($this->cache[$this->getKey($key)]);
+        $_key = $this->getKey($key);
+        unset($this->cache[$_key]);
     }
 
     /**
@@ -51,7 +52,8 @@ class Memory extends AbstractAdapter
     public function get($key)
     {
         if ($this->has($key)) {
-            return unserialize($this->cache[$this->getKey($key)]['value']);
+            $_key = $this->getKey($key);
+            return $this->unserialize($this->cache[$_key]['value']);
         }
         return false;
     }
@@ -61,9 +63,10 @@ class Memory extends AbstractAdapter
      */
     public function has($key)
     {
-        if (isset($this->cache[$this->getKey($key)])) {
-            $data = $this->cache[$this->getKey($key)];
-            if (time() < $data['ttl'] + $data['time']) {
+        $_key = $this->getKey($key);
+        if (isset($this->cache[$_key])) {
+            $data = $this->cache[$_key];
+            if (time() < $data['ttl']) {
                 return true;
             } else {
                 $this->delete($key);
@@ -80,14 +83,13 @@ class Memory extends AbstractAdapter
         while (count($this->cache) >= $this->limit) {
             array_shift($this->cache);
         }
-
+        $_key = $this->getKey($key);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->cache[$this->getKey($key)] = array(
+        $this->cache[$_key] = array(
             'value' => serialize($value),
-            'ttl' => $ttl,
-            'time' => time(),
+            'ttl' => $ttl + time(),
         );
     }
 
@@ -107,4 +109,5 @@ class Memory extends AbstractAdapter
         }
         return parent::setOption($key, $value);
     }
+
 }

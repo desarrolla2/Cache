@@ -51,7 +51,8 @@ class Mongo extends AbstractAdapter
      */
     public function delete($key)
     {
-        $this->db->items->remove(array('key' => $key));
+        $_key = $this->getKey($key);
+        $this->db->items->remove(array('key' => $_key));
     }
 
     /**
@@ -83,11 +84,15 @@ class Mongo extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
+        $_key = $this->getKey($key);
+        $_value = $this->serialize($value);
+        if (!$ttl) {
+            $ttl = $this->ttl;
+        }
         $item = array(
-            'key' => $key,
-            'value' => $value,
-            'ttl' => $ttl,
-            'time' => time(),
+            'key' => $_key,
+            'value' => $_value,
+            'ttl' => $ttl + time(),
         );
         $this->delete($key);
         $this->db->items->insert($item);
@@ -122,14 +127,14 @@ class Mongo extends AbstractAdapter
      */
     protected function getData($key)
     {
-        $data = $this->db->items->findOne(array('key' => $key));
+        $_key = $this->getKey($key);
+        $data = $this->db->items->findOne(array('key' => $_key));
         if (count($data)) {
             if ($data = array_values($data)) {
-                if (time() > $data[4] + $data[3]) {
+                if (time() > $data[3]) {
                     return false;
                 }
-
-                return $data[2];
+                return $this->unserialize($data[2]);
             }
         }
 

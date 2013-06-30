@@ -26,20 +26,6 @@ class File extends AbstractAdapter
      */
     protected $cacheDir;
 
-    /**
-     * Last data loaded by getData
-     * 
-     * @var array 
-     */
-    protected $lastData = null;
-
-    /**
-     * Last key loaded by getData
-     * 
-     * @var string 
-     */
-    protected $lastKey = null;
-
     public function __construct($cacheDir = null)
     {
         if (!$cacheDir) {
@@ -61,15 +47,9 @@ class File extends AbstractAdapter
      */
     public function delete($key)
     {
-        $cacheFile = $this->getCacheFileForKey($key);
-        if (file_exists($cacheFile)) {
-            unlink($cacheFile);
-        }
-
-        if ($key == $this->lastKey) {
-            $this->lastKey = null;
-            $this->lastData = null;
-        }
+        $_key = $this->getKey($key);
+        $cacheFile = $this->getCacheFile($_key);
+        $this->deleteFile($cacheFile);
     }
 
     /**
@@ -101,15 +81,17 @@ class File extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheFile = $this->getCacheFileForKey($key);
-        if (is_null($ttl)) {
+        $_key = $this->getKey($key);
+        $cacheFile = $this->getCacheFile($_key);
+        $_value = $this->serialize($value);
+        if (!($ttl)) {
             $ttl = $this->ttl;
         }
-        $item = array(
-            'value' => $value,
-            'ttl' => $ttl,
-        );
-        if (!file_put_contents($cacheFile, serialize($item))) {
+        $item = $this->serialize(array(
+            'value' => $_value,
+            'ttl' => (int) $ttl + time(),
+        ));
+        if (!file_put_contents($cacheFile, $item)) {
             throw new FileCacheException('Error saving data with the key "' . $key . '" to the cache file.');
         }
     }
@@ -169,16 +151,6 @@ class File extends AbstractAdapter
 
     /**
      * Get the specified cache file
-     * 
-     * @param string $key
-     */
-    protected function getCacheFileForKey($key)
-    {
-        return $this->getCacheFile(md5($key));
-    }
-
-    /**
-     * Get the specified cache file
      */
     protected function getCacheFile($fileName)
     {
@@ -198,10 +170,8 @@ class File extends AbstractAdapter
      */
     protected function getData($key)
     {
-        if ($key == $this->lastKey) {
-            return $this->lastData;
-        }
-        $cacheFile = $this->getCacheFileForKey($key);
+        $_key = $this->getKey($key);
+        $cacheFile = $this->getCacheFile($_key);
         if (file_exists($cacheFile)) {
             if (!$data = unserialize(file_get_contents($cacheFile))) {
                 throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
@@ -212,13 +182,11 @@ class File extends AbstractAdapter
             if (!array_key_exists('ttl', $data)) {
                 throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
             }
-            if (time() > $data['ttl'] + filemtime($cacheFile)) {
+            if (time() > $data['ttl']) {
+                $this->delete($key);
                 return false;
             }
-
-            $this->lastKey = $key;
-            $this->lastData = $data['value'];
-            return $data['value'];
+            return $this->unserialize($data['value']);
         }
         return false;
     }
