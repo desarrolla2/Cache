@@ -29,6 +29,18 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     protected $cache;
 
     /**
+     * @return array
+     */
+    public function dataProvider()
+    {
+        return array(
+            array('key1', 'value', 1, 0, 'value', true),
+            array('key2', 'value', null, 0, 'value', true),
+            array('key3', 'value', 1, 2, false, false),
+        );
+    }
+
+    /**
      *
      * @test
      * @dataProvider dataProvider

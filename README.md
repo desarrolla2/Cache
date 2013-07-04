@@ -127,6 +127,18 @@ Use it if you will you have mongodb available in your system.
 
 ```
 
+### MySQL
+
+Use it if you will you have mysqlnd available in your system.
+
+``` php
+    <?php
+    
+
+```
+
+
+
 ## Coming soon
 
 This library implements other adapters as soon as possible, feel free to send 
