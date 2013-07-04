@@ -22,7 +22,7 @@ class NotCache extends AbstractAdapter
      */
     public function delete($key)
     {
-        return false;
+        
     }
 
     /**

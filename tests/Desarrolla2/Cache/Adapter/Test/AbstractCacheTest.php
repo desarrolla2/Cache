@@ -29,6 +29,28 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     protected $cache;
 
     /**
+     * @return array
+     */
+    public function dataProvider()
+    {
+        return array(
+            array('key1', 'value', 1, 0, 'value', true),
+            array('key2', 'value', null, 0, 'value', true),
+            array('key3', 'value', 1, 2, false, false),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function dataProviderForOptions()
+    {
+        return array(
+            array('ttl', 100),
+        );
+    }
+
+    /**
      *
      * @test
      * @dataProvider dataProvider
@@ -41,8 +63,11 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function hasTest($key, $value, $ttl, $sleep, $return, $has)
     {
-        $this->cache->set($key, $value, $ttl);
-        sleep($sleep);
+        $this->assertFalse($this->cache->has($key));
+        $this->assertNull($this->cache->set($key, $value, $ttl));
+        if ($sleep) {
+            sleep($sleep);
+        }
         $this->assertEquals($has, $this->cache->has($key));
         $this->cache->delete($key);
     }
@@ -76,10 +101,8 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     public function deleteTest($key, $value, $ttl)
     {
         $this->cache->set($key, $value, $ttl);
-        $this->cache->delete($key);
-        $this->assertEquals(false, $this->cache->has($key));
-        $this->assertEquals(null, $this->cache->get($key));
-        $this->assertEquals(false, $this->cache->delete($key));
+        $this->assertNull($this->cache->delete($key));
+        $this->assertFalse($this->cache->has($key));
     }
 
     /**
@@ -92,7 +115,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function setOptionTest($key, $value)
     {
-        $this->assertEquals(true, $this->cache->setOption($key, $value));
+        $this->assertTrue($this->cache->setOption($key, $value));
     }
 
     /**

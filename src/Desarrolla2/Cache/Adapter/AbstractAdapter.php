@@ -36,7 +36,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function __construct()
     {
-        
+
     }
 
     /**
@@ -76,8 +76,8 @@ abstract class AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * 
-     * @param string $key
+     *
+     * @param  string $key
      * @return string
      */
     protected function getKey($key)

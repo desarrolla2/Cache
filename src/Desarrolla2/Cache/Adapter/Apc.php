@@ -62,6 +62,7 @@ class Apc extends AbstractAdapter
             return (boolean) \apc_exists($_key);
         } else {
             \apc_fetch($_key, $result);
+
             return (boolean) $result;
         }
     }

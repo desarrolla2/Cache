@@ -22,7 +22,6 @@ for ($i = 1; $i <= 10000; $i++) {
     $data[$i]=md5($i);
 }
 
-
 $timer = new Timer();
 for ($i = 1; $i <= 10000; $i++) {
     $cache->set($data[$i], $data[$i], 3600);

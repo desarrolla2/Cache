@@ -68,7 +68,7 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function setTest()
     {
-        $this->cache->set('key', 'value');
+        $this->assertNull($this->cache->set('key', 'value'));
     }
 
     /**
@@ -77,7 +77,7 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function deleteTest()
     {
-        $this->cache->delete('key');
+        $this->assertNull($this->cache->delete('key'));
     }
 
     /**

@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the Cache proyect.
- * 
+ *
  * Copyright (c)
- * Daniel González <daniel.gonzalez@freelancemadrid.es> 
- * 
+ * Daniel González <daniel.gonzalez@freelancemadrid.es>
+ *
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
@@ -16,10 +16,10 @@ use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use \Memcache as BaseMemcache;
 
 /**
- * 
+ *
  * Description of Mencache
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : Memcache.php , UTF-8
  * @date : Jun 30, 2013 , 4:55:03 PM
  */
@@ -28,7 +28,7 @@ class Memcache extends AbstractAdapter
 
     /**
      *
-     * @var \Memcache 
+     * @var \Memcache
      */
     protected $server;
 
@@ -39,7 +39,7 @@ class Memcache extends AbstractAdapter
     }
 
     /**
-     * 
+     *
      * @param string $host
      * @param string $port
      */
@@ -54,7 +54,7 @@ class Memcache extends AbstractAdapter
     public function delete($key)
     {
         $_key = $this->getKey($key);
-        return $this->server->delete($_key);
+        $this->server->delete($_key);
     }
 
     /**
@@ -64,6 +64,7 @@ class Memcache extends AbstractAdapter
     {
         $_key = $this->getKey($key);
         $data = $this->server->get($_key);
+
         return $this->unserialize($data);
     }
 
@@ -76,6 +77,7 @@ class Memcache extends AbstractAdapter
         if ($this->server->get($_key)) {
             return true;
         }
+
         return false;
     }
 

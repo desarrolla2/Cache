@@ -2,10 +2,10 @@
 
 /**
  * This file is part of the Cache proyect.
- * 
+ *
  * Copyright (c)
- * Daniel González <daniel.gonzalez@freelancemadrid.es> 
- * 
+ * Daniel González <daniel.gonzalez@freelancemadrid.es>
+ *
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
@@ -15,10 +15,10 @@ namespace Desarrolla2\Cache\Adapter;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 
 /**
- * 
+ *
  * Description of Memory
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es> 
+ * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  * @file : Memory.php , UTF-8
  * @date : Jun 30, 2013 , 4:00:56 PM
  */
@@ -27,7 +27,7 @@ class Memory extends AbstractAdapter
 
     /**
      *
-     * @var int 
+     * @var int
      */
     protected $limit = 100;
 
@@ -53,8 +53,10 @@ class Memory extends AbstractAdapter
     {
         if ($this->has($key)) {
             $_key = $this->getKey($key);
+
             return $this->unserialize($this->cache[$_key]['value']);
         }
+
         return false;
     }
 
@@ -72,6 +74,7 @@ class Memory extends AbstractAdapter
                 $this->delete($key);
             }
         }
+
         return false;
     }
 
@@ -105,8 +108,10 @@ class Memory extends AbstractAdapter
                     throw new MemoryCacheException('limit cant be lower than 1');
                 }
                 $this->limit = $value;
+
                 return true;
         }
+
         return parent::setOption($key, $value);
     }
 

@@ -30,28 +30,6 @@ class FileTest extends AbstractCacheTest
     /**
      * @return array
      */
-    public function dataProvider()
-    {
-        return array(
-            array('key1', 'value', 1, 0, 'value', true),
-            array('key2', 'value', null, 0, 'value', true),
-            array('key3', 'value', 1, 2, false, false),
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptions()
-    {
-        return array(
-            array('ttl', 100),
-        );
-    }
-
-    /**
-     * @return array
-     */
     public function dataProviderForOptionsException()
     {
         return array(

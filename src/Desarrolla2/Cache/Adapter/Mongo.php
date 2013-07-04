@@ -33,15 +33,15 @@ class Mongo extends AbstractAdapter
     /**
      *
      * @param  string             $server
-     * @param  array               $options
-     * @param  string               $database
+     * @param  array              $options
+     * @param  string             $database
      * @throws FileCacheException
      */
     public function __construct($server = 'mongodb://localhost:27017', $options = array('connect' => true), $database = '__cache')
     {
         $this->mongo = new MongoBase();
         if (!$this->mongo) {
-            throw new MongoCacheException(' mongo connection fails ');
+            throw new MongoCacheException(' Mongo connection fails ');
         }
         $this->db = $this->mongo->selectDB($database);
     }
@@ -92,7 +92,7 @@ class Mongo extends AbstractAdapter
         $item = array(
             'key' => $_key,
             'value' => $_value,
-            'ttl' => $ttl + time(),
+            'ttl' => (int) $ttl + time(),
         );
         $this->delete($key);
         $this->db->items->insert($item);
@@ -121,21 +121,24 @@ class Mongo extends AbstractAdapter
     /**
      * Get data value from file cache
      *
-     * @param  string               $key
+     * @param  string             $key
      * @return boolean
      * @throws FileCacheException
      */
-    protected function getData($key)
+    protected function getData($key, $delete = true)
     {
         $_key = $this->getKey($key);
         $data = $this->db->items->findOne(array('key' => $_key));
         if (count($data)) {
-            if ($data = array_values($data)) {
-                if (time() > $data[3]) {
-                    return false;
+            $data = array_values($data);
+            if (time() > $data[3]) {
+                if ($delete) {
+                    $this->delete($key);
                 }
-                return $this->unserialize($data[2]);
+                return false;
             }
+
+            return $this->unserialize($data[2]);
         }
 
         return false;

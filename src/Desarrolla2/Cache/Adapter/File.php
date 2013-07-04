@@ -29,7 +29,7 @@ class File extends AbstractAdapter
     public function __construct($cacheDir = null)
     {
         if (!$cacheDir) {
-            $cacheDir = realpath(sys_get_temp_dir());
+            $cacheDir = realpath(sys_get_temp_dir()) . '/cache';
         }
         $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
@@ -139,14 +139,16 @@ class File extends AbstractAdapter
 
     /**
      * Delete file
-     * 
+     *
      * @param type $cacheFile
      */
     protected function deleteFile($cacheFile)
     {
         if (file_exists($cacheFile)) {
-            unlink($cacheFile);
+            return unlink($cacheFile);
         }
+
+        return false;
     }
 
     /**
@@ -184,10 +186,13 @@ class File extends AbstractAdapter
             }
             if (time() > $data['ttl']) {
                 $this->delete($key);
+
                 return false;
             }
+
             return $this->unserialize($data['value']);
         }
+
         return false;
     }
 

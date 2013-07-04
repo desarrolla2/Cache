@@ -35,27 +35,6 @@ class ApcCacheTest extends AbstractCacheTest
     /**
      * @return array
      */
-    public function dataProvider()
-    {
-        return array(
-            array('key', 'value', 1, 0, 'value', true),
-            array('key', 'value', null, 0, 'value', true),
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptions()
-    {
-        return array(
-            array('ttl', 100),
-        );
-    }
-
-    /**
-     * @return array
-     */
     public function dataProviderForOptionsException()
     {
         return array(
