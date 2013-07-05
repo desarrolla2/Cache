@@ -34,9 +34,9 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     public function dataProvider()
     {
         return array(
-            array('key1', 'value', 1, 0, 'value', true),
-            array('key2', 'value', null, 0, 'value', true),
-            array('key3', 'value', 1, 2, false, false),
+            array('key1', 'value', 1),
+            array('key2', 'value', 100),
+            array('key3', 'value', null),
         );
     }
 
@@ -57,19 +57,12 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      * @param string $key
      * @param string $value
      * @param type   $ttl
-     * @param type   $sleep
-     * @param type   $return
-     * @param type   $return
      */
-    public function hasTest($key, $value, $ttl, $sleep, $return, $has)
+    public function hasTest($key, $value, $ttl)
     {
         $this->assertFalse($this->cache->has($key));
         $this->assertNull($this->cache->set($key, $value, $ttl));
-        if ($sleep) {
-            sleep($sleep);
-        }
-        $this->assertEquals($has, $this->cache->has($key));
-        $this->cache->delete($key);
+        $this->assertTrue($this->cache->has($key));
     }
 
     /**
@@ -79,15 +72,11 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      * @param string $key
      * @param string $value
      * @param type   $ttl
-     * @param type   $sleep
-     * @param type   $return
      */
-    public function getTest($key, $value, $ttl, $sleep, $return)
+    public function getTest($key, $value, $ttl)
     {
         $this->cache->set($key, $value, $ttl);
-        sleep($sleep);
-        $this->assertEquals($return, $this->cache->get($key));
-        $this->cache->delete($key);
+        $this->assertEquals($value, $this->cache->get($key));
     }
 
     /**
@@ -102,6 +91,20 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache->set($key, $value, $ttl);
         $this->assertNull($this->cache->delete($key));
+        $this->assertFalse($this->cache->has($key));
+    }
+
+    /**
+     *
+     * @test
+     */
+    public function hasWithTtlExpiredTest()
+    {
+        $key = 'key1';
+        $value = 'value1';
+        $ttl = 1;
+        $this->cache->set($key, $value, $ttl);
+        sleep($ttl + 1);
         $this->assertFalse($this->cache->has($key));
     }
 
