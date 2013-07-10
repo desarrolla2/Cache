@@ -39,57 +39,123 @@ class MySQL extends AbstractAdapter implements AdapterInterface
         $this->mysql = new mysqli("localhost", "root", "", "cache_dev");
     }
 
+    /**
+     * Destructor
+     */
     public function __destruct()
     {
         $this->mysql->close();
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function delete($key)
     {
         $_key = $this->getKey($key);
-        $query = 'DELETE FROM cache WHERE hash = \'' . $_key . '\' LIMIT 1; ';
-        return $this->mysql->query($query, MYSQLI_ASYNC);
+        $query = 'DELETE FROM cache WHERE hash = \'' . $_key . '\';';
+        return $this->query($query);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function get($key)
     {
         $_key = $this->getKey($key);
-        $query = 'SELECT COUNT * FROM cache WHERE hash = \'' . $_key . '\'' .
-                ' AND ttl <= ' . time() . '';
-        var_dump($query, $this->mysql->query($query));
+        $query = 'SELECT value FROM cache WHERE hash = \'' . $_key . '\'' .
+                ' AND ttl >= ' . time() . ';';
+        $res = $this->fetch_object($query);
+        if ($res) {
+            return $this->unserialize($res->value);
+        }
+        return false;
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function has($key)
     {
         $_key = $this->getKey($key);
-        $query = 'SELECT COUNT(*) FROM cache WHERE hash = ' .
+        $query = 'SELECT COUNT(*) AS items FROM cache WHERE hash = ' .
                 '\'' . $_key . '\' AND  ' .
-                ' ttl <= ' . time() . '';
-        var_dump($query, $this->mysql->query($query));
+                ' ttl >= ' . time() . ';';
+        $res = $this->fetch_object($query);
+        if (!$res) {
+            return false;
+        }
+        if ($res->items == '0') {
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function set($key, $value, $ttl = null)
     {
+        $this->delete($key);
         $_key = $this->getKey($key);
         $_value = $this->escape(
                 $this->serialize($value)
         );
+        if (!($ttl)) {
+            $ttl = $this->ttl;
+        }
         $_ttl = $ttl + time();
-        $query = 'DELETE FROM cache WHERE hash = \'' . $_key . '\' LIMIT 1; ' .
-                ' INSERT INTO cache (hash, value, ttl) VALUES (' .
+        $query = ' INSERT INTO cache (hash, value, ttl) VALUES (' .
                 '\'' . $_key . '\', ' .
                 '\'' . $_value . '\', ' .
-                '\'' . $_ttl . '\' );
-        ';
-        $this->mysql->query($query, MYSQLI_ASYNC);
+                '\'' . $_ttl . '\' );';
+        $this->query($query);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     protected function getKey($key)
     {
         $_key = parent::getKey($key);
         return $this->escape($_key);
     }
 
+    /**
+     * 
+     * @param string $query
+     * @param string $mode
+     * @return mixed
+     */
+    protected function fetch_object($query, $mode = MYSQLI_STORE_RESULT)
+    {
+        $res = $this->query($query, $mode);
+        if ($res) {
+            return $res->fetch_object();
+        }
+        return false;
+    }
+
+    /**
+     * 
+     * @param string $query
+     * @param string $mode
+     * @return mixed
+     */
+    protected function query($query, $mode = MYSQLI_STORE_RESULT)
+    {
+        $res = $this->mysql->query($query, $mode);
+        if ($res) {
+            return $res;
+        }
+        return false;
+    }
+
+    /**
+     * 
+     * @param string $key
+     * @return string
+     */
     private function escape($key)
     {
         return $this->mysql->real_escape_string($key);

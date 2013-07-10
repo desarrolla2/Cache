@@ -5,7 +5,7 @@
  *
  * Description of CacheTest
  *
- * @author : Daniel González Cerviño <daniel.gonzalez@ideup.com>
+ * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
  * @file : CacheTest.php , UTF-8
  * @date : Sep 4, 2012 , 3:49:01 PM
  */

@@ -60,6 +60,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function hasTest($key, $value, $ttl)
     {
+        $this->assertNull($this->cache->delete($key));
         $this->assertFalse($this->cache->has($key));
         $this->assertNull($this->cache->set($key, $value, $ttl));
         $this->assertTrue($this->cache->has($key));
