@@ -34,9 +34,9 @@ class MySQL extends AbstractAdapter implements AdapterInterface
      */
     protected $mysql;
 
-    public function __construct()
+    public function __construct($host = 'localhost', $user = 'root', $password = '', $database = 'cache', $port = '3306')
     {
-        $this->mysql = new mysqli("localhost", "root", "", "cache_dev");
+        $this->mysql = new mysqli($host, $user, $password, $database, $port);
     }
 
     /**
