@@ -1,7 +1,8 @@
 // .gitignore
-/build/
-/nbproject/
-/vendor/
+/build
+/nbproject
+/vendor
+/.idea
 TODO.txt
 *~
 *.swp

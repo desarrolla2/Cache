@@ -31,18 +31,18 @@ compatible autoloader.
 
 
 ``` php
-    <?php
+<?php
 
-    use Desarrolla2\Cache\Cache;
-    use Desarrolla2\Cache\Adapter\NotCache;
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\NotCache;
 
-    $cache = new Cache(new NotCache());
+$cache = new Cache(new NotCache());
 
-    $cache->set('key', 'myKeyValue', 3600);
+$cache->set('key', 'myKeyValue', 3600);
 
-    // later ...
+// later ...
 
-    echo $cache->get('key');
+echo $cache->get('key');
 
 ```
 
@@ -59,15 +59,15 @@ Use it if you will you have dont have other cache system available in your syste
 or if you like to do your code more portable.
 
 ``` php
-    <?php
+<?php
     
-    use Desarrolla2\Cache\Cache;
-    use Desarrolla2\Cache\Adapter\File;
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\File;
 
-    $cacheDir = '/tmp';
-    $adapter = new File($cacheDir);
-    $adapter->setOption('ttl', 3600);
-    $cache = new Cache($adapter);
+$cacheDir = '/tmp';
+$adapter = new File($cacheDir);
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
 
 ```
 
@@ -76,15 +76,14 @@ or if you like to do your code more portable.
 Use it if you will you have APC cache available in your system.
 
 ``` php
-    <?php
+<?php
     
-    use Desarrolla2\Cache\Cache;
-    use Desarrolla2\Cache\Adapter\Apc;
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Apc;
 
-
-    $adapter = new Apc();
-    $adapter->setOption('ttl', 3600);
-    $cache = new Cache($adapter);
+$adapter = new Apc();
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
 
 ```
 
@@ -97,16 +96,15 @@ Also it is not shared between different processes.
 Memory cache have a option "limit", that limit the max items in cache.
 
 ``` php
-    <?php
+<?php
     
-    use Desarrolla2\Cache\Cache;
-    use Desarrolla2\Cache\Adapter\Memory;
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Memory;
 
-
-    $adapter = new Apc();
-    $adapter->setOption('ttl', 3600);
-    $adapter->setOption('limit', 200);
-    $cache = new Cache($adapter);
+$adapter = new Apc();
+$adapter->setOption('ttl', 3600);
+$adapter->setOption('limit', 200);
+$cache = new Cache($adapter);
 
 ```
 
@@ -115,15 +113,15 @@ Memory cache have a option "limit", that limit the max items in cache.
 Use it if you will you have mongodb available in your system.
 
 ``` php
-    <?php
+<?php
     
-    use Desarrolla2\Cache\Cache;
-    use Desarrolla2\Cache\Adapter\Mongo;
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Mongo;
 
-    $server = 'mongodb://localhost:27017';
-    $adapter = new Mongo($server);
-    $adapter->setOption('ttl', 3600);
-    $cache = new Cache($adapter);
+$server = 'mongodb://localhost:27017';
+$adapter = new Mongo($server);
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
 
 ```
 
@@ -132,8 +130,14 @@ Use it if you will you have mongodb available in your system.
 Use it if you will you have mysqlnd available in your system.
 
 ``` php
-    <?php
-    
+<?php
+
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\MySQL;
+
+$adapter = new Cache(new MySQL('localhost', 'user', 'pass', 'port'));
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
 
 ```
 
@@ -153,3 +157,14 @@ This can be a list of pending tasks.
 ## Contact
 
 You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
+
+## Other
+
+* [API docs](http://cache.desarrolla2.com/api/)
+* [Code coverage](http://cache.desarrolla2.com/coverage/)
+* [Code dependencies](http://cache.desarrolla2.com/pdepend/dependencies.svg)
+* [Code overview pyramid](http://cache.desarrolla2.com/pdepend/overview-pyramid.svg)
+* [Coding standard report](http://cache.desarrolla2.com/phpcs/sumary.txt)
+* [Coding standard report full](http://cache.desarrolla2.com/phpcs/full.txt)
+* [Code mess report ](http://cache.desarrolla2.com/phpmd/report.txt)
+
