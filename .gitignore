@@ -3,6 +3,7 @@
 /nbproject
 /vendor
 /.idea
+/composer.lock
 TODO.txt
 *~
 *.swp
