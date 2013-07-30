@@ -1,13 +1,13 @@
 <?php
 
 /**
- * This file is part of the perrosygatos proyect.
+ * This file is part of the Cache project.
  *
  * Description of CacheTest
  *
  * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file : CacheTest.php , UTF-8
- * @date : Sep 4, 2012 , 3:49:01 PM
+ * @file   : CacheTest.php , UTF-8
+ * @date   : Sep 4, 2012 , 3:49:01 PM
  */
 
 namespace Desarrolla2\Cache\Adapter\Test;
@@ -44,7 +44,6 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider dataProvider
-
      */
     public function hasTest()
     {
@@ -88,5 +87,4 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache->setOption('ttl', 3600);
     }
-
 }

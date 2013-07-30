@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
@@ -21,8 +21,6 @@ use Mongo as MongoBase;
  * Description of Mongo
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : Mongo.php , UTF-8
- * @date : Nov 12, 2012 , 1:12:12 AM
  */
 class Mongo extends AbstractAdapter
 {
@@ -32,13 +30,16 @@ class Mongo extends AbstractAdapter
 
     /**
      *
-     * @param  string             $server
-     * @param  array              $options
-     * @param  string             $database
+     * @param  string $server
+     * @param  array  $options
+     * @param  string $database
      * @throws FileCacheException
      */
-    public function __construct($server = 'mongodb://localhost:27017', $options = array('connect' => true), $database = '__cache')
-    {
+    public function __construct(
+        $server = 'mongodb://localhost:27017',
+        $options = array('connect' => true),
+        $database = '__cache'
+    ) {
         $this->mongo = new MongoBase();
         if (!$this->mongo) {
             throw new MongoCacheException(' Mongo connection fails ');
@@ -84,15 +85,15 @@ class Mongo extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key = $this->getKey($key);
+        $_key   = $this->getKey($key);
         $_value = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
         $item = array(
-            'key' => $_key,
+            'key'   => $_key,
             'value' => $_value,
-            'ttl' => (int) $ttl + time(),
+            'ttl'   => (int)$ttl + time(),
         );
         $this->delete($key);
         $this->db->items->insert($item);
@@ -105,7 +106,7 @@ class Mongo extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new MongoCacheException('ttl cant be lower than 1');
                 }
@@ -121,7 +122,7 @@ class Mongo extends AbstractAdapter
     /**
      * Get data value from file cache
      *
-     * @param  string             $key
+     * @param  string $key
      * @return boolean
      * @throws FileCacheException
      */
@@ -135,6 +136,7 @@ class Mongo extends AbstractAdapter
                 if ($delete) {
                     $this->delete($key);
                 }
+
                 return false;
             }
 
@@ -143,5 +145,4 @@ class Mongo extends AbstractAdapter
 
         return false;
     }
-
 }

@@ -1,29 +1,27 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
  *
- * This source file is subject to the MIT license that is bundled
- * with this package in the file LICENSE.
  */
 
 namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
-use \Memcache as BaseMemcache;
+use \Memcache as BaseMemCache;
 
 /**
  *
  * Description of Mencache
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : Memcache.php , UTF-8
- * @date : Jun 30, 2013 , 4:55:03 PM
+ * @file   : MemCache.php , UTF-8
+ * @date   : Jun 30, 2013 , 4:55:03 PM
  */
-class Memcache extends AbstractAdapter
+class MemCache extends AbstractAdapter
 {
 
     /**
@@ -86,12 +84,11 @@ class Memcache extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key = $this->getKey($key);
+        $_key   = $this->getKey($key);
         $_value = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
         $this->server->set($_key, $_value, time() + $ttl);
     }
-
 }

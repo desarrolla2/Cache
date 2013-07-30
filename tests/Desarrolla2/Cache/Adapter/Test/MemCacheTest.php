@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
@@ -26,7 +26,7 @@ use Desarrolla2\Cache\Adapter\Memcache;
  */
 // extends AbstractCacheTest
 
-class MemcacheTest
+class MemCacheTest extends AbstractCacheTest
 {
 
     /**
@@ -34,7 +34,13 @@ class MemcacheTest
      */
     public function setUp()
     {
-        $adapter = new Memcache();
+        parent::setup();
+        if (!extension_loaded('memcached')) {
+            $this->markTestSkipped(
+                'The Memcache extension is not available.'
+            );
+        }
+        $adapter = new MemCache();
         $adapter->addServer('localhost', 11211);
         $this->cache = new Cache($adapter);
     }

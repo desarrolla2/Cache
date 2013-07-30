@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
@@ -12,13 +12,16 @@
 
 namespace Desarrolla2\Cache\Adapter\Test;
 
+
+use Symfony\Component\Yaml\Yaml;
+
 /**
  *
  * Description of AbstracCacheTest
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : AbstracCacheTest.php , UTF-8
- * @date : Oct 23, 2012 , 10:57:28 PM
+ * @file   : AbstracCacheTest.php , UTF-8
+ * @date   : Oct 23, 2012 , 10:57:28 PM
  */
 abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,6 +30,17 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      * @var \Desarrolla2\Cache\Cache
      */
     protected $cache;
+
+    /**
+     * @var array
+     */
+    protected $config = array();
+
+
+    public function setup()
+    {
+        $this->config = Yaml::parse(file_get_contents(__DIR__ . '/../../../../config.yml'));
+    }
 
     /**
      * @return array
@@ -133,5 +147,4 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException($expectedException);
         $this->cache->setOption($key, $value);
     }
-
 }

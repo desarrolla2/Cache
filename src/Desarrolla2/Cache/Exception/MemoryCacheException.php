@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>

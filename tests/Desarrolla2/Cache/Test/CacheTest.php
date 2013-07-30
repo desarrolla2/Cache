@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the perrosygatos proyect.
+ * This file is part of the Cache project.
  *
  * Description of CacheTest
  *

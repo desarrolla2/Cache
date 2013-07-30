@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
@@ -20,8 +20,6 @@ use Desarrolla2\Cache\Adapter\AdapterInterface;
  * Description of AbstractAdapter
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : AbstractAdapter.php , UTF-8
- * @date : Oct 24, 2012 , 12:05:12 AM
  */
 abstract class AbstractAdapter implements AdapterInterface
 {
@@ -36,7 +34,6 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function __construct()
     {
-
     }
 
     /**
@@ -46,7 +43,7 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new CacheException('ttl cant be lower than 1');
                 }
@@ -95,5 +92,4 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         return unserialize($value);
     }
-
 }

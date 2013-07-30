@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
@@ -32,13 +32,13 @@ class MongoTest extends AbstractCacheTest
      */
     public function setUp()
     {
+        parent::setup();
         if (!class_exists('Mongo')) {
             $this->markTestSkipped(
                     'The Mongo extension is not available.'
             );
         }
-        $server = 'mongodb://localhost:27017';
-        $this->cache = new Cache(new Mongo($server));
+        $this->cache = new Cache(new Mongo($this->config['mongo']['dns']));
     }
 
     /**

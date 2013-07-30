@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the D2Cache proyect.
+ * This file is part of the Cache project.
  *
  * Description of CacheInterface
  *

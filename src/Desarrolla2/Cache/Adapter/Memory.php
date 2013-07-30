@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Cache proyect.
+ * This file is part of the Cache project.
  *
  * Copyright (c)
  * Daniel González <daniel.gonzalez@freelancemadrid.es>
@@ -19,8 +19,6 @@ use Desarrolla2\Cache\Adapter\AbstractAdapter;
  * Description of Memory
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : Memory.php , UTF-8
- * @date : Jun 30, 2013 , 4:00:56 PM
  */
 class Memory extends AbstractAdapter
 {
@@ -92,7 +90,7 @@ class Memory extends AbstractAdapter
         }
         $this->cache[$_key] = array(
             'value' => serialize($value),
-            'ttl' => $ttl + time(),
+            'ttl'   => $ttl + time(),
         );
     }
 
@@ -103,7 +101,7 @@ class Memory extends AbstractAdapter
     {
         switch ($key) {
             case 'limit':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new MemoryCacheException('limit cant be lower than 1');
                 }
@@ -114,5 +112,4 @@ class Memory extends AbstractAdapter
 
         return parent::setOption($key, $value);
     }
-
 }

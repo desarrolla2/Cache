@@ -1,13 +1,11 @@
 <?php
 
 /**
- * This file is part of the perrosygatos proyect.
+ * This file is part of the Cache project.
  *
  * Description of CacheTest
  *
  * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file : CacheTest.php , UTF-8
- * @date : Sep 4, 2012 , 3:49:01 PM
  */
 
 namespace Desarrolla2\Cache\Adapter\Test;
@@ -24,6 +22,7 @@ class ApcCacheTest extends AbstractCacheTest
      */
     public function setUp()
     {
+        parent::setup();
         if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
             $this->markTestSkipped(
                     'The APC extension is not available.'

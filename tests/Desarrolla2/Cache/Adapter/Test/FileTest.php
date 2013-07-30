@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the perrosygatos proyect.
+ * This file is part of the Cache project.
  *
  * Description of CacheTest
  *
@@ -24,7 +24,8 @@ class FileTest extends AbstractCacheTest
      */
     public function setUp()
     {
-        $this->cache = new Cache(new File());
+        parent::setup();
+        $this->cache = new Cache(new File($this->config['file']['dir']));
     }
 
     /**

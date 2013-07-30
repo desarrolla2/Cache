@@ -1,13 +1,11 @@
 <?php
 
 /**
- * This file is part of the D2Cache proyect.
+ * This file is part of the Cache project.
  *
  * Description of Apc
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : Apc.php , UTF-8
- * @date : Sep 4, 2012 , 1:00:27 AM
  */
 
 namespace Desarrolla2\Cache\Adapter;
@@ -59,11 +57,11 @@ class Apc extends AbstractAdapter
     {
         $_key = $this->getKey($key);
         if (function_exists("\apc_exists")) {
-            return (boolean) \apc_exists($_key);
+            return (boolean)\apc_exists($_key);
         } else {
             \apc_fetch($_key, $result);
 
-            return (boolean) $result;
+            return (boolean)$result;
         }
     }
 
@@ -72,7 +70,7 @@ class Apc extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key = $this->getKey($key);
+        $_key   = $this->getKey($key);
         $_value = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
@@ -89,7 +87,7 @@ class Apc extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new ApcCacheException('ttl cant be lower than 1');
                 }
@@ -101,5 +99,4 @@ class Apc extends AbstractAdapter
 
         return true;
     }
-
 }

@@ -14,5 +14,12 @@ notifications:
 
 before_script:
 #  - pecl -q install mongo && echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-  - composer install
+
+#   Create MySQL Database
   - mysql -e 'CREATE DATABASE IF NOT EXISTS `cache`; USE `cache`; CREATE TABLE IF NOT EXISTS `cache` (  `hash` varchar(255) CHARACTER SET latin1 NOT NULL,  `value` text CHARACTER SET latin1 NOT NULL, `ttl` int(11) NOT NULL, PRIMARY KEY (`hash`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
+
+#   Install dependencies
+  - composer install --prefer-source
+
+#   Set Configuration
+  - cp tests/config.yml.dist config.yml

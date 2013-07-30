@@ -22,7 +22,7 @@
     "require-dev":
             {
                 "raulfraile/ladybug": "master-dev",
-                "desarrolla2/timer": "dev-master"
+                "symfony/yaml": "dev-master"
             },
     "autoload":
             {
