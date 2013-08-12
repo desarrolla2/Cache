@@ -160,7 +160,7 @@ You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
 
 ## Other
 
-* [API docs](http://cache.desarrolla2.com/api/namespaces/Desarrolla2.html)
+* [API docs](http://cache.desarrolla2.com/api/namespaces/Desarrolla2.Cache.html)
 * [Code coverage](http://cache.desarrolla2.com/coverage/src_Desarrolla2_Cache_Adapter.dashboard.html)
 * [Code dependencies](http://cache.desarrolla2.com/pdepend/dependencies.svg)
 * [Code overview pyramid](http://cache.desarrolla2.com/pdepend/overview-pyramid.svg)
