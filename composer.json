@@ -21,7 +21,7 @@
             },
     "require-dev":
             {
-                "raulfraile/ladybug": "master-dev",
+                "raulfraile/ladybug": "v0.7",
                 "symfony/yaml": "dev-master"
             },
     "autoload":
