@@ -4,7 +4,7 @@
 /vendor
 /.idea
 /composer.lock
-#/tests/config.yml
+/tests/config.yml
 /TODO.txt
 *~
 *.swp
