@@ -21,17 +21,10 @@ use Desarrolla2\Cache\Adapter\Memcache;
  * Description of MemoryTest
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : MemoryTest.php , UTF-8
- * @date : Jun 30, 2013 , 4:22:06 PM
  */
-// extends AbstractCacheTest
 
 class MemCacheTest extends AbstractCacheTest
 {
-
-    /**
-     * setup
-     */
     public function setUp()
     {
         parent::setup();
@@ -55,5 +48,4 @@ class MemCacheTest extends AbstractCacheTest
             array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
         );
     }
-
 }

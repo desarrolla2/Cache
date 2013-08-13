@@ -16,16 +16,12 @@ use Desarrolla2\Cache\Adapter\Apc;
 
 class ApcCacheTest extends AbstractCacheTest
 {
-
-    /**
-     * setup
-     */
     public function setUp()
     {
         parent::setup();
         if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
             $this->markTestSkipped(
-                    'The APC extension is not available.'
+                'The APC extension is not available.'
             );
         }
         $this->cache = new Cache(new Apc());
@@ -41,5 +37,4 @@ class ApcCacheTest extends AbstractCacheTest
             array('file', 100, '\Desarrolla2\Cache\Exception\ApcCacheException'),
         );
     }
-
 }

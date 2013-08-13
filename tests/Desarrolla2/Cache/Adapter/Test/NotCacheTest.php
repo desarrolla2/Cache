@@ -6,8 +6,6 @@
  * Description of CacheTest
  *
  * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file   : CacheTest.php , UTF-8
- * @date   : Sep 4, 2012 , 3:49:01 PM
  */
 
 namespace Desarrolla2\Cache\Adapter\Test;
@@ -15,6 +13,11 @@ namespace Desarrolla2\Cache\Adapter\Test;
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\NotCache;
 
+/**
+ * Class NotCacheTest
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class NotCacheTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -23,16 +26,13 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
      */
     protected $cache;
 
-    /**
-     * setup
-     */
     public function setUp()
     {
         $this->cache = new Cache(new NotCache());
     }
 
     /**
-     * @return type
+     * @return array
      */
     public function dataProvider()
     {
@@ -42,48 +42,43 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
      * @dataProvider dataProvider
      */
-    public function hasTest()
+    public function testHas()
     {
         $this->cache->set('key', 'value');
         $this->assertFalse($this->cache->has('key', 'value'));
     }
 
     /**
-     * @test
      * @dataProvider dataProvider
      */
-    public function getTest()
+    public function testGet()
     {
         $this->cache->set('key', 'value');
         $this->assertFalse($this->cache->get('key'));
     }
 
     /**
-     * @test
      * @dataProvider dataProvider
      */
-    public function setTest()
+    public function testSet()
     {
         $this->assertNull($this->cache->set('key', 'value'));
     }
 
     /**
-     * @test
      * @dataProvider dataProvider
      */
-    public function deleteTest()
+    public function testDelete()
     {
         $this->assertNull($this->cache->delete('key'));
     }
 
     /**
-     * @test
      * @dataProvider dataProvider
      */
-    public function setOptionTest()
+    public function testSetOption()
     {
         $this->cache->setOption('ttl', 3600);
     }

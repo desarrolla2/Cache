@@ -6,8 +6,6 @@
  * Description of CacheTest
  *
  * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file : CacheTest.php , UTF-8
- * @date : Sep 4, 2012 , 3:49:01 PM
  */
 
 namespace Desarrolla2\Cache\Adapter\Test;
@@ -16,12 +14,14 @@ use Desarrolla2\Cache\Adapter\Test\AbstractCacheTest;
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\File;
 
+/**
+ * Class FileTest
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class FileTest extends AbstractCacheTest
 {
 
-    /**
-     * setup
-     */
     public function setUp()
     {
         parent::setup();
@@ -38,5 +38,4 @@ class FileTest extends AbstractCacheTest
             array('file', 100, '\Desarrolla2\Cache\Exception\FileCacheException'),
         );
     }
-
 }

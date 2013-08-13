@@ -3,40 +3,34 @@
 /**
  * This file is part of the Cache project.
  *
- * Description of CacheTest
- *
- * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file : CacheTest.php , UTF-8
- * @date : Sep 4, 2012 , 3:49:01 PM
  */
 
 namespace Desarrolla2\Cache\Test;
 
 use Desarrolla2\Cache\Cache;
 
+/**
+ * Class CacheTest
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var \Desarrolla2\Cache\Cache
      */
     protected $cache;
 
-    /**
-     * setup
-     */
     public function setUp()
     {
         $this->cache = new Cache();
     }
 
     /**
-     * @test
      * @expectedException \Desarrolla2\Cache\Exception\AdapterNotSetException
      */
-    public function getAdapterThrowsExceptionTest()
+    public function testGetAdapterThrowsException()
     {
         $this->cache->getAdapter();
     }
-
 }

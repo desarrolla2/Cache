@@ -21,21 +21,15 @@ use Desarrolla2\Cache\Adapter\Mongo;
  * Description of MongoTest
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : MongoTest.php , UTF-8
- * @date : Nov 25, 2012 , 1:58:13 AM
  */
 class MongoTest extends AbstractCacheTest
 {
-
-    /**
-     * setup
-     */
     public function setUp()
     {
         parent::setup();
         if (!class_exists('Mongo')) {
             $this->markTestSkipped(
-                    'The Mongo extension is not available.'
+                'The Mongo extension is not available.'
             );
         }
         $this->cache = new Cache(new Mongo($this->config['mongo']['dns']));
@@ -51,5 +45,4 @@ class MongoTest extends AbstractCacheTest
             array('file', 100, '\Desarrolla2\Cache\Exception\MongoCacheException'),
         );
     }
-
 }

@@ -3,8 +3,6 @@
 /**
  * This file is part of the Cache project.
  *
- * Copyright (c)
- * Daniel González <daniel.gonzalez@freelancemadrid.es>
  *
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
@@ -21,15 +19,10 @@ use Desarrolla2\Cache\Adapter\MySQL;
  * Description of MemoryTest
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file   : MemoryTest.php , UTF-8
- * @date   : Jun 30, 2013 , 4:22:06 PM
  */
 class MySQLTest extends AbstractCacheTest
 {
 
-    /**
-     * setup
-     */
     public function setUp()
     {
         parent::setup();

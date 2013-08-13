@@ -21,15 +21,9 @@ use Desarrolla2\Cache\Adapter\Memory;
  * Description of MemoryTest
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : MemoryTest.php , UTF-8
- * @date : Jun 30, 2013 , 4:22:06 PM
  */
 class MemoryTest extends AbstractCacheTest
 {
-
-    /**
-     * setup
-     */
     public function setUp()
     {
         $this->cache = new Cache(new Memory());
@@ -57,10 +51,7 @@ class MemoryTest extends AbstractCacheTest
         );
     }
 
-    /**
-     * @test
-     */
-    public function exceededLimitTest()
+    public function testExceededLimit()
     {
         $limit = 1;
         $this->cache->setOption('limit', $limit);
@@ -69,5 +60,4 @@ class MemoryTest extends AbstractCacheTest
         }
         $this->assertFalse($this->cache->has($i));
     }
-
 }
