@@ -101,7 +101,7 @@ class Memory extends AbstractAdapter
     {
         switch ($key) {
             case 'limit':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new MemoryCacheException('limit cant be lower than 1');
                 }

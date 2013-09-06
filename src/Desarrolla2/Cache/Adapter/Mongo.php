@@ -30,9 +30,9 @@ class Mongo extends AbstractAdapter
 
     /**
      *
-     * @param  string $server
-     * @param  array  $options
-     * @param  string $database
+     * @param  string             $server
+     * @param  array              $options
+     * @param  string             $database
      * @throws FileCacheException
      */
     public function __construct(
@@ -93,7 +93,7 @@ class Mongo extends AbstractAdapter
         $item = array(
             'key'   => $_key,
             'value' => $_value,
-            'ttl'   => (int)$ttl + time(),
+            'ttl'   => (int) $ttl + time(),
         );
         $this->delete($key);
         $this->db->items->insert($item);
@@ -106,7 +106,7 @@ class Mongo extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new MongoCacheException('ttl cant be lower than 1');
                 }
@@ -122,7 +122,7 @@ class Mongo extends AbstractAdapter
     /**
      * Get data value from file cache
      *
-     * @param  string $key
+     * @param  string             $key
      * @return boolean
      * @throws FileCacheException
      */

@@ -57,11 +57,11 @@ class Apc extends AbstractAdapter
     {
         $_key = $this->getKey($key);
         if (function_exists("\apc_exists")) {
-            return (boolean)\apc_exists($_key);
+            return (boolean) \apc_exists($_key);
         } else {
             \apc_fetch($_key, $result);
 
-            return (boolean)$result;
+            return (boolean) $result;
         }
     }
 
@@ -87,7 +87,7 @@ class Apc extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new ApcCacheException('ttl cant be lower than 1');
                 }
