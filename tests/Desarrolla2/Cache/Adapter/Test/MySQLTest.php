@@ -31,13 +31,15 @@ class MySQLTest extends AbstractCacheTest
                 'The MySQLnd extension is not available.'
             );
         }
-        $this->cache = new Cache(new MySQL(
-            $this->config['mysql']['host'],
-            $this->config['mysql']['user'],
-            $this->config['mysql']['password'],
-            $this->config['mysql']['database'],
-            $this->config['mysql']['port']
-        ));
+        $this->cache = new Cache(
+            new MySQL(
+                $this->config['mysql']['host'],
+                $this->config['mysql']['user'],
+                $this->config['mysql']['password'],
+                $this->config['mysql']['database'],
+                $this->config['mysql']['port']
+            )
+        );
     }
 
     /**

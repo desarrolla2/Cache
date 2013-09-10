@@ -91,7 +91,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      * @dataProvider dataProvider
      * @param string $key
      * @param string $value
-     * @param type   $ttl
+     * @param int    $ttl
      */
     public function testGet($key, $value, $ttl)
     {
@@ -104,7 +104,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      * @dataProvider dataProvider
      * @param string $key
      * @param string $value
-     * @param type   $ttl
+     * @param int    $ttl
      */
     public function testDelete($key, $value, $ttl)
     {
@@ -112,6 +112,29 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->cache->delete($key));
         $this->assertFalse($this->cache->has($key));
     }
+
+    /**
+     * @dataProvider dataProviderForOptions
+     * @param string $key
+     * @param mixed  $value
+     */
+    public function testSetOption($key, $value)
+    {
+        $this->assertTrue($this->cache->setOption($key, $value));
+    }
+
+    /**
+     * @dataProvider dataProviderForOptionsException
+     * @param string $key
+     * @param mixed  $value
+     * @param        $expectedException
+     */
+    public function testSetOptionException($key, $value, $expectedException)
+    {
+        $this->setExpectedException($expectedException);
+        $this->cache->setOption($key, $value);
+    }
+
 
     public function testHasWithTtlExpired()
     {
@@ -121,26 +144,5 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->set($key, $value, $ttl);
         sleep($ttl + 1);
         $this->assertFalse($this->cache->has($key));
-    }
-
-    /**
-     * @dataProvider dataProvider
-     * @param $key
-     * @param $value
-     */
-    public function testSetOption($key, $value)
-    {
-        $this->assertTrue($this->cache->setOption($key, $value));
-    }
-
-    /**
-     * @param $key
-     * @param $value
-     * @param $expectedException
-     */
-    public function testSetOptionException($key, $value, $expectedException)
-    {
-        $this->setExpectedException($expectedException);
-        $this->cache->setOption($key, $value);
     }
 }

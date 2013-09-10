@@ -6,14 +6,15 @@
  * Description of Cache
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : Cache.php , UTF-8
- * @date : Sep 4, 2012 , 12:45:14 AM
+ * @file   : Cache.php , UTF-8
+ * @date   : Sep 4, 2012 , 12:45:14 AM
  */
 
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\CacheInterface;
 use Desarrolla2\Cache\Exception\AdapterNotSetException;
+use Desarrolla2\Cache\Adapter\AdapterInterface;
 
 class Cache implements CacheInterface
 {
@@ -25,9 +26,9 @@ class Cache implements CacheInterface
     protected $adapter;
 
     /**
-     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
+     * @param AdapterInterface $adapter
      */
-    public function __construct(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter = null)
+    public function __construct(AdapterInterface $adapter = null)
     {
         if ($adapter) {
             $this->setAdapter($adapter);
@@ -36,6 +37,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
      */
     public function delete($key)
     {
@@ -44,6 +47,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
      */
     public function get($key)
     {
@@ -64,6 +69,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
      */
     public function has($key)
     {
@@ -72,6 +79,10 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @param null   $ttl
      */
     public function set($key, $value, $ttl = null)
     {
@@ -80,14 +91,20 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc }
+     *
+     * @param Adapter\AdapterInterface $adapter
      */
-    public function setAdapter(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter)
+    public function setAdapter(AdapterInterface $adapter)
     {
         $this->adapter = $adapter;
     }
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
+     * @param string $value
+     * @return mixed
      */
     public function setOption($key, $value)
     {
@@ -99,7 +116,6 @@ class Cache implements CacheInterface
      */
     public function clearCache()
     {
-
     }
 
     /**
@@ -107,7 +123,5 @@ class Cache implements CacheInterface
      */
     public function dropCache()
     {
-
     }
-
 }

@@ -22,8 +22,8 @@ class Apc extends AbstractAdapter
     public function delete($key)
     {
         if ($this->has($key)) {
-            $_key = $this->getKey($key);
-            if (!\apc_delete($_key)) {
+            $tKey = $this->getKey($key);
+            if (!\apc_delete($tKey)) {
                 throw new ApcCacheException('Error deleting data with the key "' . $key . '" from the APC cache.');
             }
 
@@ -39,8 +39,8 @@ class Apc extends AbstractAdapter
     public function get($key)
     {
         if ($this->has($key)) {
-            $_key = $this->getKey($key);
-            if (!$data = \apc_fetch($_key)) {
+            $tKey = $this->getKey($key);
+            if (!$data = \apc_fetch($tKey)) {
                 throw new ApcCacheException('Error fetching data with the key "' . $key . '" from the APC cache.');
             }
 
@@ -55,13 +55,13 @@ class Apc extends AbstractAdapter
      */
     public function has($key)
     {
-        $_key = $this->getKey($key);
+        $tKey = $this->getKey($key);
         if (function_exists("\apc_exists")) {
-            return (boolean) \apc_exists($_key);
+            return (boolean)\apc_exists($tKey);
         } else {
-            \apc_fetch($_key, $result);
+            \apc_fetch($tKey, $result);
 
-            return (boolean) $result;
+            return (boolean)$result;
         }
     }
 
@@ -70,12 +70,12 @@ class Apc extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key   = $this->getKey($key);
+        $tKey = $this->getKey($key);
         $_value = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        if (!\apc_store($_key, $_value, $ttl)) {
+        if (!\apc_store($tKey, $_value, $ttl)) {
             throw new ApcCacheException('Error saving data with the key "' . $key . '" to the APC cache.');
         }
     }
@@ -87,13 +87,13 @@ class Apc extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new ApcCacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
-            default :
+            default:
                 throw new ApcCacheException('option not valid ' . $key);
         }
 

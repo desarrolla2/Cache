@@ -29,7 +29,7 @@ class File extends AbstractAdapter
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()) . '/cache';
         }
-        $this->cacheDir = (string) $cacheDir;
+        $this->cacheDir = (string)$cacheDir;
         if (!is_dir($this->cacheDir)) {
             if (!mkdir($this->cacheDir, 0777, true)) {
                 throw new FileCacheException($this->cacheDir . ' is not writable');
@@ -45,8 +45,8 @@ class File extends AbstractAdapter
      */
     public function delete($key)
     {
-        $_key = $this->getKey($key);
-        $cacheFile = $this->getCacheFile($_key);
+        $tKey = $this->getKey($key);
+        $cacheFile = $this->getCacheFile($tKey);
         $this->deleteFile($cacheFile);
     }
 
@@ -79,16 +79,18 @@ class File extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key = $this->getKey($key);
-        $cacheFile = $this->getCacheFile($_key);
+        $tKey = $this->getKey($key);
+        $cacheFile = $this->getCacheFile($tKey);
         $_value = $this->serialize($value);
         if (!($ttl)) {
             $ttl = $this->ttl;
         }
-        $item = $this->serialize(array(
-            'value' => $_value,
-            'ttl' => (int) $ttl + time(),
-        ));
+        $item = $this->serialize(
+            array(
+                'value' => $_value,
+                'ttl' => (int)$ttl + time(),
+            )
+        );
         if (!file_put_contents($cacheFile, $item)) {
             throw new FileCacheException('Error saving data with the key "' . $key . '" to the cache file.');
         }
@@ -101,13 +103,13 @@ class File extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new FileCacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
-            default :
+            default:
                 throw new FileCacheException('option not valid ' . $key);
         }
 
@@ -129,8 +131,8 @@ class File extends AbstractAdapter
     {
         foreach (scandir($this->cacheDir) as $fileName) {
             $cacheFile = $this->cacheDir .
-                    DIRECTORY_SEPARATOR .
-                    $fileName;
+                DIRECTORY_SEPARATOR .
+                $fileName;
             $this->deleteFile($cacheFile);
         }
     }
@@ -139,6 +141,7 @@ class File extends AbstractAdapter
      * Delete file
      *
      * @param type $cacheFile
+     * @return bool
      */
     protected function deleteFile($cacheFile)
     {
@@ -155,23 +158,23 @@ class File extends AbstractAdapter
     protected function getCacheFile($fileName)
     {
         return $this->cacheDir .
-                DIRECTORY_SEPARATOR .
-                self::CACHE_FILE_PREFIX .
-                $fileName .
-                self::CACHE_FILE_SUBFIX;
+        DIRECTORY_SEPARATOR .
+        self::CACHE_FILE_PREFIX .
+        $fileName .
+        self::CACHE_FILE_SUBFIX;
     }
 
     /**
      * Get data value from file cache
      *
-     * @param  type               $key
+     * @param  type $key
      * @return boolean
      * @throws FileCacheException
      */
     protected function getData($key)
     {
-        $_key = $this->getKey($key);
-        $cacheFile = $this->getCacheFile($_key);
+        $tKey = $this->getKey($key);
+        $cacheFile = $this->getCacheFile($tKey);
         if (file_exists($cacheFile)) {
             if (!$data = unserialize(file_get_contents($cacheFile))) {
                 throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
@@ -193,5 +196,4 @@ class File extends AbstractAdapter
 
         return false;
     }
-
 }

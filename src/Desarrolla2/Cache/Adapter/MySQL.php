@@ -54,8 +54,8 @@ class MySQL extends AbstractAdapter implements AdapterInterface
      */
     public function delete($key)
     {
-        $_key  = $this->getKey($key);
-        $query = 'DELETE FROM cache WHERE hash = \'' . $_key . '\';';
+        $tKey  = $this->getKey($key);
+        $query = 'DELETE FROM cache WHERE hash = \'' . $tKey . '\';';
 
         return $this->query($query);
     }
@@ -65,8 +65,8 @@ class MySQL extends AbstractAdapter implements AdapterInterface
      */
     public function get($key)
     {
-        $_key  = $this->getKey($key);
-        $query = 'SELECT value FROM cache WHERE hash = \'' . $_key . '\'' .
+        $tKey  = $this->getKey($key);
+        $query = 'SELECT value FROM cache WHERE hash = \'' . $tKey . '\'' .
             ' AND ttl >= ' . time() . ';';
         $res   = $this->fetch_object($query);
         if ($res) {
@@ -81,9 +81,9 @@ class MySQL extends AbstractAdapter implements AdapterInterface
      */
     public function has($key)
     {
-        $_key  = $this->getKey($key);
+        $tKey  = $this->getKey($key);
         $query = 'SELECT COUNT(*) AS items FROM cache WHERE hash = ' .
-            '\'' . $_key . '\' AND  ' .
+            '\'' . $tKey . '\' AND  ' .
             ' ttl >= ' . time() . ';';
         $res   = $this->fetch_object($query);
         if (!$res) {
@@ -102,7 +102,7 @@ class MySQL extends AbstractAdapter implements AdapterInterface
     public function set($key, $value, $ttl = null)
     {
         $this->delete($key);
-        $_key   = $this->getKey($key);
+        $tKey   = $this->getKey($key);
         $_value = $this->escape(
             $this->serialize($value)
         );
@@ -111,7 +111,7 @@ class MySQL extends AbstractAdapter implements AdapterInterface
         }
         $_ttl  = $ttl + time();
         $query = ' INSERT INTO cache (hash, value, ttl) VALUES (' .
-            '\'' . $_key . '\', ' .
+            '\'' . $tKey . '\', ' .
             '\'' . $_value . '\', ' .
             '\'' . $_ttl . '\' );';
         $this->query($query);
@@ -122,9 +122,9 @@ class MySQL extends AbstractAdapter implements AdapterInterface
      */
     protected function getKey($key)
     {
-        $_key = parent::getKey($key);
+        $tKey = parent::getKey($key);
 
-        return $this->escape($_key);
+        return $this->escape($tKey);
     }
 
     /**

@@ -25,39 +25,50 @@ use Mongo as MongoBase;
 class Mongo extends AbstractAdapter
 {
 
-    protected $db;
+    /**
+     * @var \MongoDB
+     */
+    protected $database;
+
+    /**
+     * @var \Mongo
+     */
     protected $mongo;
 
     /**
      *
-     * @param  string             $server
-     * @param  array              $options
-     * @param  string             $database
-     * @throws FileCacheException
+     * @param  string $server
+     * @param  array  $options
+     * @param  string $database
+     * @throws \Desarrolla2\Cache\Exception\MongoCacheException
      */
     public function __construct(
         $server = 'mongodb://localhost:27017',
         $options = array('connect' => true),
         $database = '__cache'
     ) {
-        $this->mongo = new MongoBase();
+        $this->mongo = new MongoBase($server, $options);
         if (!$this->mongo) {
             throw new MongoCacheException(' Mongo connection fails ');
         }
-        $this->db = $this->mongo->selectDB($database);
+        $this->database = $this->mongo->selectDB($database);
     }
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
      */
     public function delete($key)
     {
-        $_key = $this->getKey($key);
-        $this->db->items->remove(array('key' => $_key));
+        $tKey = $this->getKey($key);
+        $this->database->items->remove(array('key' => $tKey));
     }
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
      */
     public function get($key)
     {
@@ -70,6 +81,9 @@ class Mongo extends AbstractAdapter
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
+     * @return bool
      */
     public function has($key)
     {
@@ -82,31 +96,40 @@ class Mongo extends AbstractAdapter
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @param null   $ttl
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key   = $this->getKey($key);
+        $tKey = $this->getKey($key);
         $_value = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
         $item = array(
-            'key'   => $_key,
+            'key' => $tKey,
             'value' => $_value,
-            'ttl'   => (int) $ttl + time(),
+            'ttl' => (int)$ttl + time(),
         );
         $this->delete($key);
-        $this->db->items->insert($item);
+        $this->database->items->insert($item);
     }
 
     /**
      * {@inheritdoc }
+     *
+     * @param string $key
+     * @param string $value
+     * @return bool
+     * @throws \Desarrolla2\Cache\Exception\MongoCacheException
      */
     public function setOption($key, $value)
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new MongoCacheException('ttl cant be lower than 1');
                 }
@@ -122,14 +145,14 @@ class Mongo extends AbstractAdapter
     /**
      * Get data value from file cache
      *
-     * @param  string             $key
-     * @return boolean
-     * @throws FileCacheException
+     * @param  string $key
+     * @param bool    $delete
+     * @return mixed
      */
     protected function getData($key, $delete = true)
     {
-        $_key = $this->getKey($key);
-        $data = $this->db->items->findOne(array('key' => $_key));
+        $tKey = $this->getKey($key);
+        $data = $this->database->items->findOne(array('key' => $tKey));
         if (count($data)) {
             $data = array_values($data);
             if (time() > $data[3]) {

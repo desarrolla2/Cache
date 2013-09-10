@@ -51,8 +51,8 @@ class MemCache extends AbstractAdapter
      */
     public function delete($key)
     {
-        $_key = $this->getKey($key);
-        $this->server->delete($_key);
+        $tKey = $this->getKey($key);
+        $this->server->delete($tKey);
     }
 
     /**
@@ -60,8 +60,8 @@ class MemCache extends AbstractAdapter
      */
     public function get($key)
     {
-        $_key = $this->getKey($key);
-        $data = $this->server->get($_key);
+        $tKey = $this->getKey($key);
+        $data = $this->server->get($tKey);
 
         return $this->unserialize($data);
     }
@@ -71,8 +71,8 @@ class MemCache extends AbstractAdapter
      */
     public function has($key)
     {
-        $_key = $this->getKey($key);
-        if ($this->server->get($_key)) {
+        $tKey = $this->getKey($key);
+        if ($this->server->get($tKey)) {
             return true;
         }
 
@@ -84,11 +84,11 @@ class MemCache extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $_key   = $this->getKey($key);
+        $tKey   = $this->getKey($key);
         $_value = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($_key, $_value, time() + $ttl);
+        $this->server->set($tKey, $_value, time() + $ttl);
     }
 }

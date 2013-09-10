@@ -43,13 +43,13 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new CacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
-            default :
+            default:
                 throw new CacheException('option not valid ' . $key);
         }
 
