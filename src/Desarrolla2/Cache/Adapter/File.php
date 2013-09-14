@@ -145,7 +145,7 @@ class File extends AbstractAdapter
      */
     protected function deleteFile($cacheFile)
     {
-        if (file_exists($cacheFile)) {
+        if (is_file($cacheFile)) {
             return unlink($cacheFile);
         }
 
