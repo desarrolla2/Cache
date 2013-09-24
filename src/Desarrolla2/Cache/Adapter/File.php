@@ -180,31 +180,32 @@ class File extends AbstractAdapter
     {
         $tKey = $this->getKey($key);
         $cacheFile = $this->getCacheFile($tKey);
-        if (file_exists($cacheFile)) {
-            if (!$data = unserialize(file_get_contents($cacheFile))) {
-                throw new FileCacheException(
-                    'Error with the key "' . $key . '" in cache file ' . $cacheFile
-                );
-            }
-            if (!array_key_exists('value', $data)) {
-                throw new FileCacheException(
-                    'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist'
-                );
-            }
-            if (!array_key_exists('ttl', $data)) {
-                throw new FileCacheException(
-                    'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist'
-                );
-            }
-            if (time() > $data['ttl']) {
-                $this->delete($key);
+        if (!file_exists($cacheFile)) {
+            return;
+        }
+        if (!$data = unserialize(file_get_contents($cacheFile))) {
+            throw new FileCacheException(
+                'Error with the key "' . $key . '" in cache file ' . $cacheFile
+            );
+        }
+        if (!array_key_exists('value', $data)) {
+            throw new FileCacheException(
+                'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist'
+            );
+        }
+        if (!array_key_exists('ttl', $data)) {
+            throw new FileCacheException(
+                'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist'
+            );
+        }
+        if (time() > $data['ttl']) {
+            $this->delete($key);
 
-                return false;
-            }
-
-            return $this->unserialize($data['value']);
+            return false;
         }
 
-        return false;
+        return $this->unserialize($data['value']);
+
+        return;
     }
 }
