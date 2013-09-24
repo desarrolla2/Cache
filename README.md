@@ -1,9 +1,12 @@
 # Cache
 
-[![Latest Stable Version](https://poser.pugx.org/desarrolla2/cache/v/stable.png)](https://packagist.org/packages/desarrolla2/cache) [![Total Downloads](https://poser.pugx.org/desarrolla2/cache/downloads.png)](https://packagist.org/packages/desarrolla2/cache) [![Build Status](https://secure.travis-ci.org/desarrolla2/Cache.png)](http://travis-ci.org/desarrolla2/Cache)
-
 A symple cache library. Implements different adapters that you can use and change 
 easily by a manager or similar.
+
+[![Build Status](https://secure.travis-ci.org/desarrolla2/Cache.png)](http://travis-ci.org/desarrolla2/Cache) [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/quality-score.png?s=940939c8d0bf2056188455594f4332a002a968c2)](https://scrutinizer-ci.com/g/desarrolla2/Cache/) [![Code Coverage](https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/coverage.png?s=16037142f461dcfdfd6ad57561e231881252197b)](https://scrutinizer-ci.com/g/desarrolla2/Cache/)
+
+[![Latest Stable Version](https://poser.pugx.org/desarrolla2/cache/v/stable.png)](https://packagist.org/packages/desarrolla2/cache) [![Total Downloads](https://poser.pugx.org/desarrolla2/cache/downloads.png)](https://packagist.org/packages/desarrolla2/cache) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/desarrolla2/cache/trend.png)](https://bitdeli.com/desarrolla2)
+
 
 
 ## Installation
@@ -161,10 +164,3 @@ You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
 ## Other
 
 * [API docs](http://cache.desarrolla2.com/api/namespaces/Desarrolla2.Cache.html)
-* [Code coverage](http://cache.desarrolla2.com/coverage/src_Desarrolla2_Cache_Adapter.dashboard.html)
-* [Code dependencies](http://cache.desarrolla2.com/pdepend/dependencies.svg)
-* [Code overview pyramid](http://cache.desarrolla2.com/pdepend/overview-pyramid.svg)
-* [Coding standard report](http://cache.desarrolla2.com/phpcs/sumary.txt)
-* [Coding standard report full](http://cache.desarrolla2.com/phpcs/full.txt)
-* [Code mess report ](http://cache.desarrolla2.com/phpmd/report.txt)
-
