@@ -18,12 +18,9 @@ use \Memcache as BaseMemCache;
  * Description of Mencache
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file   : MemCache.php , UTF-8
- * @date   : Jun 30, 2013 , 4:55:03 PM
  */
 class MemCache extends AbstractAdapter
 {
-
     /**
      *
      * @var \Memcache
@@ -84,11 +81,11 @@ class MemCache extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $tKey   = $this->getKey($key);
-        $_value = $this->serialize($value);
+        $tKey = $this->getKey($key);
+        $tValue = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($tKey, $_value, time() + $ttl);
+        $this->server->set($tKey, $tValue, time() + $ttl);
     }
 }

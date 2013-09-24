@@ -16,6 +16,11 @@ use Desarrolla2\Cache\CacheInterface;
 use Desarrolla2\Cache\Exception\AdapterNotSetException;
 use Desarrolla2\Cache\Adapter\AdapterInterface;
 
+/**
+ * Class Cache
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class Cache implements CacheInterface
 {
 
@@ -116,6 +121,7 @@ class Cache implements CacheInterface
      */
     public function clearCache()
     {
+        $this->adapter->clearCache();
     }
 
     /**
@@ -123,5 +129,6 @@ class Cache implements CacheInterface
      */
     public function dropCache()
     {
+        $this->adapter->dropCache();
     }
 }

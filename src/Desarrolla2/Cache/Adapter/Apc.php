@@ -13,6 +13,11 @@ namespace Desarrolla2\Cache\Adapter;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\ApcCacheException;
 
+/**
+ * Class Apc
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class Apc extends AbstractAdapter
 {
 
@@ -71,11 +76,11 @@ class Apc extends AbstractAdapter
     public function set($key, $value, $ttl = null)
     {
         $tKey = $this->getKey($key);
-        $_value = $this->serialize($value);
+        $tValue = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        if (!\apc_store($tKey, $_value, $ttl)) {
+        if (!\apc_store($tKey, $tValue, $ttl)) {
             throw new ApcCacheException('Error saving data with the key "' . $key . '" to the APC cache.');
         }
     }

@@ -13,6 +13,11 @@ namespace Desarrolla2\Cache\Adapter;
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\FileCacheException;
 
+/**
+ * Class File
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class File extends AbstractAdapter
 {
 
@@ -81,13 +86,13 @@ class File extends AbstractAdapter
     {
         $tKey = $this->getKey($key);
         $cacheFile = $this->getCacheFile($tKey);
-        $_value = $this->serialize($value);
+        $tValue = $this->serialize($value);
         if (!($ttl)) {
             $ttl = $this->ttl;
         }
         $item = $this->serialize(
             array(
-                'value' => $_value,
+                'value' => $tValue,
                 'ttl' => (int)$ttl + time(),
             )
         );
@@ -168,7 +173,7 @@ class File extends AbstractAdapter
      * Get data value from file cache
      *
      * @param  type $key
-     * @return boolean
+     * @return mixed
      * @throws FileCacheException
      */
     protected function getData($key)
@@ -177,13 +182,19 @@ class File extends AbstractAdapter
         $cacheFile = $this->getCacheFile($tKey);
         if (file_exists($cacheFile)) {
             if (!$data = unserialize(file_get_contents($cacheFile))) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile);
+                throw new FileCacheException(
+                    'Error with the key "' . $key . '" in cache file ' . $cacheFile
+                );
             }
             if (!array_key_exists('value', $data)) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist');
+                throw new FileCacheException(
+                    'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist'
+                );
             }
             if (!array_key_exists('ttl', $data)) {
-                throw new FileCacheException('Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist');
+                throw new FileCacheException(
+                    'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist'
+                );
             }
             if (time() > $data['ttl']) {
                 $this->delete($key);

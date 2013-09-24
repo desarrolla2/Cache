@@ -68,7 +68,7 @@ class MySQL extends AbstractAdapter implements AdapterInterface
         $tKey  = $this->getKey($key);
         $query = 'SELECT value FROM cache WHERE hash = \'' . $tKey . '\'' .
             ' AND ttl >= ' . time() . ';';
-        $res   = $this->fetch_object($query);
+        $res   = $this->fetchObject($query);
         if ($res) {
             return $this->unserialize($res->value);
         }
@@ -85,7 +85,7 @@ class MySQL extends AbstractAdapter implements AdapterInterface
         $query = 'SELECT COUNT(*) AS items FROM cache WHERE hash = ' .
             '\'' . $tKey . '\' AND  ' .
             ' ttl >= ' . time() . ';';
-        $res   = $this->fetch_object($query);
+        $res   = $this->fetchObject($query);
         if (!$res) {
             return false;
         }
@@ -103,17 +103,17 @@ class MySQL extends AbstractAdapter implements AdapterInterface
     {
         $this->delete($key);
         $tKey   = $this->getKey($key);
-        $_value = $this->escape(
+        $tValue = $this->escape(
             $this->serialize($value)
         );
         if (!($ttl)) {
             $ttl = $this->ttl;
         }
-        $_ttl  = $ttl + time();
+        $tTtl  = $ttl + time();
         $query = ' INSERT INTO cache (hash, value, ttl) VALUES (' .
             '\'' . $tKey . '\', ' .
-            '\'' . $_value . '\', ' .
-            '\'' . $_ttl . '\' );';
+            '\'' . $tValue . '\', ' .
+            '\'' . $tTtl . '\' );';
         $this->query($query);
     }
 
@@ -129,11 +129,11 @@ class MySQL extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  string $query
-     * @param  string $mode
+     * @param  string    $query
+     * @param int|string $mode
      * @return mixed
      */
-    protected function fetch_object($query, $mode = MYSQLI_STORE_RESULT)
+    protected function fetchObject($query, $mode = MYSQLI_STORE_RESULT)
     {
         $res = $this->query($query, $mode);
         if ($res) {
@@ -145,8 +145,8 @@ class MySQL extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  string $query
-     * @param  string $mode
+     * @param  string    $query
+     * @param int|string $mode
      * @return mixed
      */
     protected function query($query, $mode = MYSQLI_STORE_RESULT)

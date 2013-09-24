@@ -12,6 +12,11 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
+/**
+ * Interface AdapterInterface
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 interface AdapterInterface
 {
     /**

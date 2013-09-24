@@ -104,13 +104,13 @@ class Mongo extends AbstractAdapter
     public function set($key, $value, $ttl = null)
     {
         $tKey = $this->getKey($key);
-        $_value = $this->serialize($value);
+        $tValue = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
         $item = array(
             'key' => $tKey,
-            'value' => $_value,
+            'value' => $tValue,
             'ttl' => (int)$ttl + time(),
         );
         $this->delete($key);
@@ -135,7 +135,7 @@ class Mongo extends AbstractAdapter
                 }
                 $this->ttl = $value;
                 break;
-            default :
+            default:
                 throw new MongoCacheException('option not valid ' . $key);
         }
 

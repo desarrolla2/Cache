@@ -12,6 +12,11 @@
 
 namespace Desarrolla2\Cache;
 
+/**
+ * Interface CacheInterface
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 interface CacheInterface
 {
 

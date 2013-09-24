@@ -40,7 +40,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $configurationFile = realpath(__DIR__ . '/../../../../') . '/config.yml';
 
         if (!is_file($configurationFile)) {
-            throw new \Exception (' Configuration file not found in "' . $configurationFile . '" ');
+            throw new \Exception(' Configuration file not found in "' . $configurationFile . '" ');
         }
         $this->config = Yaml::parse(
             file_get_contents(
