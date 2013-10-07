@@ -23,6 +23,7 @@ use Desarrolla2\Cache\Adapter\AdapterInterface;
  */
 class Cache implements CacheInterface
 {
+    const VERSION = 1.7;
 
     /**
      *

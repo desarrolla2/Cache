@@ -30,6 +30,7 @@ interface AdapterInterface
      * Retrieve the value corresponding to a provided key
      *
      * @param string $key
+     * @return mixed
      */
     public function get($key);
 
@@ -37,6 +38,7 @@ interface AdapterInterface
      * Retrieve the if value corresponding to a provided key exist
      *
      * @param string $key
+     * @return bool
      */
     public function has($key);
 

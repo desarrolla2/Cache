@@ -50,14 +50,16 @@ class MySQL extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc }
+     * Delete a value from the cache
+     *
+     * @param string $key
      */
     public function delete($key)
     {
         $tKey  = $this->getKey($key);
         $query = 'DELETE FROM cache WHERE hash = \'' . $tKey . '\';';
 
-        return $this->query($query);
+        $this->query($query);
     }
 
     /**

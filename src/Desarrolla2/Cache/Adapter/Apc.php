@@ -22,7 +22,10 @@ class Apc extends AbstractAdapter
 {
 
     /**
-     * {@inheritdoc }
+     * Delete a value from the cache
+     *
+     * @param string $key
+     * @throws \Desarrolla2\Cache\Exception\ApcCacheException
      */
     public function delete($key)
     {
@@ -31,11 +34,7 @@ class Apc extends AbstractAdapter
             if (!\apc_delete($tKey)) {
                 throw new ApcCacheException('Error deleting data with the key "' . $key . '" from the APC cache.');
             }
-
-            return true;
         }
-
-        return false;
     }
 
     /**

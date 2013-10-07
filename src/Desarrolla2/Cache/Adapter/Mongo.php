@@ -55,7 +55,7 @@ class Mongo extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc }
+     * Delete a value from the cache
      *
      * @param string $key
      */

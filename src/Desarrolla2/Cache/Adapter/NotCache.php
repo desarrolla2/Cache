@@ -14,11 +14,18 @@ namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Adapter\AbstractAdapter;
 
+/**
+ * Class NotCache
+ *
+ * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ */
 class NotCache extends AbstractAdapter
 {
 
     /**
-     * {@inheritdoc }
+     * Delete a value from the cache
+     *
+     * @param string $key
      */
     public function delete($key)
     {
@@ -55,4 +62,5 @@ class NotCache extends AbstractAdapter
     {
         return false;
     }
+
 }
