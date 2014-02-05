@@ -104,7 +104,7 @@ Memory cache have a option "limit", that limit the max items in cache.
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Memory;
 
-$adapter = new Apc();
+$adapter = new Memory();
 $adapter->setOption('ttl', 3600);
 $adapter->setOption('limit', 200);
 $cache = new Cache($adapter);
