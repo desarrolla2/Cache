@@ -1,6 +1,6 @@
 # Cache
 
-A symple cache library. Implements different adapters that you can use and change 
+A simple cache library. Implements different adapters that you can use and change 
 easily by a manager or similar.
 
 [![Build Status](https://secure.travis-ci.org/desarrolla2/Cache.png)](http://travis-ci.org/desarrolla2/Cache) [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/quality-score.png?s=940939c8d0bf2056188455594f4332a002a968c2)](https://scrutinizer-ci.com/g/desarrolla2/Cache/) [![Code Coverage](https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/coverage.png?s=16037142f461dcfdfd6ad57561e231881252197b)](https://scrutinizer-ci.com/g/desarrolla2/Cache/)
