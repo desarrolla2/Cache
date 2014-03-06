@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/desarrolla2/cache.png?label=ready&title=Ready)](https://waffle.io/desarrolla2/cache)
 # Cache
 
 A simple cache library. Implements different adapters that you can use and change 
