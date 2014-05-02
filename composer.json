@@ -1,5 +1,5 @@
 {
-    "name": "desarrola2/cache",
+    "name": "desarrolla2/cache",
     "description": "Provides an cache interface for several adapters (Apc, File, Mongo, Memcached, Mysql, ... )",
     "keywords": ["cache", "apc", "file", "memcached", "mysql", "mongo", "redis"],
     "type": "library",
