@@ -48,7 +48,7 @@ class Memcached extends AbstractAdapter
         if (is_array($data))
         {
             /* if array, then the user supplied an array of servers */
-            foreach ($servers as $s) {
+            foreach ($data as $s) {
                 $this->adapter->addServer($s['host'], $s['port'], $s['weight']);
             }
         }

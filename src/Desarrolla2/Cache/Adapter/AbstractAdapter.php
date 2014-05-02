@@ -57,6 +57,7 @@ abstract class AbstractAdapter implements AdapterInterface
             foreach ($key as $k => $v) {
                 $this->setOption($k, $v);
             }
+            return;
         }
         
         switch ($key)
