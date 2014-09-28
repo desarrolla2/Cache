@@ -88,6 +88,6 @@ class MemCache extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($tKey, $tValue, time() + $ttl);
+        $this->server->set($tKey, $tValue, false, time() + $ttl);
     }
 }
