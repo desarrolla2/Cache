@@ -10,10 +10,10 @@
  * with this package in the file LICENSE.
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
-use Desarrolla2\Cache\Exception\MongoCacheException;
+use Gresakg\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Exception\MongoCacheException;
 use Mongo as MongoBase;
 
 /**

@@ -9,18 +9,17 @@
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
-
-namespace Desarrolla2\Cache\Exception;
+namespace Gresakg\Cache\Exception;
 
 /**
  *
- * Description of MongoCacheException
+ * Description of MySQLCacheException
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : MongoCacheException.php , UTF-8
- * @date : Nov 25, 2012 , 1:54:07 AM
+ * @file : MySQLCacheException.php , UTF-8
+ * @date : Oct 24, 2012 , 12:13:25 AM
  */
-class MongoCacheException extends \Exception
+class MySQLCacheException extends \Exception
 {
     //put your code here
 }

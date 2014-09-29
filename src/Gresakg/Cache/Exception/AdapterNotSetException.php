@@ -10,7 +10,7 @@
  * @date : Sep 4, 2012 , 4:06:46 PM
  */
 
-namespace Desarrolla2\Cache\Exception;
+namespace Gresakg\Cache\Exception;
 
 class AdapterNotSetException extends \Exception
 {

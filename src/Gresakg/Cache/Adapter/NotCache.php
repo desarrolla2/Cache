@@ -10,9 +10,9 @@
  * @date   : Sep 4, 2012 , 1:00:01 AM
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Adapter\AbstractAdapter;
 
 /**
  * Class NotCache

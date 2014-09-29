@@ -9,17 +9,18 @@
  * This source file is subject to the MIT license that is bundled
  * with this package in the file LICENSE.
  */
-namespace Desarrolla2\Cache\Exception;
+
+namespace Gresakg\Cache\Exception;
 
 /**
  *
- * Description of MySQLCacheException
+ * Description of MemcachedException
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : MySQLCacheException.php , UTF-8
- * @date : Oct 24, 2012 , 12:13:25 AM
+ * @file : MemcachedException.php , UTF-8
+ * @date : Oct 24, 2012 , 12:10:58 AM
  */
-class MySQLCacheException extends \Exception
+class MemcacheException extends \Exception
 {
-    //put your code here
+
 }

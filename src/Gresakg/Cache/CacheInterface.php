@@ -10,7 +10,7 @@
  * @date : Sep 4, 2012 , 12:45:25 AM
  */
 
-namespace Desarrolla2\Cache;
+namespace Gresakg\Cache;
 
 /**
  * Interface CacheInterface

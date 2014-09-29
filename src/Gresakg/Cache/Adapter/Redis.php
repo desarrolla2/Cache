@@ -8,10 +8,10 @@
  * with this package in the file LICENSE.
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Adapter\AdapterInterface;
+use Gresakg\Cache\Adapter\AbstractAdapter;
 use Predis\Client;
 
 

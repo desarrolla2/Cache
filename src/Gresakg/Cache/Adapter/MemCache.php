@@ -8,9 +8,9 @@
  *
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Adapter\AbstractAdapter;
 use \Memcache as BaseMemCache;
 
 /**

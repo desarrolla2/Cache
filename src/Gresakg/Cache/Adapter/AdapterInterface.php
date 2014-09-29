@@ -10,7 +10,7 @@
  * @date   : Sep 4, 2012 , 12:49:07 AM
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
 /**
  * Interface AdapterInterface
