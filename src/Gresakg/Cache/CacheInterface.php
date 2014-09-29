@@ -62,7 +62,7 @@ interface CacheInterface
      *
      * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
      */
-    public function setAdapter(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter);
+    public function setAdapter(\Gresakg\Cache\Adapter\AdapterInterface $adapter);
 
     /**
      * Set option for Adapter
