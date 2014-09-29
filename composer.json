@@ -33,7 +33,7 @@
     "autoload":
             {
                 "psr-0": {
-                    "Desarrolla2\\Cache\\": "src/"
+                    "Gresakg\\Cache\\": "src/"
                 }
             },
     "minimum-stability": "dev"
