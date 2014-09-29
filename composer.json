@@ -1,19 +1,24 @@
 {
-    "name": "desarrolla2/cache",
+    "name": "gresakg/cache",
     "description": "Provides an cache interface for several adapters (Apc, File, Mongo, Memcached, Mysql, ... )",
     "keywords": ["cache", "apc", "file", "memcached", "mysql", "mongo", "redis"],
     "type": "library",
     "license": "MIT",
-    "homepage": "https://github.com/desarrolla2/Cache/blob/master/README.md",
+    "homepage": "https://github.com/gresakg/Cache/blob/master/README.md",
     "authors": [
         {
             "name": "Daniel González",
             "homepage": "http://desarrolla2.com/",
             "role": "Developer"
+        },
+        {
+            "name": "Gregor Grešak",
+            "homepage": "http://gresak.net/",
+            "role": "Developer"
         }
     ],
     "support": {
-        "issues": "https://github.com/desarrolla2/Cache/issues"
+        "issues": "https://github.com/gresakg/Cache/issues"
     },
     "require":
             {
