@@ -30,7 +30,7 @@ class MemCache extends AbstractAdapter
     public function __construct()
     {
         $this->server = new BaseMemcache();
-        //$this->server->addServer('localhost', 11211);
+        $this->server->addServer('localhost', 11211);
     }
 
     /**
