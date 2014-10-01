@@ -103,4 +103,8 @@ class Apc extends AbstractAdapter
 
         return true;
     }
+	
+	public function dropCache() {
+		apc_clear_cache("user");
+	}
 }
