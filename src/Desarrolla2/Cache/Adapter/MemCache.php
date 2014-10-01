@@ -90,4 +90,8 @@ class MemCache extends AbstractAdapter
         }
         $this->server->set($tKey, $tValue, false, time() + $ttl);
     }
+	
+	public function dropCache($delay = 0) {
+		$this->server->flush($delay);
+	}
 }
