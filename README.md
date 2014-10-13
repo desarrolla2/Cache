@@ -5,7 +5,7 @@ easily by a manager or similar.
 
 [![Build Status](https://secure.travis-ci.org/desarrolla2/Cache.png)](http://travis-ci.org/desarrolla2/Cache) [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/quality-score.png?s=940939c8d0bf2056188455594f4332a002a968c2)](https://scrutinizer-ci.com/g/desarrolla2/Cache/) [![Code Coverage](https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/coverage.png?s=16037142f461dcfdfd6ad57561e231881252197b)](https://scrutinizer-ci.com/g/desarrolla2/Cache/)
 
-[![Latest Stable Version](https://poser.pugx.org/desarrolla2/cache/v/stable.png)](https://packagist.org/packages/desarrolla2/cache) [![Total Downloads](https://poser.pugx.org/desarrolla2/cache/downloads.png)](https://packagist.org/packages/desarrolla2/cache) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/desarrolla2/cache/trend.png)](https://bitdeli.com/desarrolla2)
+[![Latest Stable Version](https://poser.pugx.org/desarrolla2/cache/v/stable.png)](https://packagist.org/packages/desarrolla2/cache) [![Total Downloads](https://poser.pugx.org/desarrolla2/cache/downloads.png)](https://packagist.org/packages/desarrolla2/cache)
 
 
 
