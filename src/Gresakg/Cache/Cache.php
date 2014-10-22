@@ -10,11 +10,11 @@
  * @date   : Sep 4, 2012 , 12:45:14 AM
  */
 
-namespace Desarrolla2\Cache;
+namespace Gresakg\Cache;
 
-use Desarrolla2\Cache\CacheInterface;
-use Desarrolla2\Cache\Exception\AdapterNotSetException;
-use Desarrolla2\Cache\Adapter\AdapterInterface;
+use Gresakg\Cache\CacheInterface;
+use Gresakg\Cache\Exception\AdapterNotSetException;
+use Gresakg\Cache\Adapter\AdapterInterface;
 
 /**
  * Class Cache

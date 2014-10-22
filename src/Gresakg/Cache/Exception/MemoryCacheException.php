@@ -10,7 +10,7 @@
  * with this package in the file LICENSE.
  */
 
-namespace Desarrolla2\Cache\Exception;
+namespace Gresakg\Cache\Exception;
 
 /**
  *

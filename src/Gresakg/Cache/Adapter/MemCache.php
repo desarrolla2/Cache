@@ -8,9 +8,9 @@
  *
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Adapter\AbstractAdapter;
 use \Memcache as BaseMemCache;
 
 /**
@@ -30,7 +30,7 @@ class MemCache extends AbstractAdapter
     public function __construct()
     {
         $this->server = new BaseMemcache();
-        //$this->server->addServer('localhost', 11211);
+        $this->server->addServer('localhost', 11211);
     }
 
     /**
@@ -88,6 +88,10 @@ class MemCache extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($tKey, $tValue, time() + $ttl);
+        $this->server->set($tKey, $tValue, false, time() + $ttl);
     }
+	
+	public function dropCache($delay = 0) {
+		$this->server->flush($delay);
+	}
 }

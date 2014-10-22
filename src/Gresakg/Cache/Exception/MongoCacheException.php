@@ -10,17 +10,17 @@
  * with this package in the file LICENSE.
  */
 
-namespace Desarrolla2\Cache\Exception;
+namespace Gresakg\Cache\Exception;
 
 /**
  *
- * Description of MemcachedException
+ * Description of MongoCacheException
  *
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : MemcachedException.php , UTF-8
- * @date : Oct 24, 2012 , 12:10:58 AM
+ * @file : MongoCacheException.php , UTF-8
+ * @date : Nov 25, 2012 , 1:54:07 AM
  */
-class MemcacheException extends \Exception
+class MongoCacheException extends \Exception
 {
-
+    //put your code here
 }

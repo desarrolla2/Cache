@@ -8,10 +8,10 @@
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
-use Desarrolla2\Cache\Exception\ApcCacheException;
+use Gresakg\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Exception\ApcCacheException;
 
 /**
  * Class Apc
@@ -103,4 +103,8 @@ class Apc extends AbstractAdapter
 
         return true;
     }
+	
+	public function dropCache() {
+		apc_clear_cache("user");
+	}
 }

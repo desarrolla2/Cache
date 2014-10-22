@@ -8,10 +8,10 @@
  * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
-use Desarrolla2\Cache\Exception\FileCacheException;
+use Gresakg\Cache\Adapter\AbstractAdapter;
+use Gresakg\Cache\Exception\FileCacheException;
 
 /**
  * Class File

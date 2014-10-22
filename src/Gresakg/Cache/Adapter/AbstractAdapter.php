@@ -10,10 +10,10 @@
  * with this package in the file LICENSE.
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Gresakg\Cache\Adapter;
 
-use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Adapter\AdapterInterface;
+use Gresakg\Cache\Exception\CacheException;
+use Gresakg\Cache\Adapter\AdapterInterface;
 
 /**
  *

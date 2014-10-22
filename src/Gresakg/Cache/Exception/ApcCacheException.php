@@ -10,7 +10,7 @@
  * @date : Sep 14, 2012 , 12:17:39 PM
  */
 
-namespace Desarrolla2\Cache\Exception;
+namespace Gresakg\Cache\Exception;
 
 class ApcCacheException extends \Exception
 {
