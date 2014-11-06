@@ -1,21 +1,20 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Description of NoCache
+ * Copyright (c) Daniel González
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file   : NoCache.php , UTF-8
- * @date   : Sep 4, 2012 , 1:00:01 AM
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache\Adapter;
 
 /**
- * Class NotCache
- *
- * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * NotCache
  */
 class NotCache extends AbstractAdapter
 {

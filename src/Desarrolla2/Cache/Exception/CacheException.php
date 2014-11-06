@@ -1,26 +1,21 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Copyright (c)
- * Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * Copyright (c) Daniel González
  *
- * This source file is subject to the MIT license that is bundled
- * with this package in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache\Exception;
 
 /**
- *
- * Description of CacheException
- *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : CacheException.php , UTF-8
- * @date : Jun 30, 2013 , 4:04:09 PM
+ * CacheException
  */
 class CacheException extends \Exception
 {
-    //put your code here
 }

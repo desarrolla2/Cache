@@ -1,11 +1,14 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
+ * Copyright (c) Daniel González
  *
- * This source file is subject to the MIT license that is bundled
- * with this package in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache\Adapter\Test;
@@ -14,10 +17,7 @@ use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\MySQL;
 
 /**
- *
- * Description of MemoryTest
- *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * MySQLTest
  */
 class MySQLTest extends AbstractCacheTest
 {

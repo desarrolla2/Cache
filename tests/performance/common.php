@@ -1,17 +1,14 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Copyright (c)
+ * Copyright (c) Daniel González
  *
- * This source file is subject to the MIT license that is bundled
- * with this package in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file : common.php , UTF-8
- * @date : Nov 27, 2012 , 10:56:05 PM
- *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 use Desarrolla2\Timer\Timer;

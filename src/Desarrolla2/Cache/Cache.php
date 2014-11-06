@@ -1,29 +1,26 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Description of Cache
+ * Copyright (c) Daniel González
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
- * @file   : Cache.php , UTF-8
- * @date   : Sep 4, 2012 , 12:45:14 AM
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\Exception\AdapterNotSetException;
 use Desarrolla2\Cache\Adapter\AdapterInterface;
+use Desarrolla2\Cache\Exception\AdapterNotSetException;
 
 /**
- * Class Cache
- *
- * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * Cache
  */
 class Cache implements CacheInterface
 {
-    const VERSION = 1.7;
-
     /**
      *
      * @var Adapter\AdapterInterface

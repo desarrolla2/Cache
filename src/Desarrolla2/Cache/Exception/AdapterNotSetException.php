@@ -1,17 +1,21 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Description of AdapterNotSetException
+ * Copyright (c) Daniel González
  *
- * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file : AdapterNotSetException.php , UTF-8
- * @date : Sep 4, 2012 , 4:06:46 PM
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache\Exception;
 
+/**
+ * AdapterNotSetException
+ */
 class AdapterNotSetException extends \Exception
 {
 

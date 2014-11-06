@@ -1,8 +1,14 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
+ * Copyright (c) Daniel González
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache\Test;
@@ -10,9 +16,7 @@ namespace Desarrolla2\Cache\Test;
 use Desarrolla2\Cache\Cache;
 
 /**
- * Class CacheTest
- *
- * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * CacheTest
  */
 class CacheTest extends \PHPUnit_Framework_TestCase
 {

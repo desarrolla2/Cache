@@ -1,13 +1,14 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Description of auto load
+ * Copyright (c) Daniel González
  *
- * @author : Daniel González Cerviño <daniel.gonzalez@freelancemadrid.es>
- * @file : autoload.php , UTF-8
- * @date : Sep 4, 2012 , 3:43:12 PM
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 $loader = require_once __DIR__ . '/../vendor/autoload.php';

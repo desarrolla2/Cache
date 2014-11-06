@@ -1,11 +1,14 @@
 <?php
 
-/**
- * This file is part of the Cache project.
+/*
+ * This file is part of the Cache package.
  *
- * Description of File
+ * Copyright (c) Daniel González
  *
- * @author : Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
  */
 
 namespace Desarrolla2\Cache\Adapter;
@@ -13,9 +16,7 @@ namespace Desarrolla2\Cache\Adapter;
 use Desarrolla2\Cache\Exception\FileCacheException;
 
 /**
- * Class File
- *
- * @author Daniel González <daniel.gonzalez@freelancemadrid.es>
+ * File
  */
 class File extends AbstractAdapter
 {
