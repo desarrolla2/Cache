@@ -14,7 +14,7 @@
 namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memcache;
+use Desarrolla2\Cache\Adapter\MemCache;
 
 /**
  * MemCacheTest
@@ -24,7 +24,7 @@ class MemCacheTest extends AbstractCacheTest
     public function setUp()
     {
         parent::setup();
-        if (!extension_loaded('memcached')) {
+        if (!extension_loaded('memcached') || !class_exists('\Memcache')) {
             $this->markTestSkipped(
                 'The Memcache extension is not available.'
             );

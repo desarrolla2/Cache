@@ -14,8 +14,7 @@ easily by a manager or similar.
 ### With Composer
 
 It is best installed it through [packagist](http://packagist.org/packages/desarrolla2/cache) 
-by including
-`desarrolla2/cache` in your project composer.json require:
+by including `desarrolla2/cache` in your project composer.json require:
 
 ``` json
     "require": {
@@ -183,7 +182,7 @@ new adapters if you think it appropriate.
 
 This can be a list of pending tasks.
 
-* Cleanning cache
+* Cleaning cache
 * MemcachedAdapter
 * Other Adapters
 
