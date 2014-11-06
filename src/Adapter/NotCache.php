@@ -59,5 +59,4 @@ class NotCache extends AbstractAdapter
     {
         return false;
     }
-
 }

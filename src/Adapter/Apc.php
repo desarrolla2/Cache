@@ -24,7 +24,7 @@ class Apc extends AbstractAdapter
     /**
      * Delete a value from the cache
      *
-     * @param  string                                         $key
+     * @param  string $key
      * @throws \Desarrolla2\Cache\Exception\ApcCacheException
      */
     public function delete($key)
@@ -61,11 +61,12 @@ class Apc extends AbstractAdapter
     {
         $tKey = $this->getKey($key);
         if (function_exists("\apc_exists")) {
-            return (boolean) \apc_exists($tKey);
+            return (boolean)\apc_exists($tKey);
         } else {
+            $result = false;
             \apc_fetch($tKey, $result);
 
-            return (boolean) $result;
+            return (boolean)$result;
         }
     }
 
@@ -91,7 +92,7 @@ class Apc extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new ApcCacheException('ttl cant be lower than 1');
                 }

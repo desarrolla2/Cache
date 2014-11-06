@@ -38,11 +38,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         if (!is_file($configurationFile)) {
             throw new \Exception(' Configuration file not found in "' . $configurationFile . '" ');
         }
-        $this->config = Yaml::parse(
-            file_get_contents(
-                $configurationFile
-            )
-        );
+        $this->config = Yaml::parse(file_get_contents($configurationFile));
     }
 
     /**
@@ -71,8 +67,8 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider dataProvider
      * @param string $key
-     * @param string $value
-     * @param type   $ttl
+     * @param mixed $value
+     * @param int|null $ttl
      */
     public function testHash($key, $value, $ttl)
     {
@@ -86,8 +82,8 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider dataProvider
      * @param string $key
-     * @param string $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int|null $ttl
      */
     public function testGet($key, $value, $ttl)
     {
@@ -99,8 +95,8 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider dataProvider
      * @param string $key
-     * @param string $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int|null $ttl
      */
     public function testDelete($key, $value, $ttl)
     {
@@ -112,7 +108,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataProviderForOptions
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function testSetOption($key, $value)
     {
@@ -122,8 +118,8 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataProviderForOptionsException
      * @param string $key
-     * @param mixed  $value
-     * @param        $expectedException
+     * @param mixed $value
+     * @param \Exception $expectedException
      */
     public function testSetOptionException($key, $value, $expectedException)
     {

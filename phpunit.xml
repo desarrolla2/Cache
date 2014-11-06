@@ -21,7 +21,7 @@
 
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-html" target="build/coverage" title="RSS Client" charset="UTF-8" yui="true" highlight="true"
-             lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-html" target="build/coverage" title="Desarrolla2 Cache Client" charset="UTF-8" yui="true"
+             highlight="true" lowUpperBound="35" highLowerBound="70"/>
     </logging>
 </phpunit>

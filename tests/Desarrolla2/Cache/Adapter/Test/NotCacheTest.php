@@ -21,7 +21,6 @@ use Desarrolla2\Cache\Adapter\NotCache;
  */
 class NotCacheTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var \Desarrolla2\Cache\Cache
      */
@@ -48,7 +47,7 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
     public function testHas()
     {
         $this->cache->set('key', 'value');
-        $this->assertFalse($this->cache->has('key', 'value'));
+        $this->assertFalse($this->cache->has('key'));
     }
 
     /**
