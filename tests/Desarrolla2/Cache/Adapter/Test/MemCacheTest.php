@@ -29,6 +29,7 @@ class MemCacheTest extends AbstractCacheTest
                 'The Memcache extension is not available.'
             );
         }
+
         $adapter = new MemCache();
         $adapter->addServer('localhost', 11211);
         $this->cache = new Cache($adapter);
