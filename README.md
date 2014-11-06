@@ -144,6 +144,39 @@ $cache = new Cache($adapter);
 
 ```
 
+### Redis
+
+Use it if you will you have redis available in your system.
+
+``` php
+<?php
+
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Redis;
+
+$adapter = new Cache(new Redis());
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
+
+```
+
+### Memcache
+
+Use it if you will you have memcache available in your system.
+
+``` php
+<?php
+
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\MemCache;
+
+$adapter = new Cache(new MemCache());
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
+
+```
+
+
 
 
 ## Coming soon
