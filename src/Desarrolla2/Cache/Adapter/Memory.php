@@ -12,8 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
-
 /**
  *
  * Description of Memory

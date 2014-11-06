@@ -12,8 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use \mysqli;
 
 /**
@@ -131,8 +129,8 @@ class MySQL extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  string    $query
-     * @param int|string $mode
+     * @param  string     $query
+     * @param  int|string $mode
      * @return mixed
      */
     protected function fetchObject($query, $mode = MYSQLI_STORE_RESULT)
@@ -147,8 +145,8 @@ class MySQL extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  string    $query
-     * @param int|string $mode
+     * @param  string     $query
+     * @param  int|string $mode
      * @return mixed
      */
     protected function query($query, $mode = MYSQLI_STORE_RESULT)

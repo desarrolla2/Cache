@@ -10,7 +10,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use \Memcached as BaseMemcached;
 
 /**
@@ -57,8 +56,8 @@ class Memcached extends AbstractAdapter
     /**
      *
      * @param string $host
-     * @param int $port
-     * @param int $weight
+     * @param int    $port
+     * @param int    $weight
      *
      */
     public function addServer($host, $port, $weight = 0)

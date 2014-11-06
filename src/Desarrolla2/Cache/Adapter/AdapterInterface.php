@@ -29,7 +29,7 @@ interface AdapterInterface
     /**
      * Retrieve the value corresponding to a provided key
      *
-     * @param string $key
+     * @param  string $key
      * @return mixed
      */
     public function get($key);
@@ -37,7 +37,7 @@ interface AdapterInterface
     /**
      * Retrieve the if value corresponding to a provided key exist
      *
-     * @param string $key
+     * @param  string $key
      * @return bool
      */
     public function has($key);
@@ -46,8 +46,8 @@ interface AdapterInterface
      * * Add a value to the cache under a unique key
      *
      * @param string $key
-     * @param mixed $value
-     * @param int $ttl
+     * @param mixed  $value
+     * @param int    $ttl
      */
     public function set($key, $value, $ttl = null);
 

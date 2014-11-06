@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter\Test;
 
-
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -33,7 +32,6 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      * @var array
      */
     protected $config = array();
-
 
     public function setup()
     {
@@ -134,7 +132,6 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException($expectedException);
         $this->cache->setOption($key, $value);
     }
-
 
     public function testHasWithTtlExpired()
     {

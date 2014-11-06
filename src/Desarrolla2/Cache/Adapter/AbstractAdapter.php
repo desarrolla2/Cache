@@ -13,7 +13,6 @@
 namespace Desarrolla2\Cache\Adapter;
 
 use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Adapter\AdapterInterface;
 
 /**
  *
@@ -45,17 +44,17 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new CacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
             case 'prefix':
-                $this->prefix = (string)$value;
+                $this->prefix = (string) $value;
                 break;
             case 'serialize':
-                $this->serialize = (bool)$value;
+                $this->serialize = (bool) $value;
                 break;
             default:
                 throw new CacheException('option not valid ' . $key);
@@ -102,12 +101,11 @@ abstract class AbstractAdapter implements AdapterInterface
         return $this->prefix . $key;
     }
 
-
     /**
      * Packages the data to be stored by the internal caching driver
      * according to the options on the adapter.
      *
-     * @param mixed $data
+     * @param  mixed $data
      * @return mixed
      */
     protected function packData($data)
@@ -124,7 +122,7 @@ abstract class AbstractAdapter implements AdapterInterface
      * according to the options on the adapter. This will be the inverse
      * of packData IF the options are set correctly.
      *
-     * @param mixed $data
+     * @param  mixed $data
      * @return mixed
      */
     protected function unpackData($data)

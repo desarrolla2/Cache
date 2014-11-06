@@ -10,7 +10,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\FileCacheException;
 
 /**
@@ -34,7 +33,7 @@ class File extends AbstractAdapter
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()) . '/cache';
         }
-        $this->cacheDir = (string)$cacheDir;
+        $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
             if (!mkdir($this->cacheDir, 0777, true)) {
                 throw new FileCacheException($this->cacheDir . ' is not writable');
@@ -95,7 +94,7 @@ class File extends AbstractAdapter
         $item = $this->serialize(
             array(
                 'value' => $tValue,
-                'ttl' => (int)$ttl + time(),
+                'ttl' => (int) $ttl + time(),
             )
         );
         if (!file_put_contents($cacheFile, $item)) {
@@ -110,7 +109,7 @@ class File extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new FileCacheException('ttl cant be lower than 1');
                 }
@@ -147,7 +146,7 @@ class File extends AbstractAdapter
     /**
      * Delete file
      *
-     * @param type $cacheFile
+     * @param  type $cacheFile
      * @return bool
      */
     protected function deleteFile($cacheFile)
@@ -174,7 +173,7 @@ class File extends AbstractAdapter
     /**
      * Get data value from file cache
      *
-     * @param  type $key
+     * @param  type               $key
      * @return mixed
      * @throws FileCacheException
      */

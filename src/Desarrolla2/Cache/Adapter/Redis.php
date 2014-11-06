@@ -10,10 +10,7 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AdapterInterface;
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Predis\Client;
-
 
 /**
  * Class Redis
@@ -29,12 +26,12 @@ class Redis extends AbstractAdapter
      */
     protected $client;
 
-    function __construct()
+    public function __construct()
     {
         $this->client = new Client();
     }
 
-    function __destruct()
+    public function __destruct()
     {
         $this->client->disconnect();
     }
@@ -55,7 +52,7 @@ class Redis extends AbstractAdapter
     /**
      * Retrieve the value corresponding to a provided key
      *
-     * @param string $key
+     * @param  string $key
      * @return mixed
      */
     public function get($key)
@@ -66,7 +63,7 @@ class Redis extends AbstractAdapter
     /**
      * Retrieve the if value corresponding to a provided key exist
      *
-     * @param string $key
+     * @param  string $key
      * @return bool
      */
     public function has($key)

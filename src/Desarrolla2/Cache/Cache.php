@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\CacheInterface;
 use Desarrolla2\Cache\Exception\AdapterNotSetException;
 use Desarrolla2\Cache\Adapter\AdapterInterface;
 
@@ -108,8 +107,8 @@ class Cache implements CacheInterface
     /**
      * {@inheritdoc }
      *
-     * @param string $key
-     * @param string $value
+     * @param  string $key
+     * @param  string $value
      * @return mixed
      */
     public function setOption($key, $value)

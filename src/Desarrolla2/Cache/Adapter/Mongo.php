@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use Desarrolla2\Cache\Exception\MongoCacheException;
 use Mongo as MongoBase;
 
@@ -37,9 +36,9 @@ class Mongo extends AbstractAdapter
 
     /**
      *
-     * @param  string $server
-     * @param  array  $options
-     * @param  string $database
+     * @param  string                                           $server
+     * @param  array                                            $options
+     * @param  string                                           $database
      * @throws \Desarrolla2\Cache\Exception\MongoCacheException
      */
     public function __construct(
@@ -82,7 +81,7 @@ class Mongo extends AbstractAdapter
     /**
      * {@inheritdoc }
      *
-     * @param string $key
+     * @param  string $key
      * @return bool
      */
     public function has($key)
@@ -111,7 +110,7 @@ class Mongo extends AbstractAdapter
         $item = array(
             'key' => $tKey,
             'value' => $tValue,
-            'ttl' => (int)$ttl + time(),
+            'ttl' => (int) $ttl + time(),
         );
         $this->delete($key);
         $this->database->items->insert($item);
@@ -120,8 +119,8 @@ class Mongo extends AbstractAdapter
     /**
      * {@inheritdoc }
      *
-     * @param string $key
-     * @param string $value
+     * @param  string                                           $key
+     * @param  string                                           $value
      * @return bool
      * @throws \Desarrolla2\Cache\Exception\MongoCacheException
      */
@@ -129,7 +128,7 @@ class Mongo extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new MongoCacheException('ttl cant be lower than 1');
                 }
@@ -146,7 +145,7 @@ class Mongo extends AbstractAdapter
      * Get data value from file cache
      *
      * @param  string $key
-     * @param bool    $delete
+     * @param  bool   $delete
      * @return mixed
      */
     protected function getData($key, $delete = true)

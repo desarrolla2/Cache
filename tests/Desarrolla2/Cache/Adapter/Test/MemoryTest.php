@@ -12,7 +12,6 @@
 
 namespace Desarrolla2\Cache\Adapter\Test;
 
-use Desarrolla2\Cache\Adapter\Test\AbstractCacheTest;
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Memory;
 

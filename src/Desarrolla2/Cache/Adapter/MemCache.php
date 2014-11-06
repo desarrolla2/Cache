@@ -10,7 +10,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Adapter\AbstractAdapter;
 use \Memcache as BaseMemCache;
 
 /**
@@ -90,8 +89,9 @@ class MemCache extends AbstractAdapter
         }
         $this->server->set($tKey, $tValue, false, time() + $ttl);
     }
-	
-	public function dropCache($delay = 0) {
-		$this->server->flush($delay);
-	}
+
+    public function dropCache($delay = 0)
+    {
+        $this->server->flush($delay);
+    }
 }

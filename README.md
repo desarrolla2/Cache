@@ -176,9 +176,6 @@ $cache = new Cache($adapter);
 
 ```
 
-
-
-
 ## Coming soon
 
 This library implements other adapters as soon as possible, feel free to send 
@@ -193,7 +190,3 @@ This can be a list of pending tasks.
 ## Contact
 
 You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
-
-## Other
-
-* [API docs](http://cache.desarrolla2.com/api/namespaces/Desarrolla2.Cache.html)
