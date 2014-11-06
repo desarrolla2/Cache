@@ -57,7 +57,7 @@ interface AdapterInterface
      * @param string $key
      * @param string $value
      */
-    public function setOption($key, $value);
+    public function setOption($key, $value = null);
 
     /**
      * clean all expired records from cache
