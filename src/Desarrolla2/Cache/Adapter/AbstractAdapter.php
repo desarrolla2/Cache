@@ -23,45 +23,27 @@ use Desarrolla2\Cache\Adapter\AdapterInterface;
  */
 abstract class AbstractAdapter implements AdapterInterface
 {
-
     /**
      * @var int
      */
-    protected $ttl          = 3600;
-    
+    protected $ttl = 3600;
+
     /**
      * @var string
      */
-    protected $prefix       = '';
-    
+    protected $prefix = '';
+
     /**
      * @var bool
      */
-    protected $serialize    = true;
+    protected $serialize = true;
 
     /**
      * {@inheritdoc }
      */
-    public function __construct()
+    public function setOption($key, $value)
     {
-    }
-
-    /**
-     * {@inheritdoc }
-     */
-    public function setOption($key, $value = null)
-    {
-        if (is_null($value))
-        {
-            /* allow for a full array of options */
-            foreach ($key as $k => $v) {
-                $this->setOption($k, $v);
-            }
-            return;
-        }
-        
-        switch ($key)
-        {
+        switch ($key) {
             case 'ttl':
                 $value = (int)$value;
                 if ($value < 1) {
@@ -70,10 +52,10 @@ abstract class AbstractAdapter implements AdapterInterface
                 $this->ttl = $value;
                 break;
             case 'prefix':
-                $this->prefix = (string) $value;
+                $this->prefix = (string)$value;
                 break;
             case 'serialize':
-                $this->serialize = (bool) $value;
+                $this->serialize = (bool)$value;
                 break;
             default:
                 throw new CacheException('option not valid ' . $key);
@@ -108,10 +90,10 @@ abstract class AbstractAdapter implements AdapterInterface
         //return md5($key);
         return $key;
     }
-    
+
     /**
      * Builds the key according to the prefix and other options
-     * 
+     *
      * @param string key
      * @return string
      */
@@ -119,8 +101,8 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         return $this->prefix . $key;
     }
-    
-    
+
+
     /**
      * Packages the data to be stored by the internal caching driver
      * according to the options on the adapter.
@@ -133,9 +115,10 @@ abstract class AbstractAdapter implements AdapterInterface
         if ($this->serialize) {
             return serialize($data);
         }
+
         return $data;
     }
-    
+
     /**
      * Unpackages the data retrieved by the internal caching driver
      * according to the options on the adapter. This will be the inverse
@@ -149,6 +132,7 @@ abstract class AbstractAdapter implements AdapterInterface
         if ($this->serialize) {
             return unserialize($data);
         }
+
         return $data;
     }
 

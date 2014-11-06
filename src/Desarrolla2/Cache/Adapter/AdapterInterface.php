@@ -46,8 +46,8 @@ interface AdapterInterface
      * * Add a value to the cache under a unique key
      *
      * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int $ttl
      */
     public function set($key, $value, $ttl = null);
 
@@ -57,7 +57,7 @@ interface AdapterInterface
      * @param string $key
      * @param string $value
      */
-    public function setOption($key, $value = null);
+    public function setOption($key, $value);
 
     /**
      * clean all expired records from cache

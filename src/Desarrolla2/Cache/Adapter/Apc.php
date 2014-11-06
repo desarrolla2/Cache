@@ -103,7 +103,10 @@ class Apc extends AbstractAdapter
 
         return true;
     }
-	
+
+    /**
+     * {@inheritdoc }
+     */
 	public function dropCache() {
 		apc_clear_cache("user");
 	}
