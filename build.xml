@@ -64,7 +64,7 @@
     <target name="phpcs"
             description="Generate coding standard metrics using PHPCS">
         <exec executable="phpcs">
-            <arg value ="--standard=PSR2" />
+            <arg value="--standard=PSR2"/>
             <arg value="--report-full=build/phpcs/full.txt"/>
             <arg value="--report-summary=build/phpcs/sumary.txt"/>
             <arg value="src"/>
@@ -83,5 +83,4 @@
         </exec>
 
     </target>
-
 </project>
