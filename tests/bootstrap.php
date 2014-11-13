@@ -11,5 +11,5 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-$loader = require_once __DIR__ . '/../vendor/autoload.php';
+$loader = require_once __DIR__.'/../vendor/autoload.php';
 Ladybug\Loader::loadHelpers();

@@ -11,11 +11,11 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__.'/../bootstrap.php';
 
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\NotCache;
 
 $cache = new Cache(new NotCache());
 
-require_once __DIR__ . '/common.php';
+require_once __DIR__.'/common.php';

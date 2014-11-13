@@ -14,9 +14,9 @@
 use Desarrolla2\Timer\Timer;
 
 //build test data outside of timing loop
-$data=array();
+$data = array();
 for ($i = 1; $i <= 10000; $i++) {
-    $data[$i]=md5($i);
+    $data[$i] = md5($i);
 }
 
 $timer = new Timer();
@@ -38,7 +38,7 @@ for ($i = 1; $i <= 10000; $i++) {
 }
 $timer->mark('10.000 has+get combos');
 
-$benchmarks=$timer->get();
+$benchmarks = $timer->get();
 foreach ($benchmarks as $benchmark) {
     printf(
         "%30s : duration %0.2fms memory %s\n",

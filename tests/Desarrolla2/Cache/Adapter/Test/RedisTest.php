@@ -21,7 +21,6 @@ use Desarrolla2\Cache\Adapter\Redis;
  */
 class RedisTest extends AbstractCacheTest
 {
-
     public function setUp()
     {
         parent::setup();
