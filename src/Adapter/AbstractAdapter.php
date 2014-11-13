@@ -55,7 +55,7 @@ abstract class AbstractAdapter implements AdapterInterface
                 $this->serialize = (bool) $value;
                 break;
             default:
-                throw new CacheException('option not valid ' . $key);
+                throw new CacheException('option not valid '.$key);
         }
 
         return true;
@@ -96,7 +96,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     protected function buildKey($key)
     {
-        return $this->prefix . $key;
+        return $this->prefix.$key;
     }
 
     /**

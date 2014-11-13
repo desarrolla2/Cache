@@ -20,7 +20,6 @@ use \mysqli;
  */
 class MySQL extends AbstractAdapter implements AdapterInterface
 {
-
     /**
      *
      * @var \mysqli
@@ -53,7 +52,7 @@ class MySQL extends AbstractAdapter implements AdapterInterface
     public function delete($key)
     {
         $tKey  = $this->getKey($key);
-        $query = 'DELETE FROM cache WHERE hash = \'' . $tKey . '\';';
+        $query = 'DELETE FROM cache WHERE hash = \''.$tKey.'\';';
 
         $this->query($query);
     }
@@ -64,8 +63,8 @@ class MySQL extends AbstractAdapter implements AdapterInterface
     public function get($key)
     {
         $tKey  = $this->getKey($key);
-        $query = 'SELECT value FROM cache WHERE hash = \'' . $tKey . '\'' .
-            ' AND ttl >= ' . time() . ';';
+        $query = 'SELECT value FROM cache WHERE hash = \''.$tKey.'\''.
+            ' AND ttl >= '.time().';';
         $res   = $this->fetchObject($query);
         if ($res) {
             return $this->unserialize($res->value);
@@ -80,9 +79,9 @@ class MySQL extends AbstractAdapter implements AdapterInterface
     public function has($key)
     {
         $tKey  = $this->getKey($key);
-        $query = 'SELECT COUNT(*) AS items FROM cache WHERE hash = ' .
-            '\'' . $tKey . '\' AND  ' .
-            ' ttl >= ' . time() . ';';
+        $query = 'SELECT COUNT(*) AS items FROM cache WHERE hash = '.
+            '\''.$tKey.'\' AND  '.
+            ' ttl >= '.time().';';
         $res   = $this->fetchObject($query);
         if (!$res) {
             return false;
@@ -108,10 +107,10 @@ class MySQL extends AbstractAdapter implements AdapterInterface
             $ttl = $this->ttl;
         }
         $tTtl  = $ttl + time();
-        $query = ' INSERT INTO cache (hash, value, ttl) VALUES (' .
-            '\'' . $tKey . '\', ' .
-            '\'' . $tValue . '\', ' .
-            '\'' . $tTtl . '\' );';
+        $query = ' INSERT INTO cache (hash, value, ttl) VALUES ('.
+            '\''.$tKey.'\', '.
+            '\''.$tValue.'\', '.
+            '\''.$tTtl.'\' );';
         $this->query($query);
     }
 
