@@ -21,7 +21,6 @@ use Desarrolla2\Cache\Adapter\MySQL;
  */
 class MySQLTest extends AbstractCacheTest
 {
-
     public function setUp()
     {
         parent::setup();

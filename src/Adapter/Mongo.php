@@ -21,7 +21,6 @@ use Mongo as MongoBase;
  */
 class Mongo extends AbstractAdapter
 {
-
     /**
      * @var \MongoDB
      */
@@ -133,7 +132,7 @@ class Mongo extends AbstractAdapter
                 $this->ttl = $value;
                 break;
             default:
-                throw new MongoCacheException('option not valid ' . $key);
+                throw new MongoCacheException('option not valid '.$key);
         }
 
         return true;

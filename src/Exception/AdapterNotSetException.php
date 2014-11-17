@@ -18,5 +18,4 @@ namespace Desarrolla2\Cache\Exception;
  */
 class AdapterNotSetException extends \Exception
 {
-
 }

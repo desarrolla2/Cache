@@ -18,5 +18,4 @@ namespace Desarrolla2\Cache\Exception;
  */
 class MemoryCacheException extends \Exception
 {
-
 }

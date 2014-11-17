@@ -20,7 +20,6 @@ use Predis\Client;
  */
 class Redis extends AbstractAdapter
 {
-
     /**
      * @var Client
      */

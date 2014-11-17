@@ -21,7 +21,6 @@ use Desarrolla2\Cache\Adapter\File;
  */
 class FileTest extends AbstractCacheTest
 {
-
     public function setUp()
     {
         parent::setup();

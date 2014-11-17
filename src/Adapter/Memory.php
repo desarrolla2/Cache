@@ -18,7 +18,6 @@ namespace Desarrolla2\Cache\Adapter;
  */
 class Memory extends AbstractAdapter
 {
-
     /**
      *
      * @var int

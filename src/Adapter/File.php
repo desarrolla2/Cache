@@ -29,22 +29,22 @@ class File extends AbstractAdapter
     protected $cacheDir;
 
     /**
-     * @param null $cacheDir
+     * @param  null               $cacheDir
      * @throws FileCacheException
      */
     public function __construct($cacheDir = null)
     {
         if (!$cacheDir) {
-            $cacheDir = realpath(sys_get_temp_dir()) . '/cache';
+            $cacheDir = realpath(sys_get_temp_dir()).'/cache';
         }
-        $this->cacheDir = (string)$cacheDir;
+        $this->cacheDir = (string) $cacheDir;
         if (!is_dir($this->cacheDir)) {
             if (!mkdir($this->cacheDir, 0777, true)) {
-                throw new FileCacheException($this->cacheDir . ' is not writable');
+                throw new FileCacheException($this->cacheDir.' is not writable');
             }
         }
         if (!is_writable($this->cacheDir)) {
-            throw new FileCacheException($this->cacheDir . ' is not writable');
+            throw new FileCacheException($this->cacheDir.' is not writable');
         }
     }
 
@@ -98,11 +98,11 @@ class File extends AbstractAdapter
         $item = $this->serialize(
             array(
                 'value' => $tValue,
-                'ttl' => (int)$ttl + time(),
+                'ttl' => (int) $ttl + time(),
             )
         );
         if (!file_put_contents($cacheFile, $item)) {
-            throw new FileCacheException('Error saving data with the key "' . $key . '" to the cache file.');
+            throw new FileCacheException('Error saving data with the key "'.$key.'" to the cache file.');
         }
     }
 
@@ -113,14 +113,14 @@ class File extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new FileCacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
             default:
-                throw new FileCacheException('option not valid ' . $key);
+                throw new FileCacheException('option not valid '.$key);
         }
 
         return true;
@@ -140,8 +140,8 @@ class File extends AbstractAdapter
     public function dropCache()
     {
         foreach (scandir($this->cacheDir) as $fileName) {
-            $cacheFile = $this->cacheDir .
-                DIRECTORY_SEPARATOR .
+            $cacheFile = $this->cacheDir.
+                DIRECTORY_SEPARATOR.
                 $fileName;
             $this->deleteFile($cacheFile);
         }
@@ -167,17 +167,17 @@ class File extends AbstractAdapter
      */
     protected function getCacheFile($fileName)
     {
-        return $this->cacheDir .
-        DIRECTORY_SEPARATOR .
-        self::CACHE_FILE_PREFIX .
-        $fileName .
+        return $this->cacheDir.
+        DIRECTORY_SEPARATOR.
+        self::CACHE_FILE_PREFIX.
+        $fileName.
         self::CACHE_FILE_SUBFIX;
     }
 
     /**
      * Get data value from file cache
      *
-     * @param  string $key
+     * @param  string             $key
      * @return mixed
      * @throws FileCacheException
      */
@@ -190,17 +190,17 @@ class File extends AbstractAdapter
         }
         if (!$data = unserialize(file_get_contents($cacheFile))) {
             throw new FileCacheException(
-                'Error with the key "' . $key . '" in cache file ' . $cacheFile
+                'Error with the key "'.$key.'" in cache file '.$cacheFile
             );
         }
         if (!array_key_exists('value', $data)) {
             throw new FileCacheException(
-                'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', value not exist'
+                'Error with the key "'.$key.'" in cache file '.$cacheFile.', value not exist'
             );
         }
         if (!array_key_exists('ttl', $data)) {
             throw new FileCacheException(
-                'Error with the key "' . $key . '" in cache file ' . $cacheFile . ', ttl not exist'
+                'Error with the key "'.$key.'" in cache file '.$cacheFile.', ttl not exist'
             );
         }
         if (time() > $data['ttl']) {

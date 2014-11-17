@@ -18,7 +18,6 @@ namespace Desarrolla2\Cache;
  */
 interface CacheInterface
 {
-
     /**
      * Delete a value from the cache
      *

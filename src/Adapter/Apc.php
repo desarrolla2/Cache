@@ -20,11 +20,10 @@ use Desarrolla2\Cache\Exception\ApcCacheException;
  */
 class Apc extends AbstractAdapter
 {
-
     /**
      * Delete a value from the cache
      *
-     * @param  string $key
+     * @param  string                                         $key
      * @throws \Desarrolla2\Cache\Exception\ApcCacheException
      */
     public function delete($key)
@@ -32,7 +31,7 @@ class Apc extends AbstractAdapter
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
             if (!\apc_delete($tKey)) {
-                throw new ApcCacheException('Error deleting data with the key "' . $key . '" from the APC cache.');
+                throw new ApcCacheException('Error deleting data with the key "'.$key.'" from the APC cache.');
             }
         }
     }
@@ -45,7 +44,7 @@ class Apc extends AbstractAdapter
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
             if (!$data = \apc_fetch($tKey)) {
-                throw new ApcCacheException('Error fetching data with the key "' . $key . '" from the APC cache.');
+                throw new ApcCacheException('Error fetching data with the key "'.$key.'" from the APC cache.');
             }
 
             return $this->unserialize($data);
@@ -61,12 +60,12 @@ class Apc extends AbstractAdapter
     {
         $tKey = $this->getKey($key);
         if (function_exists("\apc_exists")) {
-            return (boolean)\apc_exists($tKey);
+            return (boolean) \apc_exists($tKey);
         } else {
             $result = false;
             \apc_fetch($tKey, $result);
 
-            return (boolean)$result;
+            return (boolean) $result;
         }
     }
 
@@ -81,7 +80,7 @@ class Apc extends AbstractAdapter
             $ttl = $this->ttl;
         }
         if (!\apc_store($tKey, $tValue, $ttl)) {
-            throw new ApcCacheException('Error saving data with the key "' . $key . '" to the APC cache.');
+            throw new ApcCacheException('Error saving data with the key "'.$key.'" to the APC cache.');
         }
     }
 
@@ -92,14 +91,14 @@ class Apc extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new ApcCacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
             default:
-                throw new ApcCacheException('option not valid ' . $key);
+                throw new ApcCacheException('option not valid '.$key);
         }
 
         return true;

@@ -18,7 +18,6 @@ namespace Desarrolla2\Cache\Adapter;
  */
 class NotCache extends AbstractAdapter
 {
-
     /**
      * Delete a value from the cache
      *
