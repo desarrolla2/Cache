@@ -26,7 +26,6 @@ class Apc extends AbstractAdapter
     public function __construct()
     {
         $this->apcu = extension_loaded('apcu');
-        parent::__construct();
     }
 	
     /**
