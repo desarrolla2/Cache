@@ -137,7 +137,7 @@ Use it if you will you have mysqlnd available in your system.
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\MySQL;
 
-$adapter = new Cache(new MySQL('localhost', 'user', 'pass', 'port'));
+$adapter = new MySQL('localhost', 'user', 'pass', 'port');
 $adapter->setOption('ttl', 3600);
 $cache = new Cache($adapter);
 
@@ -153,7 +153,7 @@ Use it if you will you have redis available in your system.
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Redis;
 
-$adapter = new Cache(new Redis());
+$adapter = new Redis();
 $adapter->setOption('ttl', 3600);
 $cache = new Cache($adapter);
 
@@ -169,7 +169,7 @@ Use it if you will you have memcache available in your system.
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\MemCache;
 
-$adapter = new Cache(new MemCache());
+$adapter = new MemCache();
 $adapter->setOption('ttl', 3600);
 $cache = new Cache($adapter);
 
