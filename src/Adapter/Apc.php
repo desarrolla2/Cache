@@ -20,6 +20,15 @@ use Desarrolla2\Cache\Exception\ApcCacheException;
  */
 class Apc extends AbstractAdapter
 {
+
+    private $apcu;
+    
+    public function __construct()
+    {
+        $this->apcu = extension_loaded('apcu');
+        parent::__construct();
+    }
+	
     /**
      * Delete a value from the cache
      *
@@ -30,7 +39,7 @@ class Apc extends AbstractAdapter
     {
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
-            if (!\apc_delete($tKey)) {
+            if (!($this->apcu ? \apcu_delete($tKey) : \apc_delete($tKey))) {
                 throw new ApcCacheException('Error deleting data with the key "'.$key.'" from the APC cache.');
             }
         }
@@ -43,7 +52,7 @@ class Apc extends AbstractAdapter
     {
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
-            if (!$data = \apc_fetch($tKey)) {
+            if (!$data = ($this->apcu ? \apcu_fetch($tKey) : \apc_fetch($tKey))) {
                 throw new ApcCacheException('Error fetching data with the key "'.$key.'" from the APC cache.');
             }
 
@@ -59,11 +68,12 @@ class Apc extends AbstractAdapter
     public function has($key)
     {
         $tKey = $this->getKey($key);
-        if (function_exists("\apc_exists")) {
-            return (boolean) \apc_exists($tKey);
+
+        if (function_exists("\apcu_exists") || function_exists("\apc_exists")) {
+            return (boolean) ($this->apcu ? \apcu_exists($tKey) : \apc_exists($tKey));
         } else {
             $result = false;
-            \apc_fetch($tKey, $result);
+            ($this->apcu ? \apcu_fetch($tKey, $result) : \apc_fetch($tKey, $result));
 
             return (boolean) $result;
         }
@@ -71,15 +81,15 @@ class Apc extends AbstractAdapter
 
     /**
      * {@inheritdoc }
-     */
+     */ 
     public function set($key, $value, $ttl = null)
     {
         $tKey = $this->getKey($key);
         $tValue = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
-        }
-        if (!\apc_store($tKey, $tValue, $ttl)) {
+        } 
+        if (!($this->apcu ? \apcu_store($tKey, $tValue, $ttl) : \apc_store($tKey, $tValue, $ttl))) {
             throw new ApcCacheException('Error saving data with the key "'.$key.'" to the APC cache.');
         }
     }
@@ -109,6 +119,6 @@ class Apc extends AbstractAdapter
      */
     public function dropCache()
     {
-        apc_clear_cache("user");
+		($this->apcu ? apcu_clear_cache("user") : apc_clear_cache("user"));
     }
 }
