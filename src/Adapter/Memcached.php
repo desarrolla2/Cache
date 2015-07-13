@@ -37,7 +37,7 @@ class Memcached extends AbstractAdapter
      * @param mixed $data
      *
      */
-    public function __construct($data = null, $options = [])
+    public function __construct($data = null)
     {
         if ($data instanceof BaseMemcached) {
             $this->adapter = $data;
@@ -48,11 +48,9 @@ class Memcached extends AbstractAdapter
         if (is_array($data)) {
             /* if array, then the user supplied an array of servers */
             foreach ($data as $s) {
-                $this->adapter->addServer($s['host'], $s['port'], $s['weight']);
+                $this->addServer($s['host'], $s['port'], $s['weight']);
             }
         }
-
-        $this->setOption($options);
     }
 
     /**
