@@ -209,7 +209,7 @@ class File extends AbstractAdapter
         if (time() > $data['ttl']) {
             $this->delete($key);
 
-            return false;
+            return;
         }
 
         return $this->unserialize($data['value']);
