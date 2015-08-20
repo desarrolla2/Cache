@@ -11,15 +11,14 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-use Desarrolla2\Timer\Timer;
 
 //build test data outside of timing loop
-$data = array();
+$data = [];
 for ($i = 1; $i <= 10000; $i++) {
     $data[$i] = md5($i);
 }
 
-$timer = new Timer();
+$timer = new \Desarrolla2\Timer\Timer(new \Desarrolla2\Timer\Formatter\Human());
 for ($i = 1; $i <= 10000; $i++) {
     $cache->set($data[$i], $data[$i], 3600);
 }
@@ -38,12 +37,7 @@ for ($i = 1; $i <= 10000; $i++) {
 }
 $timer->mark('10.000 has+get combos');
 
-$benchmarks = $timer->get();
+$benchmarks = $timer->getAll();
 foreach ($benchmarks as $benchmark) {
-    printf(
-        "%30s : duration %0.2fms memory %s\n",
-        $benchmark['text'],
-        $benchmark['from_previous']*1000,
-        $benchmark['memory']
-    );
+    ld($benchmark);
 }

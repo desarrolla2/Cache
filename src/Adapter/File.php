@@ -29,7 +29,8 @@ class File extends AbstractAdapter
     protected $cacheDir;
 
     /**
-     * @param  null               $cacheDir
+     * @param  null $cacheDir
+     *
      * @throws FileCacheException
      */
     public function __construct($cacheDir = null)
@@ -37,7 +38,7 @@ class File extends AbstractAdapter
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()).'/cache';
         }
-        $this->cacheDir = (string) $cacheDir;
+        $this->cacheDir = (string)$cacheDir;
         if (!is_dir($this->cacheDir)) {
             if (!mkdir($this->cacheDir, 0777, true)) {
                 throw new FileCacheException($this->cacheDir.' is not writable');
@@ -73,15 +74,15 @@ class File extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function has($key)
     {
-        if ($this->getData($key)) {
-            return true;
+        if (!$this->getData($key)) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -96,10 +97,10 @@ class File extends AbstractAdapter
             $ttl = $this->ttl;
         }
         $item = $this->serialize(
-            array(
+            [
                 'value' => $tValue,
-                'ttl' => (int) $ttl + time(),
-            )
+                'ttl' => (int)$ttl + time(),
+            ]
         );
         if (!file_put_contents($cacheFile, $item)) {
             throw new FileCacheException('Error saving data with the key "'.$key.'" to the cache file.');
@@ -113,7 +114,7 @@ class File extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new FileCacheException('ttl cant be lower than 1');
                 }
@@ -151,6 +152,7 @@ class File extends AbstractAdapter
      * Delete file
      *
      * @param  string $cacheFile
+     *
      * @return bool
      */
     protected function deleteFile($cacheFile)
@@ -177,7 +179,8 @@ class File extends AbstractAdapter
     /**
      * Get data value from file cache
      *
-     * @param  string             $key
+     * @param  string $key
+     *
      * @return mixed
      * @throws FileCacheException
      */
