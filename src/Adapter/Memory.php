@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the Cache package.
  *
@@ -12,6 +11,8 @@
  */
 
 namespace Desarrolla2\Cache\Adapter;
+
+use Desarrolla2\Cache\Exception\MemoryCacheException;
 
 /**
  * Memory
