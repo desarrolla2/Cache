@@ -1,6 +1,6 @@
 language: php
 
-sudo: false
+sudo: required
 
 php:
     - 5.4
@@ -20,17 +20,18 @@ notifications:
 
 before_script:
 
-#   Create Mysqli Database
+  # Create Mysql Database
   - mysql -e 'CREATE DATABASE IF NOT EXISTS `cache`;'
   - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
-  - sh -c "if [[ $TRAVIS_PHP_VERSION != 'hhvm' && `php-config --vernum` -ge 50500 ]] ; then pecl config-set preferred_state beta; printf "yes\n" | pecl install apcu ; else echo 'extension="apc.so"' >> ./tests/travis/php.ini ;fi"
+  # Install apcu
+  - sh -c "if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then sudo apt-get install php5-apcu"
 
-#   Install dependencies
+  # Install dependencies
   - composer self-update
   - composer install
 
-#   Set Configuration
+  # Set Configuration
   - cp tests/config.json.dist tests/config.json
   - cp tests/travis/phpunit.xml phpunit.xml
 
