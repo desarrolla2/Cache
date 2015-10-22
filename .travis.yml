@@ -35,10 +35,10 @@ before_script:
   - cp tests/travis/phpunit.xml phpunit.xml
 
 script:
-    - ./vendor/bin/phpunit -c ./phpunit.xml -v
+    - phpunit -c ./phpunit.xml -v
 
 after_script:
-    - php vendor/bin/coveralls -v
+#    - php vendor/bin/coveralls -v
 
 matrix:
   allow_failures:
