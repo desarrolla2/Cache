@@ -25,7 +25,7 @@ before_script:
   - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
   # Install apcu
-  - sh -c "if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then sudo apt-get install php; if;"
+  - sudo apt-get install php;"
 
   # Install dependencies
   - composer self-update
