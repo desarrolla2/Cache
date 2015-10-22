@@ -42,17 +42,17 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         switch ($key) {
             case 'ttl':
-                $value = (int) $value;
+                $value = (int)$value;
                 if ($value < 1) {
                     throw new CacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
             case 'prefix':
-                $this->prefix = (string) $value;
+                $this->prefix = (string)$value;
                 break;
             case 'serialize':
-                $this->serialize = (bool) $value;
+                $this->serialize = (bool)$value;
                 break;
             default:
                 throw new CacheException('option not valid '.$key);
@@ -66,7 +66,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function clearCache()
     {
-        throw new Exception('not ready yet');
+        throw new CacheException('not ready yet');
     }
 
     /**
@@ -74,12 +74,21 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function dropCache()
     {
-        throw new Exception('not ready yet');
+        throw new CacheException('not ready yet');
+    }
+
+    /**
+     * {@inheritdoc }
+     */
+    public function check()
+    {
+        return true;
     }
 
     /**
      *
      * @param  string $key
+     *
      * @return string
      */
     protected function getKey($key)
@@ -92,6 +101,7 @@ abstract class AbstractAdapter implements AdapterInterface
      * Builds the key according to the prefix and other options
      *
      * @param string key
+     *
      * @return string
      */
     protected function buildKey($key)
@@ -104,6 +114,7 @@ abstract class AbstractAdapter implements AdapterInterface
      * according to the options on the adapter.
      *
      * @param  mixed $data
+     *
      * @return mixed
      */
     protected function packData($data)
@@ -121,6 +132,7 @@ abstract class AbstractAdapter implements AdapterInterface
      * of packData IF the options are set correctly.
      *
      * @param  mixed $data
+     *
      * @return mixed
      */
     protected function unpackData($data)

@@ -13,7 +13,7 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Exception\FileCacheException;
+use Desarrolla2\Cache\Exception\CacheException;
 
 /**
  * File
@@ -31,7 +31,7 @@ class File extends AbstractAdapter
     /**
      * @param  null $cacheDir
      *
-     * @throws FileCacheException
+     * @throws CacheException
      */
     public function __construct($cacheDir = null)
     {
@@ -48,12 +48,12 @@ class File extends AbstractAdapter
     {
         if (! is_dir($path)) {
             if (! mkdir($path, 0777, true)) {
-                throw new FileCacheException($path.' is not writable');
+                throw new CacheException($path.' is not writable');
             }
         }
 
         if (! is_writable($path)) {
-            throw new FileCacheException($path.' is not writable');
+            throw new CacheException($path.' is not writable');
         }
     }
 
@@ -109,7 +109,7 @@ class File extends AbstractAdapter
             ]
         );
         if (!file_put_contents($cacheFile, $item)) {
-            throw new FileCacheException('Error saving data with the key "'.$key.'" to the cache file.');
+            throw new CacheException('Error saving data with the key "'.$key.'" to the cache file.');
         }
     }
 
@@ -122,12 +122,12 @@ class File extends AbstractAdapter
             case 'ttl':
                 $value = (int)$value;
                 if ($value < 1) {
-                    throw new FileCacheException('ttl cant be lower than 1');
+                    throw new CacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
             default:
-                throw new FileCacheException('option not valid '.$key);
+                throw new CacheException('option not valid '.$key);
         }
 
         return true;
@@ -187,7 +187,7 @@ class File extends AbstractAdapter
      * @param  string $path The path of the file to load
      * @return array        Unserialized file contents
      *
-     * @throws Desarrolla2\Cache\Exception\FileCacheException
+     * @throws Desarrolla2\Cache\Exception\CacheException
      */
     protected function loadFile($path)
     {
@@ -198,7 +198,7 @@ class File extends AbstractAdapter
         $data = unserialize(file_get_contents($path));
 
         if (! $data) {
-            throw new FileCacheException("Unable to load cache file at {$path}");
+            throw new CacheException("Unable to load cache file at {$path}");
         }
 
         return $data;
@@ -253,13 +253,13 @@ class File extends AbstractAdapter
      * @param  [type] $path [description]
      * @return void
      *
-     * @throws Desarrolla2\Cache\Exception\FileCacheException
+     * @throws Desarrolla2\Cache\Exception\CacheException
      */
     protected function validateCacheData($data, $path = null)
     {
         foreach (['value', 'ttl'] as $key) {
             if (! array_key_exists($key, $data)) {
-                throw new FileCacheException("{$key} missing from cache file {$path}");
+                throw new CacheException("{$key} missing from cache file {$path}");
             }
         }
     }

@@ -16,6 +16,6 @@ namespace Desarrolla2\Cache\Exception;
 /**
  * CacheException
  */
-class CacheException extends \Exception
+class CacheException extends \RuntimeException
 {
 }

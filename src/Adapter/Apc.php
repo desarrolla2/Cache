@@ -22,12 +22,12 @@ class Apc extends AbstractAdapter
 {
 
     private $apcu;
-    
+
     public function __construct()
     {
         $this->apcu = extension_loaded('apcu');
     }
-	
+
     /**
      * Delete a value from the cache
      *
@@ -80,14 +80,14 @@ class Apc extends AbstractAdapter
 
     /**
      * {@inheritdoc }
-     */ 
+     */
     public function set($key, $value, $ttl = null)
     {
         $tKey = $this->getKey($key);
         $tValue = $this->serialize($value);
         if (!$ttl) {
             $ttl = $this->ttl;
-        } 
+        }
         if (!($this->apcu ? \apcu_store($tKey, $tValue, $ttl) : \apc_store($tKey, $tValue, $ttl))) {
             throw new ApcCacheException('Error saving data with the key "'.$key.'" to the APC cache.');
         }

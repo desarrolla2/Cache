@@ -16,6 +16,6 @@ namespace Desarrolla2\Cache\Exception;
 /**
  * AdapterNotSetException
  */
-class AdapterNotSetException extends \Exception
+class AdapterNotSetException extends CacheException
 {
 }
