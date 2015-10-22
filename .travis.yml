@@ -34,7 +34,7 @@ before_script:
   - cp tests/config.json.dist tests/config.json
 
 script:
-    - ./vendor/bin/phpunit -c ./tests/travis/phpunit.travis.xml -v
+    - ./vendor/bin/phpunit -c ./tests/travis/phpunit.xml -v
 
 after_script:
     - php vendor/bin/coveralls -v
