@@ -11,26 +11,26 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter\Test;
+namespace Desarrolla2\Test\Cache\Adapter;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memcached;
+use Desarrolla2\Cache\Adapter\Memcache;
 
 /**
- * MemcachedTest
+ * MemcacheTest
  */
-class MemcachedTest extends AbstractCacheTest
+class MemcacheTest extends AbstractCacheTest
 {
     public function setUp()
     {
         parent::setup();
-        if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
+        if (!extension_loaded('memcache') || !class_exists('\Memcache')) {
             $this->markTestSkipped(
-                'The Memcached extension is not available.'
+                'The Memcache extension is not available.'
             );
         }
 
-        $adapter = new Memcached();
+        $adapter = new Memcache();
         $this->cache = new Cache($adapter);
     }
 

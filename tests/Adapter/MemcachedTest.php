@@ -11,38 +11,27 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter\Test;
+namespace Desarrolla2\Test\Cache\Adapter;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Predis;
+use Desarrolla2\Cache\Adapter\Memcached;
 
 /**
- * PredisTest
+ * MemcachedTest
  */
-class PredisTest extends AbstractCacheTest
+class MemcachedTest extends AbstractCacheTest
 {
     public function setUp()
     {
         parent::setup();
-        if (!class_exists('\Predis\Client')) {
+        if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
             $this->markTestSkipped(
-                'The predis library is not available.'
+                'The Memcached extension is not available.'
             );
         }
-        $this->cache = new Cache(
-            new Predis()
-        );
 
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptions()
-    {
-        return [
-            ['ttl', 100],
-        ];
+        $adapter = new Memcached();
+        $this->cache = new Cache($adapter);
     }
 
     /**

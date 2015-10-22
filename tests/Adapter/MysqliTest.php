@@ -11,7 +11,7 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter\Test;
+namespace Desarrolla2\Test\Cache\Adapter;
 
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Mysqli;

@@ -11,7 +11,7 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Test;
+namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\Cache;
 
