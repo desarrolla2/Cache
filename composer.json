@@ -25,7 +25,8 @@
     "php": ">=5.4.0"
   },
   "require-dev": {
-    "predis/predis": "~1.0.0"
+    "predis/predis": "~1.0.0",
+    "satooshi/php-coveralls":  "~0.6"
   },
   "suggest": {
     "predis/predis": "Predis support"
