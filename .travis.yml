@@ -27,3 +27,5 @@ before_script:
 
 #   Set Configuration
   - cp tests/config.json.dist tests/config.json
+
+script: phpunit -v
