@@ -1,11 +1,14 @@
 language: php
 
+sudo: false
+
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7
-  - hhvm
+    - 5.3
+    - 5.4
+    - 5.5
+    - 5.6
+    - 7.0
+    - hhvm
 
 services:
   - mongodb
@@ -31,4 +34,12 @@ before_script:
 #   Set Configuration
   - cp tests/config.json.dist tests/config.json
 
-script: phpunit -v
+script:
+    - ./vendor/bin/phpunit -c ./tests/travis/phpunit.travis.xml -v
+
+after_script:
+    - php vendor/bin/coveralls -v
+
+matrix:
+  allow_failures:
+    - php: hhvm
