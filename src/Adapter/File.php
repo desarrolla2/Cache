@@ -13,7 +13,7 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Exception\FileCacheException;
+use Desarrolla2\Cache\Exception\CacheException;
 
 /**
  * File
@@ -31,21 +31,29 @@ class File extends AbstractAdapter
     /**
      * @param  null $cacheDir
      *
-     * @throws FileCacheException
+     * @throws CacheException
      */
     public function __construct($cacheDir = null)
     {
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()).'/cache';
         }
-        $this->cacheDir = (string)$cacheDir;
-        if (!is_dir($this->cacheDir)) {
-            if (!mkdir($this->cacheDir, 0777, true)) {
-                throw new FileCacheException($this->cacheDir.' is not writable');
+
+        $this->cacheDir = (string) $cacheDir;
+        
+        $this->createCacheDirectory($cacheDir);
+    }
+
+    protected function createCacheDirectory($path)
+    {
+        if (! is_dir($path)) {
+            if (! mkdir($path, 0777, true)) {
+                throw new CacheException($path.' is not writable');
             }
         }
-        if (!is_writable($this->cacheDir)) {
-            throw new FileCacheException($this->cacheDir.' is not writable');
+
+        if (! is_writable($path)) {
+            throw new CacheException($path.' is not writable');
         }
     }
 
@@ -66,11 +74,13 @@ class File extends AbstractAdapter
      */
     public function get($key)
     {
-        if ($data = $this->getData($key)) {
-            return $data;
+        $data = $this->getCacheData($key);
+
+        if (isset($data['value'])) {
+            return $data['value'];
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -78,11 +88,7 @@ class File extends AbstractAdapter
      */
     public function has($key)
     {
-        if (!$this->getData($key)) {
-            return false;
-        }
-
-        return true;
+        return ! is_null($this->getData($key));
     }
 
     /**
@@ -103,7 +109,7 @@ class File extends AbstractAdapter
             ]
         );
         if (!file_put_contents($cacheFile, $item)) {
-            throw new FileCacheException('Error saving data with the key "'.$key.'" to the cache file.');
+            throw new CacheException('Error saving data with the key "'.$key.'" to the cache file.');
         }
     }
 
@@ -116,12 +122,12 @@ class File extends AbstractAdapter
             case 'ttl':
                 $value = (int)$value;
                 if ($value < 1) {
-                    throw new FileCacheException('ttl cant be lower than 1');
+                    throw new CacheException('ttl cant be lower than 1');
                 }
                 $this->ttl = $value;
                 break;
             default:
-                throw new FileCacheException('option not valid '.$key);
+                throw new CacheException('option not valid '.$key);
         }
 
         return true;
@@ -165,53 +171,106 @@ class File extends AbstractAdapter
     }
 
     /**
-     * Get the specified cache file
+     * Get the specified cache file path
      */
     protected function getCacheFile($fileName)
     {
         return $this->cacheDir.
-        DIRECTORY_SEPARATOR.
-        self::CACHE_FILE_PREFIX.
-        $fileName.
-        self::CACHE_FILE_SUBFIX;
+            DIRECTORY_SEPARATOR.
+            self::CACHE_FILE_PREFIX.
+            $fileName.
+            self::CACHE_FILE_SUBFIX;
+    }
+
+    /**
+     * Load the contents of a file at a given path and unserialize the contents
+     * @param  string $path The path of the file to load
+     * @return array        Unserialized file contents
+     *
+     * @throws Desarrolla2\Cache\Exception\CacheException
+     */
+    protected function loadFile($path)
+    {
+        if (! file_exists($path)) {
+            return;
+        }
+
+        $data = unserialize(file_get_contents($path));
+
+        if (! $data) {
+            throw new CacheException("Unable to load cache file at {$path}");
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get a standardised data structure irrespective of failure in
+     * order to better determine hits/misses etc when using has()
+     * @param  string $key Cache key to attempt to load
+     * @return array       Standardised array format with keys 'value' and 'ttl'
+     */
+    protected function getCacheData($key)
+    {
+        $path = $this->getCacheFile($this->getKey($key));
+
+        $data = $this->loadFile($path);
+
+        if (! $data) {
+            return ['value' => null, 'ttl' => null];
+        }
+
+        // Determine if the structure of our data is correct
+        // Leaving this throwing exceptions to prevent BC breaks
+        $this->validateCacheData($data, $path);
+
+        // Expire old cache values
+        if ($this->ttlHasExpired($data['ttl'])) {
+            $this->delete($key);
+
+            return ['value' => null, 'ttl' => null];
+        }
+
+        return [
+            'value' => unserialize($data['value']),
+            'ttl'   => $data['ttl']
+        ];
+    }
+
+    /**
+     * Determine if a given timestamp is in the past
+     * @param  int $ttl Unix timestamp denoting the desired expiry time
+     * @return [type]      [description]
+     */
+    private function ttlHasExpired($ttl)
+    {
+        return (time() > $ttl);
+    }
+
+    /**
+     * [validateCacheData description]
+     * @param  [type] $data [description]
+     * @param  [type] $path [description]
+     * @return void
+     *
+     * @throws Desarrolla2\Cache\Exception\CacheException
+     */
+    protected function validateCacheData($data, $path = null)
+    {
+        foreach (['value', 'ttl'] as $key) {
+            if (! array_key_exists($key, $data)) {
+                throw new CacheException("{$key} missing from cache file {$path}");
+            }
+        }
     }
 
     /**
      * Get data value from file cache
-     *
      * @param  string $key
-     *
      * @return mixed
-     * @throws FileCacheException
      */
     protected function getData($key)
     {
-        $tKey = $this->getKey($key);
-        $cacheFile = $this->getCacheFile($tKey);
-        if (!file_exists($cacheFile)) {
-            return;
-        }
-        if (!$data = unserialize(file_get_contents($cacheFile))) {
-            throw new FileCacheException(
-                'Error with the key "'.$key.'" in cache file '.$cacheFile
-            );
-        }
-        if (!array_key_exists('value', $data)) {
-            throw new FileCacheException(
-                'Error with the key "'.$key.'" in cache file '.$cacheFile.', value not exist'
-            );
-        }
-        if (!array_key_exists('ttl', $data)) {
-            throw new FileCacheException(
-                'Error with the key "'.$key.'" in cache file '.$cacheFile.', ttl not exist'
-            );
-        }
-        if (time() > $data['ttl']) {
-            $this->delete($key);
-
-            return;
-        }
-
-        return $this->unserialize($data['value']);
+        return $this->getCacheData($key)['value'];
     }
 }

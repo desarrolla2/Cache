@@ -3,5 +3,6 @@
 /tests/config.yml
 /vendor
 /.idea
+/TODO.md
 *~
 *.swp

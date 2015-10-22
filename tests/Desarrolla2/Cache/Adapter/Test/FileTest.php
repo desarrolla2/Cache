@@ -33,8 +33,8 @@ class FileTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return array(
-            array('ttl', 0, '\Desarrolla2\Cache\Exception\FileCacheException'),
-            array('file', 100, '\Desarrolla2\Cache\Exception\FileCacheException'),
+            array('ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'),
+            array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
         );
     }
 }

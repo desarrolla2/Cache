@@ -27,7 +27,13 @@ class Redis extends AbstractAdapter
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client(
+            [
+                'scheme' => 'tcp',
+                'host' => '127.0.0.1',
+                'port' => 6379,
+            ]
+        );
     }
 
     public function __destruct()
@@ -43,7 +49,7 @@ class Redis extends AbstractAdapter
     public function delete($key)
     {
         $cmd = $this->client->createCommand('DEL');
-        $cmd->setArguments(array($key));
+        $cmd->setArguments([$key]);
 
         $this->client->executeCommand($cmd);
     }
@@ -52,6 +58,7 @@ class Redis extends AbstractAdapter
      * Retrieve the value corresponding to a provided key
      *
      * @param  string $key
+     *
      * @return mixed
      */
     public function get($key)
@@ -63,12 +70,13 @@ class Redis extends AbstractAdapter
      * Retrieve the if value corresponding to a provided key exist
      *
      * @param  string $key
+     *
      * @return bool
      */
     public function has($key)
     {
         $cmd = $this->client->createCommand('EXISTS');
-        $cmd->setArguments(array($key));
+        $cmd->setArguments([$key]);
 
         return $this->client->executeCommand($cmd);
     }
@@ -85,7 +93,7 @@ class Redis extends AbstractAdapter
         $this->client->set($key, $value);
         if ($ttl) {
             $cmd = $this->client->createCommand('EXPIRE');
-            $cmd->setArguments(array($key, $ttl));
+            $cmd->setArguments([$key, $ttl]);
             $this->client->executeCommand($cmd);
         }
     }
