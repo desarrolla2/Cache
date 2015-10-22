@@ -20,44 +20,39 @@ use Desarrolla2\Cache\Exception\MemoryCacheException;
 class Memory extends AbstractAdapter
 {
     /**
-     *
      * @var int
      */
-    protected $limit = 100;
+    protected $limit = false;
 
     /**
-     *
      * @var array
      */
-    protected $cache = array();
+    protected $cache = [];
 
     /**
-     * Delete a value from the cache
-     *
-     * @param string $key
+     * {@inheritdoc}
      */
-    public function delete($key)
+    public function del($key)
     {
-        $tKey = $this->getKey($key);
-        unset($this->cache[$tKey]);
+        unset($this->cache[$this->getKey($key)]);
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function get($key)
     {
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
 
-            return $this->unserialize($this->cache[$tKey]['value']);
+            return $this->unPack($this->cache[$tKey]['value']);
         }
 
         return false;
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function has($key)
     {
@@ -66,43 +61,38 @@ class Memory extends AbstractAdapter
             $data = $this->cache[$tKey];
             if (time() < $data['ttl']) {
                 return true;
-            } else {
-                $this->delete($key);
             }
+            $this->del($key);
         }
 
         return false;
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function set($key, $value, $ttl = null)
     {
-        while (count($this->cache) >= $this->limit) {
+        if ($this->limit && count($this->cache) > $this->limit) {
             array_shift($this->cache);
         }
-        $tKey = $this->getKey($key);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->cache[$tKey] = array(
+        $this->cache[$this->getKey($key)] = [
             'value' => serialize($value),
-            'ttl'   => $ttl + time(),
-        );
+            'ttl' => (int)$ttl + time(),
+        ];
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function setOption($key, $value)
     {
         switch ($key) {
             case 'limit':
-                $value = (int) $value;
-                if ($value < 1) {
-                    throw new MemoryCacheException('limit cant be lower than 1');
-                }
+                $value = (int)$value;
                 $this->limit = $value;
 
                 return true;

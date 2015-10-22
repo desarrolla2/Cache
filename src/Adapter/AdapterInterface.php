@@ -31,7 +31,7 @@ interface AdapterInterface
      *
      * @param string $key
      */
-    public function delete($key);
+    public function del($key);
 
     /**
      * Retrieve the value corresponding to a provided key

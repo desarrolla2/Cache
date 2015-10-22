@@ -73,7 +73,7 @@ $cache = new Cache($adapter);
 
 ```
 
-### Apc
+### Apcu
 
 Use it if you will you have APC cache available in your system.
 
@@ -81,9 +81,9 @@ Use it if you will you have APC cache available in your system.
 <?php
     
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Apc;
+use Desarrolla2\Cache\Adapter\Apcu;
 
-$adapter = new Apc();
+$adapter = new Apcu();
 $adapter->setOption('ttl', 3600);
 $cache = new Cache($adapter);
 
@@ -127,7 +127,7 @@ $cache = new Cache($adapter);
 
 ```
 
-### MySQL
+### Mysqli
 
 Use it if you will you have mysqlnd available in your system.
 
@@ -135,26 +135,51 @@ Use it if you will you have mysqlnd available in your system.
 <?php
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\MySQL;
+use Desarrolla2\Cache\Adapter\Mysqli;
 
-$adapter = new MySQL('localhost', 'user', 'pass', 'port');
+$adapter = new Mysqli('localhost', 'user', 'pass', 'port');
 $adapter->setOption('ttl', 3600);
 $cache = new Cache($adapter);
 
 ```
 
-### Redis
+### Predis
 
 Use it if you will you have redis available in your system.
+
+You need to add predis as dependency in your composer file.
+
+``` json
+"require": {
+    //...
+    "predis/predis": "~1.0.0"
+}
+```
+
+other version will have compatibility issues.
 
 ``` php
 <?php
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Redis;
+use Desarrolla2\Cache\Adapter\Predis;
 
-$adapter = new Redis();
+$adapter = new Predis();
 $adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
+
+```
+
+If you need to configure your predis client, you will instantiate it and pass it to constructor.
+
+``` php
+<?php
+
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Predis;
+use Predis\Client;
+
+$adapter = new Predis(new Client($options));
 $cache = new Cache($adapter);
 
 ```
@@ -167,9 +192,9 @@ Use it if you will you have memcache available in your system.
 <?php
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\MemCache;
+use Desarrolla2\Cache\Adapter\Memcache;
 
-$adapter = new MemCache();
+$adapter = new Memcache();
 $adapter->setOption('ttl', 3600);
 $cache = new Cache($adapter);
 

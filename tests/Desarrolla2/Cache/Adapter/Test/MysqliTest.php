@@ -14,16 +14,33 @@
 namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memory;
+use Desarrolla2\Cache\Adapter\Mysqli;
 
 /**
- * MemoryTest
+ * MysqliTest
  */
-class MemoryTest extends AbstractCacheTest
+class MysqliTest extends AbstractCacheTest
 {
     public function setUp()
     {
-        $this->cache = new Cache(new Memory());
+        parent::setup();
+        if (!extension_loaded('mysqli')) {
+            $this->markTestSkipped(
+                'The mysqli extension is not available.'
+            );
+        }
+
+        $this->cache = new Cache(
+            new Mysqli(
+                new \mysqli(
+                    $this->config['mysql']['host'],
+                    $this->config['mysql']['user'],
+                    $this->config['mysql']['password'],
+                    $this->config['mysql']['database'],
+                    $this->config['mysql']['port']
+                )
+            )
+        );
     }
 
     /**
@@ -33,7 +50,6 @@ class MemoryTest extends AbstractCacheTest
     {
         return [
             ['ttl', 100],
-            ['limit', 100],
         ];
     }
 
@@ -46,15 +62,5 @@ class MemoryTest extends AbstractCacheTest
             ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
             ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
         ];
-    }
-
-    public function testExceededLimit()
-    {
-        $limit = 1;
-        $this->cache->setOption('limit', $limit);
-        for ($i = 0; $i <= $limit; $i++) {
-            $this->cache->set($i, $i);
-        }
-        $this->assertFalse($this->cache->has($i));
     }
 }

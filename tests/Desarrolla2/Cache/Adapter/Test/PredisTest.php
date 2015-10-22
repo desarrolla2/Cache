@@ -14,19 +14,25 @@
 namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Redis;
+use Desarrolla2\Cache\Adapter\Predis;
 
 /**
- * RedisTest
+ * PredisTest
  */
-class RedisTest extends AbstractCacheTest
+class PredisTest extends AbstractCacheTest
 {
     public function setUp()
     {
         parent::setup();
+        if (!class_exists('\Predis\Client')) {
+            $this->markTestSkipped(
+                'The predis library is not available.'
+            );
+        }
         $this->cache = new Cache(
-            new Redis()
+            new Predis()
         );
+
     }
 
     /**
@@ -34,9 +40,9 @@ class RedisTest extends AbstractCacheTest
      */
     public function dataProviderForOptions()
     {
-        return array(
-            array('ttl', 100),
-        );
+        return [
+            ['ttl', 100],
+        ];
     }
 
     /**
@@ -44,9 +50,9 @@ class RedisTest extends AbstractCacheTest
      */
     public function dataProviderForOptionsException()
     {
-        return array(
-            array('ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'),
-            array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
-        );
+        return [
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+        ];
     }
 }

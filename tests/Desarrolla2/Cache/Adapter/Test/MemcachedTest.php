@@ -14,22 +14,24 @@
 namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mongo;
+use Desarrolla2\Cache\Adapter\Memcached;
 
 /**
- * MongoTest
+ * MemcachedTest
  */
-class MongoTest extends AbstractCacheTest
+class MemcachedTest extends AbstractCacheTest
 {
     public function setUp()
     {
         parent::setup();
-        if (!class_exists('Mongo')) {
+        if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
             $this->markTestSkipped(
-                'The Mongo extension is not available.'
+                'The Memcached extension is not available.'
             );
         }
-        $this->cache = new Cache(new Mongo($this->config['mongo']['dns']));
+
+        $adapter = new Memcached();
+        $this->cache = new Cache($adapter);
     }
 
     /**
@@ -37,9 +39,9 @@ class MongoTest extends AbstractCacheTest
      */
     public function dataProviderForOptionsException()
     {
-        return array(
-            array('ttl', 0, '\Desarrolla2\Cache\Exception\MongoCacheException'),
-            array('file', 100, '\Desarrolla2\Cache\Exception\MongoCacheException'),
-        );
+        return [
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+        ];
     }
 }

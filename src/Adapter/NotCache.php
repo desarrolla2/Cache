@@ -23,12 +23,12 @@ class NotCache extends AbstractAdapter
      *
      * @param string $key
      */
-    public function delete($key)
+    public function del($key)
     {
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function get($key)
     {
@@ -36,7 +36,7 @@ class NotCache extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function has($key)
     {
@@ -44,7 +44,7 @@ class NotCache extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function set($key, $value, $ttl = null)
     {
@@ -52,7 +52,7 @@ class NotCache extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function setOption($key, $value)
     {

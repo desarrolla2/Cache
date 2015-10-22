@@ -38,17 +38,17 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      *
      * @param string $key
      */
     public function delete($key)
     {
-        $this->getAdapter()->delete($key);
+        $this->getAdapter()->del($key);
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      *
      * @param string $key
      */
@@ -58,7 +58,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function getAdapter()
     {
@@ -70,7 +70,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      *
      * @param string $key
      */
@@ -80,7 +80,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      *
      * @param string $key
      * @param mixed  $value
@@ -92,7 +92,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      *
      * @param Adapter\AdapterInterface $adapter
      */
@@ -102,7 +102,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      *
      * @param  string $key
      * @param  string $value
@@ -114,7 +114,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function clearCache()
     {
@@ -122,7 +122,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function dropCache()
     {

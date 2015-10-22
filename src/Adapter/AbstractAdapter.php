@@ -31,12 +31,7 @@ abstract class AbstractAdapter implements AdapterInterface
     protected $prefix = '';
 
     /**
-     * @var bool
-     */
-    protected $serialize = true;
-
-    /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function setOption($key, $value)
     {
@@ -51,9 +46,6 @@ abstract class AbstractAdapter implements AdapterInterface
             case 'prefix':
                 $this->prefix = (string)$value;
                 break;
-            case 'serialize':
-                $this->serialize = (bool)$value;
-                break;
             default:
                 throw new CacheException('option not valid '.$key);
         }
@@ -62,7 +54,7 @@ abstract class AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function clearCache()
     {
@@ -70,7 +62,7 @@ abstract class AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function dropCache()
     {
@@ -78,78 +70,24 @@ abstract class AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function check()
     {
-        return true;
+        throw new CacheException('not ready yet');
     }
 
-    /**
-     *
-     * @param  string $key
-     *
-     * @return string
-     */
     protected function getKey($key)
     {
-        //return md5($key);
-        return $key;
+        return sprintf('%s%s', $this->prefix, $key);
     }
 
-    /**
-     * Builds the key according to the prefix and other options
-     *
-     * @param string key
-     *
-     * @return string
-     */
-    protected function buildKey($key)
-    {
-        return $this->prefix.$key;
-    }
-
-    /**
-     * Packages the data to be stored by the internal caching driver
-     * according to the options on the adapter.
-     *
-     * @param  mixed $data
-     *
-     * @return mixed
-     */
-    protected function packData($data)
-    {
-        if ($this->serialize) {
-            return serialize($data);
-        }
-
-        return $data;
-    }
-
-    /**
-     * Unpackages the data retrieved by the internal caching driver
-     * according to the options on the adapter. This will be the inverse
-     * of packData IF the options are set correctly.
-     *
-     * @param  mixed $data
-     *
-     * @return mixed
-     */
-    protected function unpackData($data)
-    {
-        if ($this->serialize) {
-            return unserialize($data);
-        }
-
-        return $data;
-    }
-
-    protected function serialize($value)
+    protected function pack($value)
     {
         return serialize($value);
     }
 
-    protected function unserialize($value)
+    protected function unPack($value)
     {
         return unserialize($value);
     }

@@ -13,8 +13,6 @@
 
 namespace Desarrolla2\Cache\Adapter\Test;
 
-use Symfony\Component\Yaml\Yaml;
-
 /**
  * AbstractCacheTest
  */
@@ -28,16 +26,16 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
 
     public function setup()
     {
-        $configurationFile = realpath(__DIR__.'/../../../../').'/config.yml';
+        $configurationFile = realpath(__DIR__.'/../../../../').'/config.json';
 
         if (!is_file($configurationFile)) {
             throw new \Exception(' Configuration file not found in "'.$configurationFile.'" ');
         }
-        $this->config = Yaml::parse(file_get_contents($configurationFile));
+        $this->config = json_decode(file_get_contents($configurationFile), true);
     }
 
     /**
@@ -45,11 +43,15 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function dataProvider()
     {
-        return array(
-            array('key1', 'value', 1),
-            array('key2', 'value', 100),
-            array('key3', 'value', null),
-        );
+        return [
+            ['key1', 'value1', 1],
+            ['key2', 'value2', 100],
+            ['key3', 'value3', null],
+            ['key4', true, null],
+            ['key5', false, null],
+            ['key6', [], null],
+            ['key7', new \DateTime(), null],
+        ];
     }
 
     /**
@@ -57,19 +59,20 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function dataProviderForOptions()
     {
-        return array(
-            array('ttl', 100),
-        );
+        return [
+            ['ttl', 100],
+        ];
     }
 
     /**
      *
      * @dataProvider dataProvider
+     *
      * @param string   $key
      * @param mixed    $value
      * @param int|null $ttl
      */
-    public function testHash($key, $value, $ttl)
+    public function testHas($key, $value, $ttl)
     {
         $this->assertNull($this->cache->delete($key));
         $this->assertFalse($this->cache->has($key));
@@ -80,6 +83,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     /**
      *
      * @dataProvider dataProvider
+     *
      * @param string   $key
      * @param mixed    $value
      * @param int|null $ttl
@@ -93,6 +97,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     /**
      *
      * @dataProvider dataProvider
+     *
      * @param string   $key
      * @param mixed    $value
      * @param int|null $ttl
@@ -106,6 +111,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataProviderForOptions
+     *
      * @param string $key
      * @param mixed  $value
      */
@@ -116,6 +122,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataProviderForOptionsException
+     *
      * @param string     $key
      * @param mixed      $value
      * @param \Exception $expectedException
@@ -128,11 +135,8 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testHasWithTtlExpired()
     {
-        $key = 'key1';
-        $value = 'value1';
-        $ttl = 1;
-        $this->cache->set($key, $value, $ttl);
-        sleep($ttl + 1);
-        $this->assertFalse($this->cache->has($key));
+        $this->cache->set('key1', 'value1', 1);
+        sleep(2);
+        $this->assertFalse($this->cache->has('key1'));
     }
 }

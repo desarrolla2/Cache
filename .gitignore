@@ -1,6 +1,6 @@
 /build
 /composer.lock
-/tests/config.yml
+/tests/config.json
 /vendor
 /.idea
 /TODO.md

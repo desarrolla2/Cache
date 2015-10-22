@@ -14,8 +14,8 @@
 require_once __DIR__.'/../bootstrap.php';
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Apc;
+use Desarrolla2\Cache\Adapter\Apcu;
 
-$cache = new Cache(new Apc());
+$cache = new Cache(new Apcu());
 
 require_once __DIR__.'/common.php';

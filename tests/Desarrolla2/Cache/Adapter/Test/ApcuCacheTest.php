@@ -14,22 +14,27 @@
 namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Apc;
+use Desarrolla2\Cache\Adapter\Apcu;
 
 /**
- * ApcCacheTest
+ * ApcuCacheTest
  */
-class ApcCacheTest extends AbstractCacheTest
+class ApcuCacheTest extends AbstractCacheTest
 {
     public function setUp()
     {
-        parent::setup();
-        if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
+        if (!extension_loaded('apcu')) {
             $this->markTestSkipped(
-                'The APC extension is not available.'
+                'The APCu extension is not available.'
             );
         }
-        $this->cache = new Cache(new Apc());
+        if (!ini_get('apc.enable_cli')) {
+            $this->markTestSkipped(
+                'You need to enable apc.enable_cli'
+            );
+        }
+
+        $this->cache = new Cache(new Apcu());
     }
 
     /**
@@ -37,9 +42,9 @@ class ApcCacheTest extends AbstractCacheTest
      */
     public function dataProviderForOptionsException()
     {
-        return array(
-            array('ttl', 0, '\Desarrolla2\Cache\Exception\ApcCacheException'),
-            array('file', 100, '\Desarrolla2\Cache\Exception\ApcCacheException'),
-        );
+        return [
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+        ];
     }
 }

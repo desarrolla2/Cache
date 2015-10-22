@@ -13,29 +13,30 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use \Memcached as BaseMemcached;
+use \Memcache as BaseMemcache;
 
 /**
- * Memcached
+ * Memcache
  */
-class Memcached extends AbstractAdapter
+class Memcache extends AbstractAdapter
 {
     /**
-     * @var BaseMemcached
+     *
+     * @var BaseMemcache
      */
     protected $server;
 
     /**
-     * @param BaseMemcached|null $server
+     * @param BaseMemCache|null $server
      */
-    public function __construct(BaseMemcached $server = null)
+    public function __construct(BaseMemcache $server = null)
     {
         if ($server) {
             $this->server = $server;
 
             return;
         }
-        $this->server = new BaseMemcached();
+        $this->server = new BaseMemcache();
         $this->server->addServer('localhost', 11211);
     }
 
@@ -81,6 +82,6 @@ class Memcached extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($this->getKey($key), $this->pack($value), time() + $ttl);
+        $this->server->set($this->getKey($key), $this->pack($value), false, time() + $ttl);
     }
 }
