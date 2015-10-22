@@ -37,7 +37,7 @@ class Memcached extends AbstractAdapter
      * @param mixed $data
      *
      */
-    public function __construct($data = null, $options = [])
+    public function __construct($data = null, $options = array())
     {
         if ($data instanceof BaseMemcached) {
             $this->adapter = $data;

@@ -13,7 +13,7 @@
 
 
 //build test data outside of timing loop
-$data = [];
+$data = array();
 for ($i = 1; $i <= 10000; $i++) {
     $data[$i] = md5($i);
 }
