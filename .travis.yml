@@ -1,6 +1,5 @@
 language: php
-
-sudo: required
+#sudo: false
 
 php:
     - 5.4
@@ -9,38 +8,39 @@ php:
     - 7.0
     - hhvm
 
+matrix:
+    allow_failures:
+        - php: hhvm
+
 services:
-  - mongodb
-  - redis-server
-  - memcached
+    - mongodb
+    - redis-server
+    - memcached
 
 notifications:
-  email:
-    - daniel.gonzalez@freelancemadrid.es
+    email:
+        - daniel.gonzalez@freelancemadrid.es
 
 before_script:
 
-  # Create Mysql Database
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS `cache`;'
-  - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
+    # Create Mysql Database
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS `cache`;'
+    - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
-  # Install apcu
-  - sudo apt-get install php5-apcu
+    # Install apcu
+    - sh -c "if [[ $TRAVIS_PHP_VERSION != 'hhvm' && `php-config --vernum` -ge 50500 ]] ; then pecl config-set preferred_state beta; printf "yes\n" | pecl install apcu ; else echo 'extension="apc.so"' >> ./tests/travis/php.ini ;fi"
+    - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then phpenv config-add ./tests/travis/php.ini; fi"
 
-  # Install dependencies
-  - composer self-update
-  - composer install
+    # Install dependencies
+    - composer self-update
+    - composer install
 
-  # Set Configuration
-  - cp tests/config.json.dist tests/config.json
-  - cp tests/travis/phpunit.xml phpunit.xml
+    # Set Configuration
+    - cp tests/config.json.dist tests/config.json
+    - cp tests/travis/phpunit.xml phpunit.xml
 
 script:
     - phpunit -c ./phpunit.xml -v
 
 after_script:
 #    - php vendor/bin/coveralls -v
-
-matrix:
-  allow_failures:
-    - php: hhvm
