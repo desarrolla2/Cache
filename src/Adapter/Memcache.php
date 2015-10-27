@@ -13,7 +13,7 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use \Memcache as BaseMemcache;
+use Memcache as BaseMemcache;
 
 /**
  * Memcache

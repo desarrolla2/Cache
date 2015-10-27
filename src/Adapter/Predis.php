@@ -39,7 +39,6 @@ class Predis extends AbstractAdapter
             return;
         }
         $this->predis = new Client();
-
     }
 
     public function __destruct()

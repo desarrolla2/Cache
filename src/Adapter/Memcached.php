@@ -13,7 +13,7 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use \Memcached as BaseMemcached;
+use Memcached as BaseMemcached;
 
 /**
  * Memcached

@@ -13,7 +13,7 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use \mysqli as Server;
+use mysqli as Server;
 
 /**
  * Mysqli
@@ -116,7 +116,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         if (!($ttl)) {
             $ttl = $this->ttl;
         }
-        $tTtl = (int)$ttl + time();
+        $tTtl = (int) $ttl + time();
         $this->query(
             sprintf(
                 'INSERT INTO %s (k, v, t) VALUES ("%s", "%s", %d)',
@@ -141,11 +141,10 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         return $this->escape(parent::pack($value));
     }
 
-
     /**
      *
-     * @param  string     $query
-     * @param  int|string $mode
+     * @param string     $query
+     * @param int|string $mode
      *
      * @return mixed
      */
@@ -161,8 +160,8 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  string     $query
-     * @param  int|string $mode
+     * @param string     $query
+     * @param int|string $mode
      *
      * @return mixed
      */
@@ -178,7 +177,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
 
     /**
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return string
      */

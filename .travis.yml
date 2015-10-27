@@ -35,7 +35,8 @@ before_script:
 
     # Install dependencies
     - composer self-update
-    - composer install
+    - composer require --dev "satooshi/php-coveralls:~0.6"
+    - mkdir -p build/logs
 
     # Set Configuration
     - cp tests/config.json.dist tests/config.json
@@ -45,4 +46,5 @@ script:
     - phpunit -c ./phpunit.xml -v
 
 after_script:
+    - ls
     - php vendor/bin/coveralls -v

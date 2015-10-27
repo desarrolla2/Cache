@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the Cache package.
  *
@@ -12,7 +13,6 @@
 
 namespace Desarrolla2\Cache\Adapter;
 
-use Desarrolla2\Cache\Exception\MemoryCacheException;
 
 /**
  * Memory
@@ -81,7 +81,7 @@ class Memory extends AbstractAdapter
         }
         $this->cache[$this->getKey($key)] = [
             'value' => serialize($value),
-            'ttl' => (int)$ttl + time(),
+            'ttl' => (int) $ttl + time(),
         ];
     }
 
@@ -92,7 +92,7 @@ class Memory extends AbstractAdapter
     {
         switch ($key) {
             case 'limit':
-                $value = (int)$value;
+                $value = (int) $value;
                 $this->limit = $value;
 
                 return true;

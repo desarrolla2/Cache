@@ -83,4 +83,18 @@
         </exec>
 
     </target>
+
+    <target name="cs" description="">
+        <parallel>
+            <exec executable="php-cs-fixer">
+                <arg line="fix src"/>
+            </exec>
+            <exec executable="php-formatter">
+                <arg line="formatter:header:fix src"/>
+            </exec>
+            <exec executable="php-formatter">
+                <arg line="formatter:use:sort src"/>
+            </exec>
+        </parallel>
+    </target>
 </project>

@@ -40,7 +40,7 @@ class File extends AbstractAdapter
             $cacheDir = realpath(sys_get_temp_dir()).'/cache';
         }
 
-        $this->cacheDir = (string)$cacheDir;
+        $this->cacheDir = (string) $cacheDir;
 
         $this->createCacheDirectory($cacheDir);
     }
@@ -83,7 +83,7 @@ class File extends AbstractAdapter
         $item = $this->pack(
             [
                 'value' => $value,
-                'ttl' => (int)$ttl + time(),
+                'ttl' => (int) $ttl + time(),
             ]
         );
         if (!file_put_contents($cacheFile, $item)) {
@@ -98,7 +98,7 @@ class File extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new CacheException('ttl cant be lower than 1');
                 }
@@ -123,7 +123,6 @@ class File extends AbstractAdapter
             throw new CacheException($path.' is not writable');
         }
     }
-
 
     protected function deleteFile($cacheFile)
     {

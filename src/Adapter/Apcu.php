@@ -62,7 +62,7 @@ class Apcu extends AbstractAdapter
             $this->pack(
                 [
                     'value' => $value,
-                    'ttl' => (int)$ttl + time(),
+                    'ttl' => (int) $ttl + time(),
                 ]
             ),
             $ttl
@@ -79,7 +79,7 @@ class Apcu extends AbstractAdapter
     {
         switch ($key) {
             case 'ttl':
-                $value = (int)$value;
+                $value = (int) $value;
                 if ($value < 1) {
                     throw new CacheException('ttl cant be lower than 1');
                 }
@@ -122,7 +122,6 @@ class Apcu extends AbstractAdapter
 
         return true;
     }
-
 
     protected function ttlHasExpired($ttl)
     {
