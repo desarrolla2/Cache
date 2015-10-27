@@ -236,15 +236,15 @@ You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
 
 [ico-version]: https://img.shields.io/packagist/v/desarrolla2/cache.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/desarrolla2/cache/master.svg?style=flat-square
-[ico-coveralls]: https://img.shields.io/coveralls/desarrolla2/cache/master.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/desarrolla2/Cache/master.svg?style=flat-square
+[ico-coveralls]: https://img.shields.io/coveralls/desarrolla2/Cache/master.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/desarrolla2/cache.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/desarrolla2/cache.svg?style=flat-square
 [ico-gitter]: https://img.shields.io/badge/GITTER-JOIN%20CHAT%20%E2%86%92-brightgreen.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/desarrolla2/cache
 [link-license]: http://hassankhan.mit-license.org
-[link-travis]: https://travis-ci.org/desarrolla2/cache
+[link-travis]: https://travis-ci.org/desarrolla2/Cache
 [link-coveralls]: https://coveralls.io/github/desarrolla2/Cache
 [link-code-quality]: https://scrutinizer-ci.com/g/desarrolla2/cache
 [link-downloads]: https://packagist.org/packages/desarrolla2/cache
