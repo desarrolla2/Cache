@@ -9,7 +9,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @author Daniel Gonz�lez <daniel@desarrolla2.com>
+ * @author Daniel González <daniel@desarrolla2.com>
  * @author Janos Vajda <janos.vajda@customerfocus.com>
  */
 
