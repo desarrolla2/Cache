@@ -146,6 +146,54 @@ $cache = new Cache($adapter);
 
 ```
 
+### Mongo
+
+Use it to store the cache in a Mongo database. Requires the
+[(legacy) mongo extension](http://php.net/mongo) or the
+[mongodb/mongodb](https://github.com/mongodb/mongo-php-library) library.
+
+You may pass either a database or collection object to the constructor. If a
+database object is passed, the `items` collection within that DB is used.
+
+``` php
+<?php
+
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Mongo;
+
+$client = new MongoClient($dsn);
+$database = $client->selectDatabase($dbname);
+
+$adapter = new Mongo($database);
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
+
+```
+
+``` php
+<?php
+
+use Desarrolla2\Cache\Cache;
+use Desarrolla2\Cache\Adapter\Mongo;
+
+$client = new MongoClient($dsn);
+$database = $client->selectDatabase($dbName);
+$collection = $database->selectCollection($collectionName);
+
+$adapter = new Mongo($collection);
+$adapter->setOption('ttl', 3600);
+$cache = new Cache($adapter);
+
+```
+
+_Note that expired cache items aren't automatically deleted. To keep your
+database clean, you should create a
+[ttl index](https://docs.mongodb.org/manual/core/index-ttl/)._
+
+
+```
+db.items.createIndex( { "ttl": 1 }, { expireAfterSeconds: 30 } )
+```
 
 ### Mysqli
 
