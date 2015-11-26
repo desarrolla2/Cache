@@ -21,28 +21,28 @@ use Desarrolla2\Cache\Exception\CacheException;
 class Mongo extends AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var string
+     * @var MongoCollection|MongoDB\Collection
      */
     protected $collection;
 
     /**
-     * @param MongoDB|MongoDB\Database                  $database   (may be omitted)
-     * @param MongoCollection|MongoDB\Collection|string $collection
+     * @param MongoDB|MongoDB\Database|MongoCollection|MongoDB\Collection  $backend
      */
-    public function __construct($database, $collection = 'items')
+    public function __construct($backend = null)
     {
-        if ($database instanceof \MongoCollection || $database instanceof \MongoDB\Collection) {
-            $collection = $database;
-            $database = null;
+        if (!isset($backend)) {
+            $client = class_exist('MongoCollection') ? new \MongoClient() : new \MongoDB\Client();
+            $backend = $client->selectDatabase('cache');
         }
-    
-        if ($collection instanceof \MongoCollection || $collection instanceof \MongoDB\Collection) {
-            $this->collection = $collection;
-        } elseif ($database instanceof \MongoDB || $database instanceof \MongoDB\Database) {
-            $this->collection = $database->selectCollection($collection);
+            
+        if ($backend instanceof \MongoCollection || $backend instanceof \MongoDB\Collection) {
+            $this->collection = $backend;
+        } elseif ($backend instanceof \MongoDB || $backend instanceof \MongoDB\Database) {
+            $this->collection = $backend->selectCollection('items');
         } else {
             $type = (is_object($database) ? get_class($database) . ' ' : '') . gettype($database);
-            throw new CacheException("Database should be a MongoDB or MongoDB\Database, not a $type");
+            throw new CacheException("Database should be a database (MongoDB or MongoDB\Database) or " .          
+                " collection (MongoCollection or MongoDB\Collection) object, not a $type");
         }
     }
 

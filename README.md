@@ -152,6 +152,9 @@ Use it to store the cache in a Mongo database. Requires the
 [(legacy) mongo extension](http://php.net/mongo) or the
 [mongodb/mongodb](https://github.com/mongodb/mongo-php-library) library.
 
+You may pass either a database or collection object to the constructor. If a
+database object is passed, the `items` collection within that DB is used.
+
 ``` php
 <?php
 
@@ -167,16 +170,6 @@ $cache = new Cache($adapter);
 
 ```
 
-By default the `items` collection is used. You specify a different collection
-as second argument of the constructor.
-
-```
-$adapter = new Mongo($database, $colname);
-$cache = new Cache($adapter);
-```
-
-Alternatively you may pass a collection object as single argument.
-
 ``` php
 <?php
 
@@ -184,8 +177,8 @@ use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Mongo;
 
 $client = new MongoClient($dsn);
-$database = $client->selectDatabase($dbname);
-$collection = $database->selectCollection($colname);
+$database = $client->selectDatabase($dbName);
+$collection = $database->selectCollection($collectionName);
 
 $adapter = new Mongo($collection);
 $adapter->setOption('ttl', 3600);
