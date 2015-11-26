@@ -7,7 +7,8 @@
     "port": "11211"
   },
   "mongo": {
-    "dns": "mongodb://localhost:27017"
+    "dsn": "mongodb://localhost:27017",
+    "database": "cache"
   },
   "mysql": {
     "user": "root",
