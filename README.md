@@ -270,6 +270,32 @@ $cache = new Cache($adapter);
 
 ```
 
+## Methods
+
+A `Desarrolla2\Cache\Cache` object has the following methods:
+
+##### `delete(string $key)`
+Delete a value from the cache
+
+##### `public function get(string $key)`
+Retrieve the value corresponding to a provided key
+
+##### `public function has($key)`
+Retrieve the if value corresponding to a provided key exist
+
+##### `set(string $key , mixed $value [, int $ttl])`
+Add a value to the cache under a unique key
+
+##### `setOption(string $key, string $value)`
+Set option for Adapter
+
+##### `clearCache()`
+Clean all expired records from cache
+
+##### `dropCache()`
+Clear all cache
+
+
 ## Coming soon
 
 This library implements other adapters as soon as possible, feel free to send 
