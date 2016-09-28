@@ -277,10 +277,10 @@ A `Desarrolla2\Cache\Cache` object has the following methods:
 ##### `delete(string $key)`
 Delete a value from the cache
 
-##### `public function get(string $key)`
+##### `get(string $key)`
 Retrieve the value corresponding to a provided key
 
-##### `public function has($key)`
+##### `has(string $key)`
 Retrieve the if value corresponding to a provided key exist
 
 ##### `set(string $key , mixed $value [, int $ttl])`
