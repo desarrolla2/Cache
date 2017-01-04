@@ -27,7 +27,7 @@ class Apc extends AbstractAdapter
     {
         $this->apcu = extension_loaded('apcu');
     }
-	
+
     /**
      * Delete a value from the cache
      *
@@ -118,6 +118,6 @@ class Apc extends AbstractAdapter
      */
     public function dropCache()
     {
-		    ($this->apcu ? apcu_clear_cache() : apc_clear_cache("user"));
+        ($this->apcu ? apcu_clear_cache() : apc_clear_cache("user"));
     }
 }
