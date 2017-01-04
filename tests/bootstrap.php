@@ -12,4 +12,4 @@
  */
 
 $loader = require_once __DIR__.'/../vendor/autoload.php';
-Ladybug\Loader::loadHelpers();
+//Ladybug\Loader::loadHelpers();
