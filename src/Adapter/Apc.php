@@ -68,7 +68,7 @@ class Apc extends AbstractAdapter
     {
         $tKey = $this->getKey($key);
 
-        if (function_exists("\apcu_exists") || function_exists("\apc_exists")) {
+        if (function_exists('\apcu_exists') || function_exists('\apc_exists')) {
             return (boolean) ($this->apcu ? \apcu_exists($tKey) : \apc_exists($tKey));
         } else {
             $result = false;
@@ -118,6 +118,6 @@ class Apc extends AbstractAdapter
      */
     public function dropCache()
     {
-		($this->apcu ? apcu_clear_cache("user") : apc_clear_cache("user"));
+		    ($this->apcu ? apcu_clear_cache() : apc_clear_cache("user"));
     }
 }
