@@ -25,7 +25,7 @@ class Apcu extends AbstractAdapter
      */
     public function del($key)
     {
-        apc_delete($this->getKey($key));
+        apcu_delete($this->getKey($key));
     }
 
     /**
@@ -57,7 +57,7 @@ class Apcu extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        if (!apc_store(
+        if (!apcu_store(
             $this->getKey($key),
             $this->pack(
                 [
@@ -94,7 +94,7 @@ class Apcu extends AbstractAdapter
 
     protected function getValueFromCache($key)
     {
-        $data = $this->unPack(apc_fetch($this->getKey($key)));
+        $data = $this->unPack(apcu_fetch($this->getKey($key)));
         if (!$this->validateDataFromCache($data, $key)) {
             $this->del($key);
 
