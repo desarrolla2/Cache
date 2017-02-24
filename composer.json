@@ -26,7 +26,7 @@
   },
   "require-dev": {
     "predis/predis": "*",
-    "phpunit/phpunit": "^5.7",
+    "phpunit/phpunit": "^4.8",
     "raulfraile/ladybug": "^1.0"
   },
   "autoload": {

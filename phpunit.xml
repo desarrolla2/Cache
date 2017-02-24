@@ -10,7 +10,7 @@
 
     <filter>
         <whitelist>
-            <directory>./Test</directory>
+            <directory>./src</directory>
         </whitelist>
         <blacklist>
             <directory>/usr/share/pear/</directory>
