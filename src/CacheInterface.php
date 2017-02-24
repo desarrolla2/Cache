@@ -35,7 +35,7 @@ interface CacheInterface
     /**
      *
      * @return \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
-     * @throws Exception
+     * @throws \Exception
      */
     public function getAdapter();
 

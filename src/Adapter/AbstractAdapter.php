@@ -66,7 +66,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function clearCache()
     {
-        throw new Exception('not ready yet');
+        throw new \Exception('not ready yet');
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function dropCache()
     {
-        throw new Exception('not ready yet');
+        throw new \Exception('not ready yet');
     }
 
     /**
@@ -91,7 +91,7 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * Builds the key according to the prefix and other options
      *
-     * @param string key
+     * @param string $key
      * @return string
      */
     protected function buildKey($key)

@@ -97,10 +97,10 @@ class File extends AbstractAdapter
             $ttl = $this->ttl;
         }
         $item = $this->serialize(
-            [
+            array(
                 'value' => $tValue,
                 'ttl' => (int)$ttl + time(),
-            ]
+            )
         );
         if (!file_put_contents($cacheFile, $item)) {
             throw new FileCacheException('Error saving data with the key "'.$key.'" to the cache file.');
@@ -132,7 +132,7 @@ class File extends AbstractAdapter
      */
     public function clearCache()
     {
-        throw new Exception('not ready yet');
+        throw new \Exception('not ready yet');
     }
 
     /**

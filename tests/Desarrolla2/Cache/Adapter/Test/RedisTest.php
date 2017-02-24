@@ -15,6 +15,7 @@ namespace Desarrolla2\Cache\Adapter\Test;
 
 use Desarrolla2\Cache\Cache;
 use Desarrolla2\Cache\Adapter\Redis;
+use Predis\Connection\ConnectionException;
 
 /**
  * RedisTest
@@ -24,6 +25,7 @@ class RedisTest extends AbstractCacheTest
     public function setUp()
     {
         parent::setup();
+
         $this->cache = new Cache(
             new Redis()
         );
@@ -49,4 +51,21 @@ class RedisTest extends AbstractCacheTest
             array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
         );
     }
+
+    /**
+     * Run a test.
+     *
+     * @return mixed
+     *
+     * @throws Exception|PHPUnit_Framework_Exception
+     * @throws PHPUnit_Framework_Exception
+     */
+    protected function runTest()
+    {
+        try {
+            parent::runTest();
+        } catch (ConnectionException $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
+   }
 }
