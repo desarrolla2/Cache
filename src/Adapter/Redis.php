@@ -70,7 +70,7 @@ class Redis extends AbstractAdapter
         $cmd = $this->client->createCommand('EXISTS');
         $cmd->setArguments(array($key));
 
-        return $this->client->executeCommand($cmd);
+        return (bool)$this->client->executeCommand($cmd);
     }
 
     /**
