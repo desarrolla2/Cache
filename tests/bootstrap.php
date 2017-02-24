@@ -13,3 +13,10 @@
 
 $loader = require_once __DIR__.'/../vendor/autoload.php';
 //Ladybug\Loader::loadHelpers();
+
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
+if (!file_exists(__DIR__ . '/config.yml')) {
+    copy(__DIR__ . '/config.yml.dist', __DIR__ . '/config.yml');
+}
+

@@ -25,12 +25,13 @@
     "php": ">=5.3.3"
   },
   "require-dev": {
-    "predis/predis": "*"
+    "predis/predis": "*",
+    "phpunit/phpunit": "^5.7",
+    "raulfraile/ladybug": "^1.0"
   },
   "autoload": {
     "psr-4": {
       "Desarrolla2\\Cache\\": "src/"
     }
-  },
-  "minimum-stability": "dev"
+  }
 }

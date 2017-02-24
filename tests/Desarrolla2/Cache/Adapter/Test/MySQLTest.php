@@ -21,6 +21,11 @@ use Desarrolla2\Cache\Adapter\MySQL;
  */
 class MySQLTest extends AbstractCacheTest
 {
+    public static function setUpBeforeClass()
+    {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    }
+
     public function setUp()
     {
         parent::setup();
@@ -29,15 +34,20 @@ class MySQLTest extends AbstractCacheTest
                 'The MySQLnd extension is not available.'
             );
         }
-        $this->cache = new Cache(
-            new MySQL(
+
+        try {
+            $adapter = new MySQL(
                 $this->config['mysql']['host'],
                 $this->config['mysql']['user'],
                 $this->config['mysql']['password'],
                 $this->config['mysql']['database'],
                 $this->config['mysql']['port']
-            )
-        );
+            );
+        } catch (\mysqli_sql_exception $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
+
+        $this->cache = new Cache($adapter);
     }
 
     /**
