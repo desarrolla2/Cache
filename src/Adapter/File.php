@@ -144,7 +144,7 @@ class File extends AbstractAdapter
 
     protected function getValueFromCache($key)
     {
-        $path = $this->getFileName($this->getKey($key));
+        $path = $this->getFileName($key);
 
         if (!file_exists($path)) {
             return;
