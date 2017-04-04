@@ -1,5 +1,7 @@
 # Cache [<img alt="SensioLabsInsight" src="https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88/small.png" align="right">](https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88)
 
+[![Join the chat at https://gitter.im/desarrolla2/Cache](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/desarrolla2/Cache?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A simple cache library. Implements different adapters that you can use and change 
 easily by a manager or similar.
 
