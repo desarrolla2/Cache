@@ -13,70 +13,25 @@
 
 namespace Desarrolla2\Cache;
 
+use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
+
 /**
  * CacheInterface
  */
-interface CacheInterface
+interface CacheInterface extends PsrCacheInterface
 {
     /**
-     * Delete a value from the cache
-     *
-     * @param string $key
-     */
-    public function delete($key);
-
-    /**
-     * Retrieve the value corresponding to a provided key
-     *
-     * @param string $key
-     */
-    public function get($key);
-
-    /**
-     *
-     * @return \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
-     * @throws Exception
-     */
-    public function getAdapter();
-
-    /**
-     * Retrieve the if value corresponding to a provided key exist
-     *
-     * @param string $key
-     */
-    public function has($key);
-
-    /**
-     * * Add a value to the cache under a unique key
-     *
-     * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
-     */
-    public function set($key, $value, $ttl = null);
-
-    /**
-     * Set Adapter interface
-     *
-     * @param \Desarrolla2\Cache\Adapter\AdapterInterface $adapter
-     */
-    public function setAdapter(\Desarrolla2\Cache\Adapter\AdapterInterface $adapter);
-
-    /**
-     * Set option for Adapter
+     * Set option for cache
      *
      * @param string $key
      * @param string $value
      */
     public function setOption($key, $value);
-
+    
     /**
-     * clean all expired records from cache
+     * Get option for cache
+     *
+     * @param string $key
      */
-    public function clearCache();
-
-    /**
-     * clear all cache
-     */
-    public function dropCache();
+    public function getOption($key);
 }

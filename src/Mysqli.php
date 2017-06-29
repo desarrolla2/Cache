@@ -28,7 +28,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
     /**
      * @var string
      */
-    protected $database = 'cache';
+    protected $table = 'cache';
 
     /**
      * @param Server|null $server
@@ -43,22 +43,16 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $this->server = new server();
     }
 
-    public function __destruct()
-    {
-        $this->server->close();
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $this->query(
             sprintf(
                 'DELETE FROM %s WHERE k = "%s" OR t < %d',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
-                $this->database,
                 time()
             )
         );
@@ -72,7 +66,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $res = $this->fetchObject(
             sprintf(
                 'SELECT v FROM %s WHERE k = "%s" AND t >= %d LIMIT 1;',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
                 time()
             )
@@ -92,7 +86,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $res = $this->fetchObject(
             sprintf(
                 'SELECT COUNT(*) AS n FROM %s WHERE k = "%s" AND t >= %d;',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
                 time()
             )
@@ -120,7 +114,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $this->query(
             sprintf(
                 'INSERT INTO %s (k, v, t) VALUES ("%s", "%s", %d)',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
                 $this->pack($value),
                 $tTtl

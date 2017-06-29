@@ -1,7 +1,6 @@
 # Cache [<img alt="SensioLabsInsight" src="https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88/small.png" align="right">](https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88)
 
-A simple cache library. Implements different adapters that you can use and change 
-easily by a manager or similar.
+A simple cache library, implementing the [PSR-16](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) standard.
 
 
 [![Latest version][ico-version]][link-packagist]
@@ -15,25 +14,13 @@ easily by a manager or similar.
 [![Today Downloads][ico-today-downloads]][link-downloads]
 [![Gitter][ico-gitter]][link-gitter]
 
+
 ## Installation
 
-### With Composer
-
-It is best installed it through [packagist](http://packagist.org/packages/desarrolla2/cache) 
-by including `desarrolla2/cache` in your project composer.json require:
-
-``` json
-    "require": {
-        // ...
-        "desarrolla2/cache":  "~2.0"
-    }
+```
+composer require desarrolla2/cache
 ```
 
-### Without Composer
-
-You can also download it from [Github] (https://github.com/desarrolla2/Cache), 
-but no autoloader is provided so you'll need to register it with your own PSR-0 
-compatible autoloader.
 
 ## Usage
 
@@ -41,10 +28,9 @@ compatible autoloader.
 ``` php
 <?php
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\NotCache;
+use Desarrolla2\Cache\NotCache;
 
-$cache = new Cache(new NotCache());
+$cache = new NotCache();
 
 $cache->set('key', 'myKeyValue', 3600);
 
@@ -54,54 +40,58 @@ echo $cache->get('key');
 
 ```
 
-## Adapters
+## Cache implementations
 
 ### Apcu
 
-Use it if you will you have APC cache available in your system.
+Use [APCu cache](http://php.net/manual/en/book.apcu.php) to cache to shared
+memory.
 
 ``` php
 <?php
     
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Apcu;
+use Desarrolla2\Cache\Apcu as ApcuCache;
 
-$adapter = new Apcu();
-$adapter->setOption('ttl', 3600);
-$cache = new Cache($adapter);
+$cache = new ApcuCache();
+$cache->setOption('ttl', 3600);
+$cache->setOption('pack-ttl', true);
 
 ```
+
+If the `pack-ttl` option is set to false, the cache will rely on APCu's TTL and
+not verify the TTL itself.
 
 ### File
 
-Use it if you will you have dont have other cache system available in your system
-or if you like to do your code more portable.
+Save the cache as file to on the filesystem
 
 ``` php
 <?php
     
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\File;
+use Desarrolla2\Cache\File as FileCache;
 
 $cacheDir = '/tmp';
-$adapter = new File($cacheDir);
-$adapter->setOption('ttl', 3600);
-$cache = new Cache($adapter);
+$cache = new FileCache($cacheDir);
+$cache->setOption('ttl', 3600);
+$cache->setOption('pack-ttl', true);
 
 ```
 
+If the `pack-ttl` option is set to false, the cache file will only contain the
+cached value. The TTL is written a file suffixed with `.ttl`.
+
+
 ### Memcache
 
-Use it if you will you have mencache available in your system.
+Store cache to [Memcached](https://memcached.org/). Memcached is a high
+performance distributed caching system.
 
 ``` php
 <?php
     
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memcache;
+use Desarrolla2\Cache\Memcache as MemcacheCache;
 
-$adapter = new Memcache();
-$cache = new Cache($adapter);
+$cache = new MemcacheCache();
 
 ```
 
@@ -111,38 +101,34 @@ You can config your connection before
 ``` php
 <?php
     
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memcache;    
+use Desarrolla2\Cache\Memcache as MemcacheCache;
 use \Memcache as Backend
 
 $backend = new Backend();
 // configure it here
 
-$cache = new Cache(new Memcache($backend));
+$cache = new MemcacheCache($backend))
 ```
 
 ### Memcached
 
-Is the same like mencache adapter.
+Is the same like memcache adapter.
 
 ### Memory
 
-This is the fastest cache type, since the elements are stored in memory. 
-Cache Memory such is very volatile and is removed when the process terminates.
-Also it is not shared between different processes.
+Store the cache in process memory. Cache Memory is removed when the PHP process
+exist. Also it is not shared between different processes.
 
 Memory cache have a option "limit", that limit the max items in cache.
 
 ``` php
 <?php
     
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memory;
+use Desarrolla2\Cache\Memory as MemoryCache;
 
-$adapter = new Memory();
-$adapter->setOption('ttl', 3600);
-$adapter->setOption('limit', 200);
-$cache = new Cache($adapter);
+$cache = new MemoryCache();
+$cache->setOption('ttl', 3600);
+$cache->setOption('limit', 200);
 
 ```
 
@@ -158,31 +144,27 @@ database object is passed, the `items` collection within that DB is used.
 ``` php
 <?php
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mongo;
+use Desarrolla2\Cache\Mongo as MongoCache;
 
 $client = new MongoClient($dsn);
 $database = $client->selectDatabase($dbname);
 
-$adapter = new Mongo($database);
-$adapter->setOption('ttl', 3600);
-$cache = new Cache($adapter);
+$cache = new MongoCache($database);
+$cache->setOption('ttl', 3600);
 
 ```
 
 ``` php
 <?php
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mongo;
+use Desarrolla2\Cache\Mongo as MongoCache;
 
 $client = new MongoClient($dsn);
 $database = $client->selectDatabase($dbName);
 $collection = $database->selectCollection($collectionName);
 
-$adapter = new Mongo($collection);
-$adapter->setOption('ttl', 3600);
-$cache = new Cache($adapter);
+$cache = new MongoCache($collection);
+$cache->setOption('ttl', 3600);
 
 ```
 
@@ -202,12 +184,10 @@ Use it if you will you have mysqlnd available in your system.
 ``` php
 <?php
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mysqli;
+use Desarrolla2\Cache\Mysqli as MysqliCache;
 
-$adapter = new Mysqli();
-$adapter->setOption('ttl', 3600);
-$cache = new Cache($adapter);
+$cache = new MysqliCache();
+$cache->setOption('ttl', 3600);
 
 ```
 
@@ -215,20 +195,36 @@ $cache = new Cache($adapter);
 ``` php
 <?php
     
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mysqli;    
-use \mysqli as Backend
+use Desarrolla2\Cache\Mysqli as MysqliCache;
 
-$backend = new Backend();
-// configure it here
+$backend = new mysqli($dsn);
+$cache = new MysqliCache($backend);
+```
 
-$cache = new Cache(new Mysqli($backend));
+_Note that expired cache items aren't automatically deleted. To keep your
+database clean, you should create a
+[scheduled event](https://dev.mysql.com/doc/refman/5.7/en/event-scheduler.html)._
+
+```
+CREATE EVENT `clean_cache` ON SCHEDULE 1 DAY 
+DO BEGIN
+    DELETE FROM `cache
+END;
 ```
 
 ### NotCache
 
-Use it if you will not implement any cache adapter is an adapter that will serve 
-to fool the test environments.
+Use it if you will not implement any cache adapter is an adapter that will
+serve to fool the test environments.
+
+``` php
+<?php
+
+use Desarrolla2\Cache\NotCache;
+
+$cache = new NotCache();
+
+```
 
 ### Predis
 
@@ -248,34 +244,29 @@ other version will have compatibility issues.
 ``` php
 <?php
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Predis;
+use Desarrolla2\Cache\Predis as PredisCache;
 
-$adapter = new Predis();
-$cache = new Cache($adapter);
-
+$cache = new PredisCache();
 ```
 
-If you need to configure your predis client, you will instantiate it and pass it to constructor.
+If you need to configure your predis client, you will instantiate it and pass
+it to constructor.
 
 ``` php
 <?php
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Predis;
-use Predis\Client as Backend
+use Desarrolla2\Cache\Predis as PredisCache;
+use Predis\Client as PredisClient;
 
-$adapter = new Predis(new Backend($options));
-$cache = new Cache($adapter);
+$backend = new PredisClient($options);
+$cache = new PredisCache($backend);
 
 ```
 
 ## Methods
 
-A `Desarrolla2\Cache\Cache` object has the following methods:
-
-##### `delete(string $key)`
-Delete a value from the cache
+The `Desarrolla2\Cache\CacheInterface` extends `Psr\SimpleCache\CacheInterface`
+and defines the following methods:
 
 ##### `get(string $key)`
 Retrieve the value corresponding to a provided key
@@ -283,33 +274,61 @@ Retrieve the value corresponding to a provided key
 ##### `has(string $key)`
 Retrieve the if value corresponding to a provided key exist
 
-##### `set(string $key , mixed $value [, int $ttl])`
+##### `set(string $key, mixed $value [, int $ttl])`
 Add a value to the cache under a unique key
 
-##### `setOption(string $key, string $value)`
-Set option for Adapter
+##### `delete(string $key)`
+Delete a value from the cache
 
-##### `clearCache()`
-Clean all expired records from cache
-
-##### `dropCache()`
+##### `clear()`
 Clear all cache
 
+##### `getMultiple(array $keys)`
+Obtains multiple cache items by their unique keys
 
-## Coming soon
+##### `setMultiple(array $values [, int $ttl])`
+Persists a set of key => value pairs in the cache
 
-This library implements other adapters as soon as possible, feel free to send 
-new adapters if you think it appropriate.
+##### `deleteMultiple(array $keys)`
+Deletes multiple cache items in a single operation
 
-This can be a list of pending tasks.
+##### `setOption(string $key, string $value)`
+Set option for Adapter _(Not in PSR-16)_
 
-* Cleaning cache
-* MemcachedAdapter
-* Other Adapters
+##### `getOption(string $key)`
+Get an option for Adapter _(Not in PSR-16)_
+
+
+## Packers
+
+Cache objects typically hold a `Desarrolla2\Cache\Packer\PackerInterface`
+object. By default, packing is done using `serialize` and `unserialize`.
+
+Available packers are:
+
+* `JsonPacker` using `json_encode` and `json_decode`
+* `NopPacker` does no packing
+* `SerializePacker` using `serialize` and `unserialize`
+* `PhpPacker` uses `var_export` and `include`/`eval`
+
+#### PSR-16 incompatible packers
+
+The `JsonPacker` does not fully comply with PSR-16, as packing and
+unpacking an object will probably not result in an object of the same class.
+
+The `NopPacker` is intended when caching string data only (like HTML output) or
+if the caching backend supports structured data. Using it when storing objects
+will likely yield unexpected results.
+
 
 ## Contact
 
 You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
+
+## Contributors
+
+[![Daniel González](https://avatars1.githubusercontent.com/u/661529?v=3&s=80)](https://github.com/desarrolla2)
+[![Arnold Daniels](https://avatars3.githubusercontent.com/u/100821?v=3&s=80)](https://github.com/jasny)
 
 [ico-version]: https://img.shields.io/packagist/v/desarrolla2/Cache.svg?style=flat-square
 [ico-pre-release]: https://img.shields.io/packagist/vpre/desarrolla2/Cache.svg?style=flat-square
