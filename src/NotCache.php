@@ -11,13 +11,17 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
+
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * NotCache
  */
-class NotCache extends AbstractAdapter
+class NotCache extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * Delete a value from the cache
      *
@@ -30,7 +34,7 @@ class NotCache extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $dafault = null)
     {
         return false;
     }

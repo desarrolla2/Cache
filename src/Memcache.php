@@ -11,15 +11,20 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
 
+namespace Desarrolla2\Cache;
+
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Memcache as BaseMemcache;
 
 /**
  * Memcache
  */
-class Memcache extends AbstractAdapter
+class Memcache extends AbstractCache
 {
+    use PackTtlTrait;
+    
     /**
      *
      * @var BaseMemcache
@@ -51,11 +56,11 @@ class Memcache extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $data = $this->server->get($this->getKey($key));
         if (!$data) {
-            return;
+            return $default;
         }
 
         return $this->unPack($data);

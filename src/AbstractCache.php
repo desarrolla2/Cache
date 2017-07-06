@@ -57,7 +57,7 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    protected function getOption($key)
+    public function getOption($key)
     {
         $method = "get" . str_replace('-', '', $key) . "Option";
         

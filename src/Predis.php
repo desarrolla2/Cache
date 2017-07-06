@@ -11,15 +11,18 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Predis\Client;
 
 /**
  * Predis
  */
-class Predis extends AbstractAdapter
+class Predis extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var Client
      */
@@ -60,7 +63,7 @@ class Predis extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         return $this->unPack($this->predis->get($key));
     }

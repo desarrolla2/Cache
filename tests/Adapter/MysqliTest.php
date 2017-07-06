@@ -11,10 +11,9 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mysqli;
+use Desarrolla2\Cache\Mysqli as MysqliCache;
 
 /**
  * MysqliTest
@@ -30,16 +29,15 @@ class MysqliTest extends AbstractCacheTest
             );
         }
 
-        $this->cache = new Cache(
-            new Mysqli(
-                new \mysqli(
-                    $this->config['mysql']['host'],
-                    $this->config['mysql']['user'],
-                    $this->config['mysql']['password'],
-                    $this->config['mysql']['database'],
-                    $this->config['mysql']['port']
-                )
+        $this->cache = new MysqliCache(
+            new \mysqli(
+                $this->config['mysql']['host'],
+                $this->config['mysql']['user'],
+                $this->config['mysql']['password'],
+                $this->config['mysql']['database'],
+                $this->config['mysql']['port']
             )
+            
         );
     }
 

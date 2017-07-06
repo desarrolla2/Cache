@@ -11,10 +11,9 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memory;
+use Desarrolla2\Cache\Memory as MemoryCache;
 
 /**
  * MemoryTest
@@ -23,7 +22,7 @@ class MemoryTest extends AbstractCacheTest
 {
     public function setUp()
     {
-        $this->cache = new Cache(new Memory());
+        $this->cache = new MemoryCache();
     }
 
     /**

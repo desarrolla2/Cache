@@ -11,15 +11,17 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * Mongo
  */
-class Mongo extends AbstractAdapter implements AdapterInterface
+class Mongo extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var MongoCollection|MongoDB\Collection
      */

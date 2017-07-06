@@ -11,16 +11,16 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Predis;
+use Desarrolla2\Cache\Predis as PredisCache;
 
 /**
  * PredisTest
  */
 class PredisTest extends AbstractCacheTest
 {
+
     public function setUp()
     {
         parent::setup();
@@ -29,9 +29,7 @@ class PredisTest extends AbstractCacheTest
                 'The predis library is not available.'
             );
         }
-        $this->cache = new Cache(
-            new Predis()
-        );
+        $this->cache = new PredisCache();
 
     }
 

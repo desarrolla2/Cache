@@ -11,15 +11,18 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use mysqli as Server;
 
 /**
  * Mysqli
  */
-class Mysqli extends AbstractAdapter implements AdapterInterface
+class Mysqli extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var \mysqli
      */
@@ -61,7 +64,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $res = $this->fetchObject(
             sprintf(
@@ -75,7 +78,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
             return $this->unPack($res->v);
         }
 
-        return false;
+        return $default;
     }
 
     /**

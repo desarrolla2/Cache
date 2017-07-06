@@ -13,10 +13,8 @@
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractCache;
 use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
-use Desarrolla2\Cache\PackTtlTrait;
 
 /**
  * Apcu
@@ -24,7 +22,6 @@ use Desarrolla2\Cache\PackTtlTrait;
 class Apcu extends AbstractCache
 {
     use PackTtlTrait;
-    
 
     /**
      * Set the `pack-ttl` setting; Include TTL in the packed data.
@@ -58,9 +55,9 @@ class Apcu extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
-        return $this->getValueFromCache($key);
+        return $this->getValueFromCache($key, $default);
     }
 
     /**
@@ -109,19 +106,19 @@ class Apcu extends AbstractCache
      * @param string $key
      * @return mixed|null
      */
-    protected function getValueFromCache($key)
+    protected function getValueFromCache($key, $default = null)
     {
         $packed = apcu_fetch($this->getKey($key), $success);
         
         if (!$success) {
-            return null;
+            return $default;
         }
         
         try {
             $value = $this->unpack($packed);
         } catch (UnexpectedValueException $e) {
             $this->delete($key);
-            return null;
+            return $default;
         }
         
         return $data['value'];

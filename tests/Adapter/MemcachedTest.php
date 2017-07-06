@@ -11,10 +11,10 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memcached;
+use Desarrolla2\Cache\Memcached as MemcachedCache;
+use Memcached as BaseMemcached;
 
 /**
  * MemcachedTest
@@ -30,8 +30,8 @@ class MemcachedTest extends AbstractCacheTest
             );
         }
 
-        $adapter = new Memcached();
-        $this->cache = new Cache($adapter);
+        $adapter = new BaseMemcached();
+        $this->cache = new MemcachedCache($adapter);
     }
 
     /**

@@ -11,10 +11,9 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\File;
+use Desarrolla2\Cache\File as FileCache;
 
 /**
  * FileTest
@@ -24,7 +23,7 @@ class FileTest extends AbstractCacheTest
     public function setUp()
     {
         parent::setup();
-        $this->cache = new Cache(new File($this->config['file']['dir']));
+        $this->cache = new FileCache($this->config['file']['dir']);
     }
 
     /**

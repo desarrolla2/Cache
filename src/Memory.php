@@ -11,13 +11,17 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
+
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * Memory
  */
-class Memory extends AbstractAdapter
+class Memory extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var int
      */
@@ -39,7 +43,7 @@ class Memory extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
