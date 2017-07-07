@@ -52,6 +52,7 @@ abstract class AbstractCache implements CacheInterface
         }
         
         $this->$method($value);
+        return true;
     }
     
     /**

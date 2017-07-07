@@ -113,14 +113,15 @@ class Apcu extends AbstractCache
         if (!$success) {
             return $default;
         }
-        
+        var_dump($packed);
         try {
             $value = $this->unpack($packed);
         } catch (UnexpectedValueException $e) {
+            var_dump('cached exeption');
             $this->delete($key);
             return $default;
         }
-        
-        return $data['value'];
+
+        return $value;
     }
 }
