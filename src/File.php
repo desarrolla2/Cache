@@ -51,7 +51,7 @@ class File extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $tKey = $this->getKey($key);
         $cacheFile = $this->getFileName($tKey);
@@ -83,12 +83,9 @@ class File extends AbstractCache
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $item = $this->pack(
-            [
-                'value' => $value,
-                'ttl' => (int) $ttl + time(),
-            ]
-        );
+
+        $item = $this->pack($value, $ttl);
+
         if (!file_put_contents($cacheFile, $item)) {
             throw new CacheException(sprintf('Error saving data with the key "%s" to the cache file.', $key));
         }
@@ -152,13 +149,13 @@ class File extends AbstractCache
         if (!file_exists($path)) {
             return $default;
         }
-
-        $data = $this->unPack(file_get_contents($path));
-        if (!$data || !$this->validateDataFromCache($data) || $this->ttlHasExpired($data['ttl'])) {
+        try {
+            $data = $this->unPack(file_get_contents($path));
+        } catch( Exception $e ){
             return $default;
         }
-
-        return $data['value'];
+        
+        return $data;
     }
 
     protected function validateDataFromCache($data)

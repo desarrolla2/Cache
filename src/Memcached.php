@@ -46,7 +46,7 @@ class Memcached extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $this->server->delete($this->getKey($key));
     }
@@ -85,6 +85,6 @@ class Memcached extends AbstractCache
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($this->getKey($key), $this->pack($value), time() + $ttl);
+        $this->server->set($this->getKey($key), $this->pack($value, $ttl), false, time() + $ttl);
     }
 }

@@ -52,7 +52,7 @@ class Predis extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $cmd = $this->predis->createCommand('DEL');
         $cmd->setArguments([$key]);
@@ -84,10 +84,10 @@ class Predis extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->predis->set($key, $this->pack($value));
         if (!$ttl) {
             $ttl = $this->ttl;
         }
+        $this->predis->set($key, $this->pack($value, $ttl));
         $cmd = $this->predis->createCommand('EXPIRE');
         $cmd->setArguments([$key, $ttl]);
         $this->predis->executeCommand($cmd);

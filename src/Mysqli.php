@@ -22,7 +22,9 @@ use mysqli as Server;
  */
 class Mysqli extends AbstractCache
 {
-    use PackTtlTrait;
+    use PackTtlTrait {
+        pack as protected traitpack;
+    }
     /**
      * @var \mysqli
      */
@@ -31,7 +33,7 @@ class Mysqli extends AbstractCache
     /**
      * @var string
      */
-    protected $table = 'cache';
+    protected $table  = 'cache';
 
     /**
      * @param Server|null $server
@@ -109,7 +111,7 @@ class Mysqli extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->del($key);
+        $this->delete($key);
         if (!($ttl)) {
             $ttl = $this->ttl;
         }
@@ -135,7 +137,7 @@ class Mysqli extends AbstractCache
 
     protected function pack($value)
     {
-        return $this->escape(parent::pack($value));
+        return $this->escape($this->traitpack($value, false));
     }
 
     /**

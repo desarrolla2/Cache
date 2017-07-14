@@ -31,6 +31,7 @@ class MemcachedTest extends AbstractCacheTest
         }
 
         $adapter = new BaseMemcached();
+        $adapter->addServer($this->config['memcached']['host'], $this->config['memcached']['port']);
         $this->cache = new MemcachedCache($adapter);
     }
 
@@ -40,8 +41,8 @@ class MemcachedTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
         ];
     }
 }

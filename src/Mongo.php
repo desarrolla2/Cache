@@ -32,6 +32,7 @@ class Mongo extends AbstractCache
      */
     public function __construct($backend = null)
     {
+        $this->packTtl = false;
         if (!isset($backend)) {
             $client = class_exist('MongoCollection') ? new \MongoClient() : new \MongoDB\Client();
             $backend = $client->selectDatabase('cache');
@@ -51,7 +52,7 @@ class Mongo extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $tKey = $this->getKey($key);
         $this->collection->remove(array('_id' => $tKey));
@@ -60,7 +61,7 @@ class Mongo extends AbstractCache
     /**
      * {@inheritdoc }
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $tKey = $this->getKey($key);
         $tNow = $this->getTtl();
@@ -69,7 +70,7 @@ class Mongo extends AbstractCache
             return $this->unPack($data['value']);
         }
 
-        return false;
+        return $default;
     }
 
     /**
@@ -88,10 +89,10 @@ class Mongo extends AbstractCache
     public function set($key, $value, $ttl = null)
     {
         $tKey = $this->getKey($key);
-        $tValue = $this->pack($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
+        $tValue = $this->pack($value, $ttl);
         $item = array(
             '_id' => $tKey,
             'value' => $tValue,

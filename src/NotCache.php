@@ -27,7 +27,7 @@ class NotCache extends AbstractCache
      *
      * @param string $key
      */
-    public function del($key)
+    public function delete($key)
     {
     }
 

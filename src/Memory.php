@@ -35,7 +35,7 @@ class Memory extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         unset($this->cache[$this->getKey($key)]);
     }
@@ -48,7 +48,7 @@ class Memory extends AbstractCache
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
 
-            return $this->unPack($this->cache[$tKey]['value']);
+            return $this->unPack($this->cache[$tKey]);
         }
 
         return false;
@@ -61,13 +61,10 @@ class Memory extends AbstractCache
     {
         $tKey = $this->getKey($key);
         if (isset($this->cache[$tKey])) {
-            $data = $this->cache[$tKey];
-            if (time() < $data['ttl']) {
-                return true;
-            }
-            $this->del($key);
+            return true;
         }
-
+        
+        $this->delete($key);
         return false;
     }
 
@@ -82,10 +79,7 @@ class Memory extends AbstractCache
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->cache[$this->getKey($key)] = [
-            'value' => serialize($value),
-            'ttl' => (int) $ttl + time(),
-        ];
+        $this->cache[$this->getKey($key)] = $this->pack($value, $ttl);
     }
 
     /**

@@ -36,4 +36,13 @@ class FileTest extends AbstractCacheTest
             array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
         );
     }
+
+    /**
+     * Remove all temp dir with cache files
+     */
+    public function tearDown() 
+    {
+        array_map('unlink', glob($this->config['file']['dir']."/*.*"));
+        rmdir($this->config['file']['dir']);
+    }
 }

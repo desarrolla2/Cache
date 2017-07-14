@@ -55,7 +55,7 @@ class NoCacheTest extends \PHPUnit_Framework_TestCase
     public function testGet()
     {
         $this->cache->set('key', 'value');
-        $this->assertFalse($this->cache->get('key'));
+        $this->assertFalse($this->cache->get('key', false));
     }
 
     /**
@@ -63,7 +63,7 @@ class NoCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testSet()
     {
-        $this->assertNull($this->cache->set('key', 'value'));
+        $this->assertFalse($this->cache->set('key', 'value'));
     }
 
     /**
