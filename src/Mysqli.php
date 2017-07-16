@@ -11,15 +11,22 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use mysqli as Server;
 
 /**
  * Mysqli
  */
-class Mysqli extends AbstractAdapter implements AdapterInterface
+class Mysqli extends AbstractCache
 {
+    use PackTtlTrait {
+        pack as protected traitpack;
+    }
     /**
      * @var \mysqli
      */
@@ -28,7 +35,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
     /**
      * @var string
      */
-    protected $database = 'cache';
+    protected $table  = 'cache';
 
     /**
      * @param Server|null $server
@@ -43,22 +50,16 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $this->server = new server();
     }
 
-    public function __destruct()
-    {
-        $this->server->close();
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $this->query(
             sprintf(
                 'DELETE FROM %s WHERE k = "%s" OR t < %d',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
-                $this->database,
                 time()
             )
         );
@@ -67,12 +68,12 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $res = $this->fetchObject(
             sprintf(
                 'SELECT v FROM %s WHERE k = "%s" AND t >= %d LIMIT 1;',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
                 time()
             )
@@ -81,7 +82,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
             return $this->unPack($res->v);
         }
 
-        return false;
+        return $default;
     }
 
     /**
@@ -92,7 +93,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $res = $this->fetchObject(
             sprintf(
                 'SELECT COUNT(*) AS n FROM %s WHERE k = "%s" AND t >= %d;',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
                 time()
             )
@@ -112,7 +113,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->del($key);
+        $this->delete($key);
         if (!($ttl)) {
             $ttl = $this->ttl;
         }
@@ -120,7 +121,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
         $this->query(
             sprintf(
                 'INSERT INTO %s (k, v, t) VALUES ("%s", "%s", %d)',
-                $this->database,
+                $this->table,
                 $this->getKey($key),
                 $this->pack($value),
                 $tTtl
@@ -138,7 +139,7 @@ class Mysqli extends AbstractAdapter implements AdapterInterface
 
     protected function pack($value)
     {
-        return $this->escape(parent::pack($value));
+        return $this->escape($this->traitpack($value, false));
     }
 
     /**

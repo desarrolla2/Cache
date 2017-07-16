@@ -17,8 +17,9 @@ namespace Desarrolla2\Cache\Exception;
 use Psr\SimpleCache\CacheException as PsrCacheException;
 
 /**
- * Interface used for all types of exceptions thrown by the implementing library.
+ * Exception for unexpected values when reading from cache.
  */
-class CacheException extends \RuntimeException implements PsrCacheException
+class CacheExpiredException extends \Exception implements PsrCacheException
 {
+    var $code = E_USER_NOTICE;
 }

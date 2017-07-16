@@ -11,10 +11,9 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\File;
+use Desarrolla2\Cache\File as FileCache;
 
 /**
  * FileTest
@@ -24,7 +23,7 @@ class FileTest extends AbstractCacheTest
     public function setUp()
     {
         parent::setup();
-        $this->cache = new Cache(new File($this->config['file']['dir']));
+        $this->cache = new FileCache($this->config['file']['dir']);
     }
 
     /**
@@ -36,5 +35,14 @@ class FileTest extends AbstractCacheTest
             array('ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'),
             array('file', 100, '\Desarrolla2\Cache\Exception\CacheException'),
         );
+    }
+
+    /**
+     * Remove all temp dir with cache files
+     */
+    public function tearDown() 
+    {
+        array_map('unlink', glob($this->config['file']['dir']."/*.*"));
+        rmdir($this->config['file']['dir']);
     }
 }

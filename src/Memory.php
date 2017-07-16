@@ -11,13 +11,19 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
+
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * Memory
  */
-class Memory extends AbstractAdapter
+class Memory extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var int
      */
@@ -31,7 +37,7 @@ class Memory extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         unset($this->cache[$this->getKey($key)]);
     }
@@ -39,12 +45,12 @@ class Memory extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         if ($this->has($key)) {
             $tKey = $this->getKey($key);
 
-            return $this->unPack($this->cache[$tKey]['value']);
+            return $this->unPack($this->cache[$tKey]);
         }
 
         return false;
@@ -57,13 +63,17 @@ class Memory extends AbstractAdapter
     {
         $tKey = $this->getKey($key);
         if (isset($this->cache[$tKey])) {
-            $data = $this->cache[$tKey];
-            if (time() < $data['ttl']) {
-                return true;
+            try {
+                $this->unPack($this->cache[$tKey]);
+            } catch( UnexpectedValueException $e ){
+                return false;
+            }  catch( CacheExpiredException $e ){
+                return false;
             }
-            $this->del($key);
+            return true;
         }
-
+        
+        $this->delete($key);
         return false;
     }
 
@@ -78,10 +88,7 @@ class Memory extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->cache[$this->getKey($key)] = [
-            'value' => serialize($value),
-            'ttl' => (int) $ttl + time(),
-        ];
+        $this->cache[$this->getKey($key)] = $this->pack($value, $ttl);
     }
 
     /**

@@ -11,15 +11,20 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Predis\Client;
 
 /**
  * Predis
  */
-class Predis extends AbstractAdapter
+class Predis extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var Client
      */
@@ -49,7 +54,7 @@ class Predis extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $cmd = $this->predis->createCommand('DEL');
         $cmd->setArguments([$key]);
@@ -60,9 +65,18 @@ class Predis extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
-        return $this->unPack($this->predis->get($key));
+
+        try {
+            $data = $this->unpack($this->predis->get($key));
+        } catch( UnexpectedValueException $e ){
+            return $default;
+        }  catch( CacheExpiredException $e ){
+            return $default;
+        }
+
+        return $data;
     }
 
     /**
@@ -81,10 +95,10 @@ class Predis extends AbstractAdapter
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->predis->set($key, $this->pack($value));
         if (!$ttl) {
             $ttl = $this->ttl;
         }
+        $this->predis->set($key, $this->pack($value, $ttl));
         $cmd = $this->predis->createCommand('EXPIRE');
         $cmd->setArguments([$key, $ttl]);
         $this->predis->executeCommand($cmd);

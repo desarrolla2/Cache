@@ -11,10 +11,9 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Mongo;
+use Desarrolla2\Cache\Mongo as MongoCache;
 
 /**
  * MongoTest
@@ -33,9 +32,7 @@ class MongoTest extends AbstractCacheTest
         $client = new \MongoClient($this->config['mongo']['dsn']);
         $database = $client->selectDB($this->config['mongo']['database']);
 
-        $this->cache = new Cache(
-            new Mongo($database)
-        );
+        $this->cache = new MongoCache($database);
     }
 
     /**
@@ -54,8 +51,8 @@ class MongoTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
         ];
     }
 }

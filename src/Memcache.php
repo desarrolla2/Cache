@@ -11,38 +11,46 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
 
-use Memcached as BaseMemcached;
+namespace Desarrolla2\Cache;
+
+use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Memcache as BaseMemcache;
 
 /**
- * Memcached
+ * Memcache
  */
-class Memcached extends AbstractAdapter
+class Memcache extends AbstractCache
 {
+    use PackTtlTrait;
+    
     /**
-     * @var BaseMemcached
+     *
+     * @var BaseMemcache
      */
     protected $server;
 
     /**
-     * @param BaseMemcached|null $server
+     * @param BaseMemCache|null $server
      */
-    public function __construct(BaseMemcached $server = null)
+    public function __construct(BaseMemcache $server = null)
     {
         if ($server) {
             $this->server = $server;
 
             return;
         }
-        $this->server = new BaseMemcached();
+        $this->server = new BaseMemcache();
         $this->server->addServer('localhost', 11211);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $this->server->delete($this->getKey($key));
     }
@@ -50,11 +58,11 @@ class Memcached extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $data = $this->server->get($this->getKey($key));
         if (!$data) {
-            return;
+            return $default;
         }
 
         return $this->unPack($data);
@@ -81,6 +89,6 @@ class Memcached extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $this->server->set($this->getKey($key), $this->pack($value), time() + $ttl);
+        $this->server->set($this->getKey($key), $this->pack($value, $ttl), false, time() + $ttl);
     }
 }

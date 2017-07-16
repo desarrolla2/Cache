@@ -14,11 +14,11 @@
 
 namespace Desarrolla2\Cache\Exception;
 
-use Psr\SimpleCache\CacheException as PsrCacheException;
+use Psr\SimpleCache\InvalidArgumentException as PsrInvalidArgumentException;
 
 /**
- * Interface used for all types of exceptions thrown by the implementing library.
+ * Exception for invalid cache arguments.
  */
-class CacheException extends \RuntimeException implements PsrCacheException
+class InvalidArgumentException extends \InvalidArgumentException implements PsrInvalidArgumentException
 {
 }

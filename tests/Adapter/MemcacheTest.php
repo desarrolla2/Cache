@@ -11,10 +11,10 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Memcache;
+use Desarrolla2\Cache\Memcache as MemcacheCache;
+use Memcache as BaseMemcache;
 
 /**
  * MemcacheTest
@@ -30,8 +30,15 @@ class MemcacheTest extends AbstractCacheTest
             );
         }
 
-        $adapter = new Memcache();
-        $this->cache = new Cache($adapter);
+        $adapter = new BaseMemcache();
+        $adapter->addServer($this->config['memcache']['host'], $this->config['memcache']['port']);
+        if( !$adapter->getstats()) {
+           $this->markTestSkipped(
+                'The Memcache server not started.'
+            );   
+        }
+        
+        $this->cache = new MemcacheCache($adapter);
     }
 
     /**
@@ -40,8 +47,8 @@ class MemcacheTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
         ];
     }
 }

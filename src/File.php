@@ -11,15 +11,20 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * File
  */
-class File extends AbstractAdapter
+class File extends AbstractCache
 {
+    use PackTtlTrait;
+    
     const CACHE_FILE_PREFIX = '__';
 
     const CACHE_FILE_SUBFIX = '.php.cache';
@@ -48,7 +53,7 @@ class File extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $tKey = $this->getKey($key);
         $cacheFile = $this->getFileName($tKey);
@@ -58,9 +63,9 @@ class File extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
-        return $this->getValueFromCache($key);
+        return $this->getValueFromCache($key, $default);
     }
 
     /**
@@ -80,12 +85,9 @@ class File extends AbstractAdapter
         if (!$ttl) {
             $ttl = $this->ttl;
         }
-        $item = $this->pack(
-            [
-                'value' => $value,
-                'ttl' => (int) $ttl + time(),
-            ]
-        );
+
+        $item = $this->pack($value, $ttl);
+
         if (!file_put_contents($cacheFile, $item)) {
             throw new CacheException(sprintf('Error saving data with the key "%s" to the cache file.', $key));
         }
@@ -142,20 +144,22 @@ class File extends AbstractAdapter
         self::CACHE_FILE_SUBFIX;
     }
 
-    protected function getValueFromCache($key)
+    protected function getValueFromCache($key, $default = null)
     {
         $path = $this->getFileName($key);
 
         if (!file_exists($path)) {
-            return;
+            return $default;
         }
-
-        $data = $this->unPack(file_get_contents($path));
-        if (!$data || !$this->validateDataFromCache($data) || $this->ttlHasExpired($data['ttl'])) {
-            return;
+        try {
+            $data = $this->unPack(file_get_contents($path));
+        } catch( UnexpectedValueException $e ){
+            return $default;
+        }  catch( CacheExpiredException $e ){
+            return $default;
         }
-
-        return $data['value'];
+        
+        return $data;
     }
 
     protected function validateDataFromCache($data)

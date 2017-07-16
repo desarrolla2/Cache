@@ -9,13 +9,16 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
 
 namespace Desarrolla2\Cache\Exception;
 
+use Psr\SimpleCache\CacheException as PsrCacheException;
+
 /**
- * AdapterNotSetException
+ * Exception for unexpected values when reading from cache.
  */
-class AdapterNotSetException extends CacheException
+class UnexpectedValueException extends \UnexpectedValueException implements PsrCacheException
 {
 }

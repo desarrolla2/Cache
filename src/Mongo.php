@@ -11,15 +11,19 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Cache\Adapter;
+namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * Mongo
  */
-class Mongo extends AbstractAdapter implements AdapterInterface
+class Mongo extends AbstractCache
 {
+    use PackTtlTrait;
     /**
      * @var MongoCollection|MongoDB\Collection
      */
@@ -30,6 +34,7 @@ class Mongo extends AbstractAdapter implements AdapterInterface
      */
     public function __construct($backend = null)
     {
+        $this->packTtl = false;
         if (!isset($backend)) {
             $client = class_exist('MongoCollection') ? new \MongoClient() : new \MongoDB\Client();
             $backend = $client->selectDatabase('cache');
@@ -49,7 +54,7 @@ class Mongo extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function del($key)
+    public function delete($key)
     {
         $tKey = $this->getKey($key);
         $this->collection->remove(array('_id' => $tKey));
@@ -58,7 +63,7 @@ class Mongo extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc }
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $tKey = $this->getKey($key);
         $tNow = $this->getTtl();
@@ -67,7 +72,7 @@ class Mongo extends AbstractAdapter implements AdapterInterface
             return $this->unPack($data['value']);
         }
 
-        return false;
+        return $default;
     }
 
     /**
@@ -86,10 +91,10 @@ class Mongo extends AbstractAdapter implements AdapterInterface
     public function set($key, $value, $ttl = null)
     {
         $tKey = $this->getKey($key);
-        $tValue = $this->pack($value);
         if (!$ttl) {
             $ttl = $this->ttl;
         }
+        $tValue = $this->pack($value, $ttl);
         $item = array(
             '_id' => $tKey,
             'value' => $tValue,

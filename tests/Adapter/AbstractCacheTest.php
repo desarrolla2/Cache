@@ -11,7 +11,7 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
 /**
  * AbstractCacheTest
@@ -133,10 +133,19 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->setOption($key, $value);
     }
 
+
     public function testHasWithTtlExpired()
     {
         $this->cache->set('key1', 'value1', 1);
         sleep(2);
         $this->assertFalse($this->cache->has('key1'));
+    }
+
+
+    public function testReturnDefaultValue()
+    {
+        $this->cache->set('key1', 'value1', 1);
+        sleep(2);
+        $this->assertFalse($this->cache->get('key1', false));
     }
 }

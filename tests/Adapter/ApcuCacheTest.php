@@ -11,10 +11,9 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\Apcu;
+use Desarrolla2\Cache\Apcu as ApcuCache;
 
 /**
  * ApcuCacheTest
@@ -33,8 +32,8 @@ class ApcuCacheTest extends AbstractCacheTest
                 'You need to enable apc.enable_cli'
             );
         }
-
-        $this->cache = new Cache(new Apcu());
+        
+        $this->cache = new ApcuCache();
     }
 
     /**
@@ -43,8 +42,8 @@ class ApcuCacheTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\CacheException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\CacheException'],
+            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
+            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
         ];
     }
 }

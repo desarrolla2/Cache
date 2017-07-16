@@ -11,15 +11,14 @@
  * @author Daniel González <daniel@desarrolla2.com>
  */
 
-namespace Desarrolla2\Test\Cache\Adapter;
+namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\Cache;
-use Desarrolla2\Cache\Adapter\NotCache;
+use Desarrolla2\Cache\NotCache as NotCache;
 
 /**
  * NotCacheTest
  */
-class NotCacheTest extends \PHPUnit_Framework_TestCase
+class NoCacheTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Desarrolla2\Cache\Cache
@@ -28,7 +27,7 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->cache = new Cache(new NotCache());
+        $this->cache = new NotCache();
     }
 
     /**
@@ -56,7 +55,7 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
     public function testGet()
     {
         $this->cache->set('key', 'value');
-        $this->assertFalse($this->cache->get('key'));
+        $this->assertFalse($this->cache->get('key', false));
     }
 
     /**
@@ -64,7 +63,7 @@ class NotCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testSet()
     {
-        $this->assertNull($this->cache->set('key', 'value'));
+        $this->assertFalse($this->cache->set('key', 'value'));
     }
 
     /**
