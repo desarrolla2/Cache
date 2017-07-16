@@ -133,13 +133,19 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->setOption($key, $value);
     }
 
+
     public function testHasWithTtlExpired()
     {
-        $this->markTestSkipped(
-          'Ttl trait trowing Exception. Test are fall.'
-        );
         $this->cache->set('key1', 'value1', 1);
         sleep(2);
         $this->assertFalse($this->cache->has('key1'));
+    }
+
+
+    public function testReturnDefaultValue()
+    {
+        $this->cache->set('key1', 'value1', 1);
+        sleep(2);
+        $this->assertFalse($this->cache->get('key1', false));
     }
 }

@@ -19,6 +19,7 @@ use Psr\SimpleCache\CacheException as PsrCacheException;
 /**
  * Exception for unexpected values when reading from cache.
  */
-class CacheExpiredException extends \RuntimeException implements PsrCacheException
+class CacheExpiredException extends \Exception implements PsrCacheException
 {
+    var $code = E_USER_NOTICE;
 }

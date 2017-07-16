@@ -14,6 +14,8 @@
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Predis\Client;
 
@@ -65,7 +67,16 @@ class Predis extends AbstractCache
      */
     public function get($key, $default = null)
     {
-        return $this->unPack($this->predis->get($key));
+
+        try {
+            $data = $this->unpack($this->predis->get($key));
+        } catch( UnexpectedValueException $e ){
+            return $default;
+        }  catch( CacheExpiredException $e ){
+            return $default;
+        }
+
+        return $data;
     }
 
     /**

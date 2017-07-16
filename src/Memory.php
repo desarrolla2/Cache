@@ -14,6 +14,8 @@
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
@@ -61,6 +63,13 @@ class Memory extends AbstractCache
     {
         $tKey = $this->getKey($key);
         if (isset($this->cache[$tKey])) {
+            try {
+                $this->unPack($this->cache[$tKey]);
+            } catch( UnexpectedValueException $e ){
+                return false;
+            }  catch( CacheExpiredException $e ){
+                return false;
+            }
             return true;
         }
         

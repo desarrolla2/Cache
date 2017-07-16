@@ -14,6 +14,8 @@
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
@@ -116,6 +118,9 @@ class Apcu extends AbstractCache
         
         try {
             $value = $this->unpack($packed);
+        } catch (UnexpectedValueException $e) {
+            $this->delete($key);
+            return $default;
         } catch (CacheExpiredException $e) {
             $this->delete($key);
             return $default;

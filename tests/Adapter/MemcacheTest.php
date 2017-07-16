@@ -32,6 +32,12 @@ class MemcacheTest extends AbstractCacheTest
 
         $adapter = new BaseMemcache();
         $adapter->addServer($this->config['memcache']['host'], $this->config['memcache']['port']);
+        if( !$adapter->getstats()) {
+           $this->markTestSkipped(
+                'The Memcache server not started.'
+            );   
+        }
+        
         $this->cache = new MemcacheCache($adapter);
     }
 
