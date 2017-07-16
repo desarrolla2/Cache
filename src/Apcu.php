@@ -116,7 +116,7 @@ class Apcu extends AbstractCache
         
         try {
             $value = $this->unpack($packed);
-        } catch (UnexpectedValueException $e) {
+        } catch (CacheExpiredException $e) {
             $this->delete($key);
             return $default;
         }

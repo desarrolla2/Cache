@@ -4,6 +4,7 @@ namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
 
 /**
  * Methods for including the TTL in the 
@@ -53,7 +54,7 @@ trait PackTtlTrait
         }
         
         if ($this->packTtl && $this->ttlHasExpired($data['ttl'])) {
-            throw new UnexpectedValueException("ttl has expired");
+            throw new CacheExpiredException("ttl has expired");
         }
         
         return $this->packTtl ? $data['value'] : $data;

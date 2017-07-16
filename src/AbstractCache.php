@@ -18,6 +18,7 @@ use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
 use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\Exception\CacheExpiredException;
 
 /**
  * AbstractAdapter
