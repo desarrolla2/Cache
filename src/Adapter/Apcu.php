@@ -85,6 +85,9 @@ class Apcu extends AbstractAdapter
                 }
                 $this->ttl = $value;
                 break;
+            case 'prefix':
+                $this->prefix = (string) $value;
+                break;
             default:
                 throw new CacheException('option not valid '.$key);
         }
