@@ -100,7 +100,7 @@ abstract class AbstractAdapter implements AdapterInterface
         } else {
             if (PHP_VERSION_ID >= 70000) {
                 /* to forbid classes unserializing */
-                return unserialize($value, false);
+                return unserialize($value, []);
             } else {
                 return unserialize($value);
             }
