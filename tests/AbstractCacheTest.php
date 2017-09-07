@@ -30,7 +30,7 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $configurationFile = realpath(__DIR__.'/../').'/config.json';
+        $configurationFile = __DIR__.'/config.json';
 
         if (!is_file($configurationFile)) {
             throw new \Exception(' Configuration file not found in "'.$configurationFile.'" ');

@@ -14,6 +14,7 @@
 namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\Predis as PredisCache;
+use Predis\Client;
 
 /**
  * PredisTest
@@ -29,8 +30,8 @@ class PredisTest extends AbstractCacheTest
                 'The predis library is not available.'
             );
         }
+        
         $this->cache = new PredisCache();
-
     }
 
     /**

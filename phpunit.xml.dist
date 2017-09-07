@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./tests/bootstrap.php" colors="true">
+<phpunit bootstrap="./vendor/autoload.php" colors="true">
     <testsuites>
         <testsuite name="Desarrolla2 Cache test suite">
             <directory suffix="Test.php">./tests</directory>
@@ -9,7 +9,7 @@
 
     <filter>
         <whitelist>
-            <directory>./Test</directory>
+            <directory>./tests</directory>
         </whitelist>
         <blacklist>
             <directory>/usr/share/pear/</directory>
