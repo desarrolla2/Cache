@@ -176,4 +176,20 @@ class File extends AbstractAdapter
     {
         return (time() > $ttl);
     }
+
+    public function cacheClear()
+    {
+      $files = glob($this->cacheDir.'{*'.self::CACHE_FILE_SUBFIX.'}',GLOB_BRACE);
+      $count = count($files);
+      for($i = 0 ; $i < $count ; $i++)
+      {
+        $data = $this->unpack(file_get_contents($files[$i]));
+        if($this->ttlHasExpired($data['ttl']))
+        {
+          $this->deleteFile($files[$i]);
+        }
+        unset($files[$i]);
+      }
+      return true;
+    }  
 }
