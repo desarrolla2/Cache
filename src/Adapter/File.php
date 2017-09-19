@@ -180,11 +180,16 @@ class File extends AbstractAdapter
     public function cacheClear()
     {
       $files = glob($this->cacheDir.'{*'.self::CACHE_FILE_SUBFIX.'}',GLOB_BRACE);
+			if($files === array())
+			{
+				return true;
+			}
+
       $count = count($files);
       for($i = 0 ; $i < $count ; $i++)
       {
         $data = $this->unpack(file_get_contents($files[$i]));
-        if($this->ttlHasExpired($data['ttl']))
+        if(isset($data['ttl']) && $this->ttlHasExpired($data['ttl']))
         {
           $this->deleteFile($files[$i]);
         }
