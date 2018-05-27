@@ -197,7 +197,18 @@ db.items.createIndex( { "ttl": 1 }, { expireAfterSeconds: 30 } )
 
 ### Mysqli
 
-Use it if you will you have mysqlnd available in your system.
+You need to create Mysql table as follow
+
+```mysql
+CREATE TABLE cache (
+k varchar(255) NOT NULL,
+v text NOT NULL,
+t int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE cache
+ADD PRIMARY KEY (k) USING BTREE;
+```
 
 ``` php
 <?php
