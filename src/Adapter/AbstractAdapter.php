@@ -82,13 +82,28 @@ abstract class AbstractAdapter implements AdapterInterface
         return sprintf('%s%s', $this->prefix, $key);
     }
 
+
+
     protected function pack($value)
     {
-        return serialize($value);
+        if (function_exists('igbinary_serialize')) {
+            return igbinary_serialize($value);
+        } else {
+            return serialize($value);
+        }
     }
 
     protected function unPack($value)
     {
-        return unserialize($value);
+        if (function_exists('igbinary_serialize')) {
+            return igbinary_unserialize($value);
+        } else {
+            if (PHP_VERSION_ID >= 70000) {
+                /* to forbid classes unserializing */
+                return unserialize($value, []);
+            } else {
+                return unserialize($value);
+            }
+        }
     }
 }
