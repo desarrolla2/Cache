@@ -15,12 +15,23 @@
 namespace Desarrolla2\Cache\Packer;
 
 use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * Pack value through serialization
  */
 class JsonPacker implements PackerInterface
 {
+    /**
+     * Get cache type (might be used as file extension)
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return 'json';
+    }
+
     /**
      * Pack the value
      * 
@@ -36,13 +47,21 @@ class JsonPacker implements PackerInterface
      * Unpack the value
      * 
      * @param string $packed
-     * @return string
-     * @throws \UnexpectedValueException if he 
+     * @return mixed
+     * @throws InvalidArgumentException
      */
     public function unpack($packed)
     {
-        $value = json_decode($packed);
-        
-        return json_serialize($packed);
+        if (is_string($packed)) {
+            throw new InvalidArgumentException("packed value should be a string");
+        }
+
+        $ret = json_decode($packed);
+
+        if (!isset($ret) && json_last_error()) {
+            throw new UnexpectedValueException("packed value is not a valid JSON string");
+        }
+
+        return $ret;
     }
 }

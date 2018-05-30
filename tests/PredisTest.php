@@ -15,6 +15,7 @@ namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\Predis as PredisCache;
 use Predis\Client;
+use Predis\Connection\ConnectionException;
 
 /**
  * PredisTest
@@ -30,8 +31,15 @@ class PredisTest extends AbstractCacheTest
                 'The predis library is not available.'
             );
         }
-        
-        $this->cache = new PredisCache();
+
+        try {
+            $predis = new Client();
+            $predis->connect();
+        } catch (ConnectionException $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
+
+        $this->cache = new PredisCache($predis);
     }
 
     /**

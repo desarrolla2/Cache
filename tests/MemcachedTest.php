@@ -32,6 +32,11 @@ class MemcachedTest extends AbstractCacheTest
 
         $adapter = new BaseMemcached();
         $adapter->addServer($this->config['memcached']['host'], $this->config['memcached']['port']);
+
+        if (!$adapter->flush()) {
+            return $this->markTestSkipped("Unable to flush Memcached; not running?");
+        }
+
         $this->cache = new MemcachedCache($adapter);
     }
 

@@ -23,11 +23,10 @@ use Desarrolla2\Cache\Exception\InvalidArgumentException;
  */
 class Memory extends AbstractCache
 {
-    use PackTtlTrait;
     /**
      * @var int
      */
-    protected $limit = false;
+    protected $limit = PHP_INT_MAX;
 
     /**
      * @var array
@@ -35,11 +34,41 @@ class Memory extends AbstractCache
     protected $cache = [];
 
     /**
+     * @var array
+     */
+    protected $cacheTtl = [];
+
+
+    /**
+     * Set the max number of items
+     *
+     * @param int $limit
+     */
+    public function setLimitOption($value)
+    {
+        $this->limit = (int)$value ?: PHP_INT_MAX;
+    }
+
+    /**
+     * Get the max number of items
+     *
+     * @return int
+     */
+    public function getLimitOption()
+    {
+        return $this->limit;
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function delete($key)
     {
-        unset($this->cache[$this->getKey($key)]);
+        $cacheKey = $this->getKey($key);
+        unset($this->cache[$cacheKey], $this->cacheTtl[$cacheKey]);
+
+        return true;
     }
 
     /**
@@ -47,13 +76,13 @@ class Memory extends AbstractCache
      */
     public function get($key, $default = null)
     {
-        if ($this->has($key)) {
-            $tKey = $this->getKey($key);
-
-            return $this->unPack($this->cache[$tKey]);
+        if (!$this->has($key)) {
+            return $default;
         }
 
-        return false;
+        $cacheKey = $this->getKey($key);
+
+        return $this->unpack($this->cache[$cacheKey]);
     }
 
     /**
@@ -61,20 +90,18 @@ class Memory extends AbstractCache
      */
     public function has($key)
     {
-        $tKey = $this->getKey($key);
-        if (isset($this->cache[$tKey])) {
-            try {
-                $this->unPack($this->cache[$tKey]);
-            } catch( UnexpectedValueException $e ){
-                return false;
-            }  catch( CacheExpiredException $e ){
-                return false;
-            }
-            return true;
+        $cacheKey = $this->getKey($key);
+
+        if (!isset($this->cacheTtl[$cacheKey])) {
+            return false;
         }
-        
-        $this->delete($key);
-        return false;
+
+        if ($this->cacheTtl[$cacheKey] < self::time()) {
+            unset($this->cache[$cacheKey], $this->cacheTtl[$cacheKey]);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -82,28 +109,24 @@ class Memory extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        if ($this->limit && count($this->cache) > $this->limit) {
+        if (count($this->cache) > $this->limit) {
             array_shift($this->cache);
         }
-        if (!$ttl) {
-            $ttl = $this->ttl;
-        }
-        $this->cache[$this->getKey($key)] = $this->pack($value, $ttl);
+
+        $cacheKey = $this->getKey($key);
+
+        $this->cache[$cacheKey] = $this->pack($value);
+        $this->cacheTtl[$cacheKey] = self::time() + ($ttl ?: $this->ttl);
+
+        return true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOption($key, $value)
+    public function clear()
     {
-        switch ($key) {
-            case 'limit':
-                $value = (int) $value;
-                $this->limit = $value;
-
-                return true;
-        }
-
-        return parent::setOption($key, $value);
+        $this->cache = [];
+        $this->cacheTtl = [];
     }
 }

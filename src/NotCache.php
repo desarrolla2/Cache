@@ -19,24 +19,30 @@ use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
- * NotCache
+ * Dummy cache handler
  */
 class NotCache extends AbstractCache
 {
-    use PackTtlTrait;
     /**
-     * Delete a value from the cache
-     *
-     * @param string $key
+     * {@inheritdoc}
      */
     public function delete($key)
     {
+        return true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function get($key, $dafault = null)
+    public function get($key, $default = null)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple($keys, $default = null)
     {
         return false;
     }
@@ -60,8 +66,16 @@ class NotCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function setOption($key, $value)
+    public function setMultiple($values, $ttl = null)
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        return true;
     }
 }

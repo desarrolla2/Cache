@@ -16,9 +16,12 @@ namespace Desarrolla2\Cache;
 use Desarrolla2\Cache\CacheInterface;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
+use Desarrolla2\Cache\KeyMaker\KeyMakerInterface;
+use Desarrolla2\Cache\KeyMaker\PlainKeyMaker;
 use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Exception\CacheExpiredException;
+use Carbon\Carbon;
 
 /**
  * AbstractAdapter
@@ -31,16 +34,16 @@ abstract class AbstractCache implements CacheInterface
     protected $ttl = 3600;
 
     /**
-     * @var string
-     */
-    protected $prefix = '';
-
-    /**
      * @var PackerInterface 
      */
     protected $packer;
-    
-    
+
+    /**
+     * @var KeyMakerInterface
+     */
+    protected $keyMaker;
+
+
     /**
      * {@inheritdoc}
      */
@@ -97,23 +100,25 @@ abstract class AbstractCache implements CacheInterface
     }
     
     /**
-     * Set the key prefix
+     * Set the key prefix.
+     * @deprecated
      * 
      * @param string $value
      */
     protected function setPrefixOption($value)
     {
-        $this->prefix = (string)$value;
+        $this->keyMaker = new PlainKeyMaker($value);
     }
 
     /**
      * Get the key prefix
-     * 
+     * @deprecated
+     *
      * @return string
      */
     protected function getPrefixOption()
     {
-        return $this->prefix;
+        return $this->keyMaker()->getPrefix();
     }
     
     
@@ -140,10 +145,69 @@ abstract class AbstractCache implements CacheInterface
         
         return $this->packer;
     }
-    
-    
+
     /**
-     * Assert that the keys are traversable
+     * Pack the value, optionally include the ttl
+     *
+     * @param mixed $value
+     * @return string|mixed $data
+     */
+    protected function pack($value)
+    {
+        return $this->getPacker()->pack($value);
+    }
+
+    /**
+     * Unpack the data to retrieve the value
+     *
+     * @param string|mixed $packed
+     * @return mixed
+     * @throws UnexpectedValueException
+     */
+    protected function unpack($packed)
+    {
+        return $this->getPacker()->unpack($packed);
+    }
+
+
+    /**
+     * Set the key maker
+     *
+     * @param KeyMakerInterface $keyMaker
+     */
+    public function setKeyMaker(KeyMakerInterface $keyMaker)
+    {
+        $this->keyMaker = $keyMaker;
+    }
+
+    /**
+     * Get the key maker
+     *
+     * @return KeyMakerInterface
+     */
+    protected function getKeyMaker()
+    {
+        if (!isset($this->keyMaker)) {
+            $this->keyMaker = new PlainKeyMaker();
+        }
+
+        return $this->keyMaker;
+    }
+
+    /**
+     * Get the key with prefix
+     *
+     * @param string $key
+     * @return string
+     */
+    protected function getKey($key)
+    {
+        return $this->getKeyMaker()->make($key);
+    }
+
+
+    /**
+     * Assert that the keys are an array or traversable
      * 
      * @param iterable $subject
      * @param string   $msg
@@ -160,19 +224,6 @@ abstract class AbstractCache implements CacheInterface
         }
     }
     
-    
-    /**
-     * Get the key with prefix
-     * 
-     * @param string $key
-     * @return string
-     */
-    protected function getKey($key)
-    {
-        return sprintf('%s%s', $this->prefix, $key);
-    }
-
-
     /**
      * {@inheritdoc}
      */
@@ -186,7 +237,7 @@ abstract class AbstractCache implements CacheInterface
      */
     public function deleteMultiple($keys)
     {
-        $this->assertTraverable($keys, 'keys not iterable');
+        $this->assertIterable($keys, 'keys not iterable');
         
         $success = true;
         
@@ -210,12 +261,12 @@ abstract class AbstractCache implements CacheInterface
      */
     public function getMultiple($keys, $default = null)
     {
-        $this->assertTraverable($keys, 'keys not iterable');
+        $this->assertIterable($keys, 'keys not iterable');
         
         $result = [];
         
         foreach ($keys as $key) {
-            $result[] = $this->get($key, $default);
+            $result[$key] = $this->get($key, $default);
         }
         
         return $result;
@@ -242,15 +293,15 @@ abstract class AbstractCache implements CacheInterface
      */
     public function setMultiple($values, $ttl = null)
     {
-        $this->assertTraverable($values, 'values not iterable');
-        
-        $result = [];
+        $this->assertIterable($values, 'values not iterable');
+
+        $success = true;
         
         foreach ($values as $key => $value) {
-            $result[] = $this->set($key, $value, $ttl);
+            $success = $this->set($key, $value, $ttl) && $success;
         }
         
-        return $result;
+        return $success;
     }
     
     /**
@@ -259,5 +310,15 @@ abstract class AbstractCache implements CacheInterface
     public function clear()
     {
         throw new CacheException('not ready yet');
+    }
+
+    /**
+     * Get the current time
+     *
+     * @return int
+     */
+    protected static function time()
+    {
+        return class_exists('Carbon\\Carbon') ? Carbon::now()->timestamp : time();
     }
 }

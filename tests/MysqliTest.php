@@ -20,23 +20,37 @@ use Desarrolla2\Cache\Mysqli as MysqliCache;
  */
 class MysqliTest extends AbstractCacheTest
 {
+    protected $mysqli;
+
     public function setUp()
     {
         parent::setup();
-        if (!extension_loaded('mysqli')) {
-            $this->markTestSkipped(
-                'The mysqli extension is not available.'
-            );
-        }
-        $mysqli = new \mysqli(
-                $this->config['mysql']['host'],
-                $this->config['mysql']['user'],
-                $this->config['mysql']['password'],
-                $this->config['mysql']['database'],
-                $this->config['mysql']['port']
-            );
-        $mysqli->query('CREATE TABLE IF NOT EXISTS `'.$this->config['mysql']['table'].'`( `k` VARCHAR(255), `v` TEXT, `t` BIGINT );');
-        $this->cache = new MysqliCache($mysqli);
+        $this->mysqli = new \mysqli(
+            $this->config['mysql']['host'],
+            $this->config['mysql']['user'],
+            $this->config['mysql']['password'],
+            null,
+            $this->config['mysql']['port']
+        );
+
+        $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `'.$this->config['mysql']['database'].'`;');
+        $this->mysqli->select_db($this->config['mysql']['database']);
+
+        $this->mysqli->query('CREATE TEMPORARY TABLE IF NOT EXISTS `cache`( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED )');
+        $this->cache = new MysqliCache($this->mysqli);
+    }
+
+    public function tearDown()
+    {
+        $this->mysqli->query('DROP DATABASE IF EXISTS `'.$this->config['mysql']['database'].'`;');
+    }
+
+    /**
+     * No sleep
+     */
+    protected static function sleep($seconds)
+    {
+        return;
     }
 
     /**

@@ -13,10 +13,13 @@
 
 namespace Desarrolla2\Test\Cache;
 
+use PHPUnit\Framework\TestCase;
+use Carbon\Carbon;
+
 /**
  * AbstractCacheTest
  */
-abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractCacheTest extends TestCase
 {
     /**
      * @var \Desarrolla2\Cache\Cache
@@ -74,9 +77,10 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testHas($key, $value, $ttl)
     {
-        $this->assertNull($this->cache->delete($key));
+        $this->cache->delete($key);
         $this->assertFalse($this->cache->has($key));
-        $this->assertNull($this->cache->set($key, $value, $ttl));
+
+        $this->assertTrue($this->cache->set($key, $value, $ttl));
         $this->assertTrue($this->cache->has($key));
     }
 
@@ -105,8 +109,13 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     public function testDelete($key, $value, $ttl)
     {
         $this->cache->set($key, $value, $ttl);
-        $this->assertNull($this->cache->delete($key));
+        $this->assertTrue($this->cache->delete($key));
         $this->assertFalse($this->cache->has($key));
+    }
+
+    public function testDeleteNonExisting()
+    {
+        $this->assertFalse($this->cache->delete('key0'));
     }
 
     /**
@@ -123,29 +132,43 @@ abstract class AbstractCacheTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataProviderForOptionsException
      *
-     * @param string     $key
-     * @param mixed      $value
-     * @param \Exception $expectedException
+     * @param string   $key
+     * @param mixed    $value
+     * @param string   $expectedException
      */
     public function testSetOptionException($key, $value, $expectedException)
     {
-        $this->setExpectedException($expectedException);
+        $this->expectException($expectedException);
         $this->cache->setOption($key, $value);
     }
 
 
     public function testHasWithTtlExpired()
     {
-        $this->cache->set('key1', 'value1', 1);
-        sleep(2);
+        Carbon::setTestNow(Carbon::now()->subRealSecond(10)); // Pretend it's 10 seconds ago
+
+        $this->cache->set('key1', 'value1', 1); // TTL of 1 second
+
+        Carbon::setTestNow(); // Back to actual time, cache is now timed out
+        static::sleep(2);
+
         $this->assertFalse($this->cache->has('key1'));
     }
 
 
     public function testReturnDefaultValue()
     {
-        $this->cache->set('key1', 'value1', 1);
-        sleep(2);
-        $this->assertFalse($this->cache->get('key1', false));
+        $this->assertEquals($this->cache->get('key0', 'foo'), 'foo');
+    }
+
+
+    /**
+     * Tests can overwrite if they don't need to sleep and can work with carbon
+     *
+     * @param int $seconds
+     */
+    protected static function sleep($seconds)
+    {
+        sleep($seconds);
     }
 }

@@ -14,16 +14,19 @@
 namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\FlatFile as FileCache;
+use Desarrolla2\Cache\Packer\PhpPacker;
 
 /**
- * FileTest
+ * FileTest with PhpPacker
  */
-class FileTest extends AbstractCacheTest
+class PhpFileTest extends AbstractCacheTest
 {
     public function setUp()
     {
         parent::setup();
+
         $this->cache = new FileCache($this->config['file']['dir']);
+        $this->cache->setPacker(new PhpPacker());
     }
 
     /**

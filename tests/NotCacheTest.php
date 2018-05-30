@@ -14,11 +14,12 @@
 namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\NotCache as NotCache;
+use PHPUnit\Framework\TestCase;
 
 /**
  * NotCacheTest
  */
-class NoCacheTest extends \PHPUnit_Framework_TestCase
+class NoCacheTest extends TestCase
 {
     /**
      * @var \Desarrolla2\Cache\Cache
@@ -71,7 +72,7 @@ class NoCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testDelete()
     {
-        $this->assertNull($this->cache->delete('key'));
+        $this->assertTrue($this->cache->delete('key'));
     }
 
     /**
@@ -80,5 +81,6 @@ class NoCacheTest extends \PHPUnit_Framework_TestCase
     public function testSetOption()
     {
         $this->cache->setOption('ttl', 3600);
+        $this->assertSame(3600, $this->cache->getOption('ttl'));
     }
 }

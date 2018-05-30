@@ -20,6 +20,13 @@ namespace Desarrolla2\Cache\Packer;
 interface PackerInterface
 {
     /**
+     * Get cache type (might be used as file extension)
+     *
+     * @return string
+     */
+    public function getType();
+
+    /**
      * Pack the value
      * 
      * @param mixed $value

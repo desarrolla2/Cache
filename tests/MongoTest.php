@@ -36,6 +36,14 @@ class MongoTest extends AbstractCacheTest
     }
 
     /**
+     * No sleep
+     */
+    protected static function sleep($seconds)
+    {
+        return;
+    }
+
+    /**
      * @return array
      */
     public function dataProviderForOptions()

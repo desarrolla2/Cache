@@ -24,28 +24,29 @@ use Predis\Client;
  */
 class Predis extends AbstractCache
 {
-    use PackTtlTrait;
     /**
      * @var Client
      */
     protected $predis;
 
     /**
-     * @param Client $client
+     * Class constructor
+     * @see predis documentation about how know your configuration https://github.com/nrk/predis
      *
-     * @see predis documentation about how know your configuration
-     * https://github.com/nrk/predis
+     * @param Client $client
      */
     public function __construct(Client $client = null)
     {
-        if ($client) {
-            $this->predis = $client;
-
-            return;
+        if (!$client) {
+            $client = new Client();
         }
-        $this->predis = new Client();
+
+        $this->predis = $client;
     }
 
+    /**
+     * Class destructor
+     */
     public function __destruct()
     {
         $this->predis->disconnect();
@@ -57,7 +58,7 @@ class Predis extends AbstractCache
     public function delete($key)
     {
         $cmd = $this->predis->createCommand('DEL');
-        $cmd->setArguments([$key]);
+        $cmd->setArguments([$this->getKey($key)]);
 
         $this->predis->executeCommand($cmd);
     }
@@ -67,16 +68,9 @@ class Predis extends AbstractCache
      */
     public function get($key, $default = null)
     {
+        $packed = $this->predis->get($this->getKey($key));
 
-        try {
-            $data = $this->unpack($this->predis->get($key));
-        } catch( UnexpectedValueException $e ){
-            return $default;
-        }  catch( CacheExpiredException $e ){
-            return $default;
-        }
-
-        return $data;
+        return $this->unpack($packed);
     }
 
     /**
@@ -85,7 +79,7 @@ class Predis extends AbstractCache
     public function has($key)
     {
         $cmd = $this->predis->createCommand('EXISTS');
-        $cmd->setArguments([$key]);
+        $cmd->setArguments([$this->getKey($key)]);
 
         return $this->predis->executeCommand($cmd);
     }
@@ -95,12 +89,19 @@ class Predis extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!$ttl) {
-            $ttl = $this->ttl;
+        $cacheKey = $this->getKey($key);
+
+        $set = $this->predis->set($cacheKey, $this->pack($value));
+
+        if (!$set) {
+            return false;
         }
-        $this->predis->set($key, $this->pack($value, $ttl));
+
         $cmd = $this->predis->createCommand('EXPIRE');
-        $cmd->setArguments([$key, $ttl]);
+        $cmd->setArguments([$cacheKey, $ttl]);
+
         $this->predis->executeCommand($cmd);
+
+        return true;
     }
 }

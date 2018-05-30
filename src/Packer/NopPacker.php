@@ -22,6 +22,16 @@ use Desarrolla2\Cache\Packer\PackerInterface;
 class NopPacker implements PackerInterface
 {
     /**
+     * Get cache type (might be used as file extension)
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return 'data';
+    }
+
+    /**
      * Pack the value
      * 
      * @param mixed $value
@@ -29,7 +39,7 @@ class NopPacker implements PackerInterface
      */
     public function pack($value)
     {
-        return serialize($value);
+        return $value;
     }
     
     /**
@@ -40,6 +50,6 @@ class NopPacker implements PackerInterface
      */
     public function unpack($packed)
     {
-        return unserialize($packed);
+        return $packed;
     }
 }

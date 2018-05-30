@@ -14,44 +14,35 @@
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\Packer\NopPacker;
+use Desarrolla2\Cache\Packer\PackerInterface;
 
 /**
  * Apcu
  */
 class Apcu extends AbstractCache
 {
-    use PackTtlTrait;
-
     /**
-     * Set the `pack-ttl` setting; Include TTL in the packed data.
-     * 
-     * @param boolean $value
+     * Get the packer
+     *
+     * @return PackerInterface
      */
-    protected function setPackTtlOption($value)
+    protected function getPacker()
     {
-        $this->packTtl = (boolean)$value;
+        if (!isset($this->packer)) {
+            $this->packer = new NopPacker();
+        }
+
+        return $this->packer;
     }
 
-    /**
-     * Get the `pack-ttl` setting
-     * 
-     * @return boolean
-     */
-    protected function getPackTtlOption()
-    {
-        return $this->packTtl;
-    }
-    
-    
+
     /**
      * {@inheritdoc}
      */
     public function delete($key)
     {
-        apcu_delete($this->getKey($key));
+        return apcu_delete($this->getKey($key));
     }
 
     /**
@@ -59,7 +50,13 @@ class Apcu extends AbstractCache
      */
     public function get($key, $default = null)
     {
-        return $this->getValueFromCache($key, $default);
+        $packed = apcu_fetch($this->getKey($key), $success);
+
+        if (!$success) {
+            return $default;
+        }
+
+        return $this->unpack($packed);
     }
 
     /**
@@ -67,7 +64,7 @@ class Apcu extends AbstractCache
      */
     public function has($key)
     {
-        return apcu_exists($key) && (!$this->packTtl || $this->getValueFromCache($key) !== null);
+        return apcu_exists($key);
     }
     
     /**
@@ -83,49 +80,6 @@ class Apcu extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!$ttl) {
-            $ttl = $this->ttl;
-        }
-
-        $data = $this->pack($value, $ttl);
-        
-        if (!is_string($data)) {
-            throw new InvalidArgumentException(
-                sprintf('Error saving data with the key "%s" to the apcu cache; data must be packed as string', $key)
-            );
-        }
-        
-        $success = apcu_store($this->getKey($key), $data, $ttl);
-        
-        if (!$success) {
-            throw new CacheException(sprintf('Error saving data with the key "%s" to the apcu cache.', $key));
-        }
-    }
-    
-    /**
-     * Get the value from cache
-     * 
-     * @param string $key
-     * @return mixed|null
-     */
-    protected function getValueFromCache($key, $default = null)
-    {
-        $packed = apcu_fetch($this->getKey($key), $success);
-        
-        if (!$success) {
-            return $default;
-        }
-        
-        try {
-            $value = $this->unpack($packed);
-        } catch (UnexpectedValueException $e) {
-            $this->delete($key);
-            return $default;
-        } catch (CacheExpiredException $e) {
-            $this->delete($key);
-            return $default;
-        }
-
-        return $value;
+        return apcu_store($this->getKey($key), $this->pack($value), $ttl ?: $this->ttl);
     }
 }

@@ -13,10 +13,6 @@
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use mysqli as Server;
 
 /**
@@ -24,11 +20,8 @@ use mysqli as Server;
  */
 class Mysqli extends AbstractCache
 {
-    use PackTtlTrait {
-        pack as protected traitpack;
-    }
     /**
-     * @var \mysqli
+     * @var Server
      */
     protected $server;
 
@@ -42,27 +35,36 @@ class Mysqli extends AbstractCache
      */
     public function __construct(Server $server = null)
     {
-        if ($server) {
-            $this->server = $server;
-
-            return;
-        }
-        $this->server = new server();
+        $this->server = $server ?: new Server();
     }
+
+    /**
+     * Set the table name
+     *
+     * @param string $table
+     */
+    public function setTableOption($table)
+    {
+        $this->table = (string)$table;
+    }
+
+    /**
+     * Get the table name
+     *
+     * @return string
+     */
+    public function getTableOption()
+    {
+        return $this->table;
+    }
+
 
     /**
      * {@inheritdoc}
      */
     public function delete($key)
     {
-        $this->query(
-            sprintf(
-                'DELETE FROM %s WHERE k = "%s" OR t < %d',
-                $this->table,
-                $this->getKey($key),
-                time()
-            )
-        );
+        return $this->query('DELETE FROM {table} WHERE `key` = %s', $this->getKey($key)) !== false;
     }
 
     /**
@@ -70,19 +72,40 @@ class Mysqli extends AbstractCache
      */
     public function get($key, $default = null)
     {
-        $res = $this->fetchObject(
-            sprintf(
-                'SELECT v FROM %s WHERE k = "%s" AND t >= %d LIMIT 1;',
-                $this->table,
-                $this->getKey($key),
-                time()
-            )
+        $row = $this->fetchRow(
+            'SELECT `value` FROM {table} WHERE `key` = %s AND `ttl` >= %d LIMIT 1',
+            $this->getKey($key),
+            self::time()
         );
-        if ($res) {
-            return $this->unPack($res->v);
+
+        return $row ? $this->unpack($row[0]) : $default;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple($keys, $default = null)
+    {
+        $this->assertIterable($keys, 'keys not iterable');
+
+        if (empty($keys)) {
+            return [];
         }
 
-        return $default;
+        $cacheKeys = array_map([$this, 'getKey'], $keys);
+        $items = array_fill_keys($cacheKeys, $default);
+
+        $ret = $this->query(
+            'SELECT `key`, `value` FROM {table} WHERE `key` IN `%s` AND `ttl` >= %d',
+            $cacheKeys,
+            self::time()
+        );
+
+        while ((list($key, $value) = $ret->fetch_assoc())) {
+            $items[$key] = $this->unpack($value);
+        }
+
+        return $keys === $cacheKeys ? $items : array_merge($keys, array_values($items));
     }
 
     /**
@@ -90,22 +113,13 @@ class Mysqli extends AbstractCache
      */
     public function has($key)
     {
-        $res = $this->fetchObject(
-            sprintf(
-                'SELECT COUNT(*) AS n FROM %s WHERE k = "%s" AND t >= %d;',
-                $this->table,
-                $this->getKey($key),
-                time()
-            )
+        $row = $this->fetchRow(
+            'SELECT `key` FROM {table} WHERE `key` = %s AND `ttl` >= %d LIMIT 1',
+            $this->getKey($key),
+            self::time()
         );
-        if (!$res) {
-            return false;
-        }
-        if ($res->n == '0') {
-            return false;
-        }
 
-        return true;
+        return !empty($row);
     }
 
     /**
@@ -113,77 +127,105 @@ class Mysqli extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->delete($key);
-        if (!($ttl)) {
-            $ttl = $this->ttl;
-        }
-        $tTtl = (int) $ttl + time();
-        $this->query(
-            sprintf(
-                'INSERT INTO %s (k, v, t) VALUES ("%s", "%s", %d)',
-                $this->table,
-                $this->getKey($key),
-                $this->pack($value),
-                $tTtl
-            )
+        $res = $this->query(
+            'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES (%s, %s, %d)',
+            $this->getKey($key),
+            $this->pack($value),
+            self::time() + ($ttl ?: $this->ttl)
         );
+
+        return $res !== false;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getKey($key)
+    public function setMultiple($values, $ttl = null)
     {
-        return $this->escape(parent::getKey($key));
-    }
+        $this->assertIterable($values, 'values not iterable');
 
-    protected function pack($value)
-    {
-        return $this->escape($this->traitpack($value, false));
-    }
-
-    /**
-     *
-     * @param string     $query
-     * @param int|string $mode
-     *
-     * @return mixed
-     */
-    protected function fetchObject($query, $mode = MYSQLI_STORE_RESULT)
-    {
-        $res = $this->query($query, $mode);
-        if ($res) {
-            return $res->fetch_object();
+        if (empty($values)) {
+            return true;
         }
 
-        return false;
-    }
+        $timeTtl = self::time() + ($ttl ?: $this->ttl);
+        $query = 'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES';
 
-    /**
-     *
-     * @param string     $query
-     * @param int|string $mode
-     *
-     * @return mixed
-     */
-    protected function query($query, $mode = MYSQLI_STORE_RESULT)
-    {
-        $res = $this->server->query($query, $mode);
-        if ($res) {
-            return $res;
+        foreach ($values as $key => $value) {
+            $query .= sprintf(
+                '(%s, %s, %d),',
+                $this->quote($this->getKey($key)),
+                $this->quote($this->pack($value)),
+                $this->quote($timeTtl)
+            );
         }
 
-        return false;
+        return $this->query(rtrim($query, ',')) !== false;
     }
 
     /**
-     *
-     * @param string $key
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    private function escape($key)
+    public function clear()
     {
-        return $this->server->real_escape_string($key);
+        $this->query('TRUNCATE {table}');
+    }
+
+    /**
+     * Fetch a row from a MySQL table
+     *
+     * @param string     $query
+     * @param string[]   $params
+     * @return array|false
+     */
+    protected function fetchRow($query, ...$params)
+    {
+        $res = $this->query($query, ...$params);
+
+        if ($res === false) {
+            return false;
+        }
+
+        return $res->fetch_row();
+    }
+
+    /**
+     * Query the MySQL server
+     *
+     * @param string  $query
+     * @param mixed[] $params
+     * @return \mysqli_result|false;
+     */
+    protected function query($query, ...$params)
+    {
+        $saveParams = array_map([$this, 'quote'], $params);
+
+        $baseSql = str_replace('{table}', $this->table, $query);
+        $sql = vsprintf($baseSql, $saveParams);
+
+        $ret = $this->server->query($sql);
+
+        if ($ret === false) {
+            trigger_error($this->server->error, E_USER_NOTICE);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Quote a value to be used in an array
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function quote($value)
+    {
+        if (is_array($value)) {
+            return join(', ', array_map([$this, 'quote'], $value));
+        }
+
+        return is_string($value)
+            ? ('"' . $this->server->real_escape_string($value) . '"')
+            : (is_float($value) ? (float)$value : (int)$value);
     }
 }

@@ -22,6 +22,9 @@ class ApcuCacheTest extends AbstractCacheTest
 {
     public function setUp()
     {
+        // Required to check the TTL for new entries
+        ini_set('apc.use_request_time', false);
+
         if (!extension_loaded('apcu')) {
             $this->markTestSkipped(
                 'The APCu extension is not available.'

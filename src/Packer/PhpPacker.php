@@ -15,28 +15,16 @@
 namespace Desarrolla2\Cache\Packer;
 
 use Desarrolla2\Cache\Packer\PackerInterface;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\Exception\BadMethodCallException;
 
 /**
- * Pack value through serialization
+ * Export to code that can be evaluated by PHP.
+ *
+ * This packer only works for file caching.
+ * It can be expected to behave much faster to normal caching, as opcode cache is utilized.
  */
-class SerializePacker implements PackerInterface
+class PhpPacker implements PackerInterface
 {
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * SerializePacker constructor
-     *
-     * @param array $options  Any options to be provided to unserialize()
-     */
-    public function __construct(array $options = ['allowed_classes' => true])
-    {
-        $this->options = $options;
-    }
-
     /**
      * Get cache type (might be used as file extension)
      *
@@ -44,7 +32,7 @@ class SerializePacker implements PackerInterface
      */
     public function getType()
     {
-        return 'php.cache';
+        return 'php';
     }
 
     /**
@@ -55,22 +43,25 @@ class SerializePacker implements PackerInterface
      */
     public function pack($value)
     {
-        return serialize($value);
+        $macro = var_export($value, true);
+
+        if (strpos($macro, 'stdClass::__set_state') !== false) {
+            $macro = preg_replace_callback("/('([^'\\\\]++|''\\.)')|stdClass::__set_state/", $macro, function($match) {
+                return empty($match[1]) ? '(object)' : $match[1];
+            });
+        }
+
+        return '<?php return ' . $macro . ';';
     }
     
     /**
      * Unpack the value
      * 
      * @param string $packed
-     * @return string
-     * @throws \UnexpectedValueException if he value can't be unpacked
+     * @throws BadMethodCallException
      */
     public function unpack($packed)
     {
-        if (!is_string($packed)) {
-            throw new InvalidArgumentException("packed value should be a string");
-        }
-
-        return unserialize($packed, $this->options);
+        BadMethodCallException("PHP packer should not be used in combination with file cache");
     }
 }

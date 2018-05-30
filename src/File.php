@@ -17,47 +17,22 @@ use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\CacheExpiredException;
 use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\Packer\PhpPacker;
 
 /**
- * File
+ * Cache file.
+ * Data contains both value and ttl
  */
-class File extends AbstractCache
+class File extends AbstractFile
 {
-    use PackTtlTrait;
-    
-    const CACHE_FILE_PREFIX = '__';
-
-    const CACHE_FILE_SUBFIX = '.php.cache';
-
-    /**
-     * @var string
-     */
-    protected $cacheDir;
-
-    /**
-     * @param string $cacheDir
-     *
-     * @throws CacheException
-     */
-    public function __construct($cacheDir = null)
-    {
-        if (!$cacheDir) {
-            $cacheDir = realpath(sys_get_temp_dir()).'/cache';
-        }
-
-        $this->cacheDir = (string) $cacheDir;
-
-        $this->createCacheDirectory($cacheDir);
-    }
-
     /**
      * {@inheritdoc}
      */
     public function delete($key)
     {
-        $tKey = $this->getKey($key);
-        $cacheFile = $this->getFileName($tKey);
-        $this->deleteFile($cacheFile);
+        $cacheFile = $this->getFileName($key);
+
+        return $this->deleteFile($cacheFile);
     }
 
     /**
@@ -65,7 +40,19 @@ class File extends AbstractCache
      */
     public function get($key, $default = null)
     {
-        return $this->getValueFromCache($key, $default);
+        $cacheFile = $this->getFileName($key);
+
+        if (!file_exists($cacheFile)) {
+            return false;
+        }
+
+        $contents = $this->read($cacheFile);
+
+        if ($contents['ttl'] < self::time()) {
+            return false;
+        }
+
+        return $contents['value'];
     }
 
     /**
@@ -73,7 +60,15 @@ class File extends AbstractCache
      */
     public function has($key)
     {
-        return !is_null($this->getValueFromCache($key));
+        $cacheFile = $this->getFileName($key);
+
+        if (!file_exists($cacheFile)) {
+            return false;
+        }
+
+        $contents = $this->read($cacheFile);
+
+        return $contents['ttl'] < self::time();
     }
 
     /**
@@ -82,102 +77,13 @@ class File extends AbstractCache
     public function set($key, $value, $ttl = null)
     {
         $cacheFile = $this->getFileName($key);
-        if (!$ttl) {
-            $ttl = $this->ttl;
+
+        $packed = $this->pack(compact('value', 'ttl'));
+
+        if (!is_string($packed)) {
+            throw new UnexpectedValueException("Packer must create a string for the data to be cached to file");
         }
 
-        $item = $this->pack($value, $ttl);
-
-        if (!file_put_contents($cacheFile, $item)) {
-            throw new CacheException(sprintf('Error saving data with the key "%s" to the cache file.', $key));
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOption($key, $value)
-    {
-        switch ($key) {
-            case 'ttl':
-                $value = (int) $value;
-                if ($value < 1) {
-                    throw new CacheException('ttl cant be lower than 1');
-                }
-                $this->ttl = $value;
-                break;
-            default:
-                throw new CacheException('option not valid '.$key);
-        }
-
-        return true;
-    }
-
-    protected function createCacheDirectory($path)
-    {
-        if (!is_dir($path)) {
-            if (!mkdir($path, 0777, true)) {
-                throw new CacheException($path.' is not writable');
-            }
-        }
-
-        if (!is_writable($path)) {
-            throw new CacheException($path.' is not writable');
-        }
-    }
-
-    protected function deleteFile($cacheFile)
-    {
-        if (is_file($cacheFile)) {
-            return unlink($cacheFile);
-        }
-
-        return false;
-    }
-
-    protected function getFileName($key)
-    {
-        return $this->cacheDir.
-        DIRECTORY_SEPARATOR.
-        self::CACHE_FILE_PREFIX.
-        $this->getKey($key).
-        self::CACHE_FILE_SUBFIX;
-    }
-
-    protected function getValueFromCache($key, $default = null)
-    {
-        $path = $this->getFileName($key);
-
-        if (!file_exists($path)) {
-            return $default;
-        }
-        try {
-            $data = $this->unPack(file_get_contents($path));
-        } catch( UnexpectedValueException $e ){
-            return $default;
-        }  catch( CacheExpiredException $e ){
-            return $default;
-        }
-        
-        return $data;
-    }
-
-    protected function validateDataFromCache($data)
-    {
-        if (!is_array($data)) {
-            return false;
-        }
-        foreach (['value', 'ttl'] as $missing) {
-            if (!array_key_exists($missing, $data)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    protected function ttlHasExpired($ttl)
-    {
-        return (time() > $ttl);
+        return file_put_contents($cacheFile, $packed);
     }
 }

@@ -25,7 +25,6 @@ use Memcached as BaseMemcached;
  */
 class Memcached extends AbstractCache
 {
-    use PackTtlTrait;
     /**
      * @var BaseMemcached
      */
@@ -36,13 +35,12 @@ class Memcached extends AbstractCache
      */
     public function __construct(BaseMemcached $server = null)
     {
-        if ($server) {
-            $this->server = $server;
-
-            return;
+        if (!$server) {
+            $server = new BaseMemcached();
+            $server->addServer('localhost', 11211);
         }
-        $this->server = new BaseMemcached();
-        $this->server->addServer('localhost', 11211);
+
+        $this->server = $server;
     }
 
     /**
@@ -50,7 +48,7 @@ class Memcached extends AbstractCache
      */
     public function delete($key)
     {
-        $this->server->delete($this->getKey($key));
+        return $this->server->delete($this->getKey($key));
     }
 
     /**
@@ -59,11 +57,30 @@ class Memcached extends AbstractCache
     public function get($key, $default = null)
     {
         $data = $this->server->get($this->getKey($key));
-        if (!$data) {
+
+        if ($data === false) {
             return $default;
         }
 
-        return $this->unPack($data);
+        return $this->unpack($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple($keys, $default = null)
+    {
+        $this->assertIterable($keys, 'keys not iterable');
+
+        $cacheKeys = array_map([$this, 'getKey'], $keys);
+
+        $items = $this->server->getMulti($cacheKeys);
+
+        $result = array_map(function($item) {
+            return $this->unpack($item);
+        }, $items);
+
+        return $result;
     }
 
     /**
@@ -71,12 +88,7 @@ class Memcached extends AbstractCache
      */
     public function has($key)
     {
-        $data = $this->server->get($this->getKey($key));
-        if (!$data) {
-            return false;
-        }
-
-        return true;
+        return $this->server->get($this->getKey($key)) !== false;
     }
 
     /**
@@ -84,9 +96,35 @@ class Memcached extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!$ttl) {
-            $ttl = $this->ttl;
-        }
-        $this->server->set($this->getKey($key), $this->pack($value, $ttl), false, time() + $ttl);
+        $packed = $this->pack($value, $ttl);
+        $ttlTime = static::time() + ($ttl ?: $this->ttl);
+
+        return $this->server->set($this->getKey($key), $packed, $ttlTime);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMultiple($values, $ttl = null)
+    {
+        $this->assertIterable($values, 'values not iterable');
+
+        $cacheKeys = array_map([$this, 'getKey'], array_keys($values));
+
+        $packed = array_map(function($value) {
+            $this->pack($value);
+        }, $values);
+
+        $ttlTime = static::time() + ($ttl ?: $this->ttl);
+
+        return $this->server->setMulti(array_combine($cacheKeys, $packed), $ttlTime);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->server->flush();
     }
 }
