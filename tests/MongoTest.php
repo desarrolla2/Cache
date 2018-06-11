@@ -20,9 +20,8 @@ use Desarrolla2\Cache\Mongo as MongoCache;
  */
 class MongoTest extends AbstractCacheTest
 {
-    public function setUp()
+    public function createSimpleCache()
     {
-        parent::setup();
         if (!extension_loaded('mongo')) {
             $this->markTestSkipped(
                 'The mongo extension is not available.'
@@ -32,7 +31,7 @@ class MongoTest extends AbstractCacheTest
         $client = new \MongoClient($this->config['mongo']['dsn']);
         $database = $client->selectDB($this->config['mongo']['database']);
 
-        $this->cache = new MongoCache($database);
+        return new MongoCache($database);
     }
 
     /**

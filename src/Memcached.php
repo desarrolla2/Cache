@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
 
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Packer\NopPacker;
 use Memcached as BaseMemcached;
 
 /**
@@ -42,6 +42,17 @@ class Memcached extends AbstractCache
 
         $this->server = $server;
     }
+
+    /**
+     * Create the default packer for this cache implementation
+     *
+     * @return PackerInterface
+     */
+    protected static function createDefaultPacker(): PackerInterface
+    {
+        return new NopPacker();
+    }
+
 
     /**
      * {@inheritdoc}
@@ -97,7 +108,7 @@ class Memcached extends AbstractCache
     public function set($key, $value, $ttl = null)
     {
         $packed = $this->pack($value, $ttl);
-        $ttlTime = static::time() + ($ttl ?: $this->ttl);
+        $ttlTime = $this->ttlToTimestamp($ttl);
 
         return $this->server->set($this->getKey($key), $packed, $ttlTime);
     }
@@ -115,9 +126,7 @@ class Memcached extends AbstractCache
             $this->pack($value);
         }, $values);
 
-        $ttlTime = static::time() + ($ttl ?: $this->ttl);
-
-        return $this->server->setMulti(array_combine($cacheKeys, $packed), $ttlTime);
+        return $this->server->setMulti(array_combine($cacheKeys, $packed), $this->ttlToTimestamp($ttl));
     }
 
     /**

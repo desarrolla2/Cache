@@ -9,16 +9,18 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Packer\SerializePacker;
 use MongoDB;
-use MongoClient;
-use MongoCollection;
-use MongoDate;
-use MongoConnectionException;
+use MongoDB\BSON\UTCDatetime as BSONUTCDateTime;
 
 /**
  * Mongo
@@ -26,7 +28,7 @@ use MongoConnectionException;
 class Mongo extends AbstractCache
 {
     /**
-     * @var MongoCollection|MongoDb\Collection
+     * @var MongoDb\Collection
      */
     protected $collection;
 
@@ -35,27 +37,26 @@ class Mongo extends AbstractCache
      *
      * @param mixed $backend
      * @throws UnexpectedValueException
-     * @throws MongoConnectionException
      * @throws MongoDB\Driver\Exception
      */
     public function __construct($backend = null)
     {
         if (!isset($backend)) {
-            $backend = class_exist('MongoClient') ? new MongoClient() : new MongoDB\Client();
+            $backend = new MongoDB\Client();
         }
 
-        if ($backend instanceof MongoClient || $backend instanceof MongoDB\Client) {
+        if ($backend instanceof MongoDB\Client) {
             $backend = $backend->selectDatabase('cache');
         }
 
-        if ($backend instanceof MongoCollection || $backend instanceof MongoDB\Collection) {
+        if ($backend instanceof MongoDB\Collection) {
             $backend = $backend->selectCollection('items');
         }
 
-        if (!$backend instanceof MongoDB && !$backend instanceof MongoDB\Database) {
+        if (!$backend instanceof MongoDB\Database) {
             $type = (is_object($backend) ? get_class($backend) . ' ' : '') . gettype($backend);
-            throw new UnexpectedValueException("Database should be a database (MongoDB or MongoDB\Database) or " .
-                " collection (MongoCollection or MongoDB\Collection) object, not a $type");
+            throw new UnexpectedValueException("Database should be a database (MongoDB\Database) or " .
+                " collection (MongoDB\Collection) object, not a $type");
         }
 
         $this->collection = $backend;
@@ -70,6 +71,25 @@ class Mongo extends AbstractCache
     {
         // TTL index
         $this->collection->createIndex(['ttl' => 1], ['expireAfterSeconds' => 0]);
+    }
+
+    /**
+     * Class destructor
+     */
+    public function __destruct()
+    {
+        $this->predis->disconnect();
+    }
+
+
+    /**
+     * Create the default packer for this cache implementation.
+     *
+     * @return PackerInterface
+     */
+    protected static function createDefaultPacker(): PackerInterface
+    {
+        return new SerializePacker();
     }
 
 
@@ -133,11 +153,11 @@ class Mongo extends AbstractCache
 
         $item = [
             '_id' => $cacheKey,
-            'ttl' => $this->getTtl($ttl ?: $this->ttl),
-            'value' => $this->pack($value),
+            'ttl' => $this->getTtlBSON($ttl ?: $this->ttl),
+            'value' => $this->pack($value)
         ];
 
-        $this->collection->update(['_id' => $cacheKey], $item, ['upsert' => true]);
+        $this->collection->save(['_id' => $cacheKey], $item, ['upsert' => true]);
     }
 
     /**
@@ -151,23 +171,26 @@ class Mongo extends AbstractCache
             return true;
         }
 
-        $filters = [];
+        $bsonTtl = $this->getTtlBSON($ttl ?: $this->ttl);
         $items = [];
 
         foreach ($values as $key => $value) {
             $cacheKey = $this->getKey($key);
 
-            $filters[] = ['_id' => $cacheKey];
-
-            $items[] = array(
-                '_id' => $cacheKey,
-                'ttl' => $this->getTtl($ttl ?: $this->ttl),
-                'value' => $this->pack($value),
-            );
+            $items[] = [
+                'replaceOne' => [
+                    'filter' => ['_id' => $cacheKey],
+                    'replacement' => [
+                        '_id' => $cacheKey,
+                        'ttl' => $bsonTtl,
+                        'value' => $this->pack($value)
+                    ],
+                    'upsert' => true
+                ]
+            ];
         }
 
-        $this->collection->updateMany($filters, $values, ['upsert' => true]);
-
+        $this->collection->bulkWrite($items);
     }
 
     /**
@@ -176,20 +199,17 @@ class Mongo extends AbstractCache
     public function clear()
     {
         $this->collection->dropCollection();
-
         $this->initCollection();
     }
 
     /**
      * Get TTL as Date type BSON object
      *
-     * @param  int  $ttl
-     * @return MongoDate|MongoDB\BSON\UTCDatetime
+     * @param int|null $ttl
+     * @return BSONUTCDatetime|null
      */
-    protected function getTtl($ttl = 0)
+    protected function getTtlBSON(?int $ttl): ?BSONUTCDatetime
     {
-        return $this->collection instanceof MongoCollection ?
-            new MongoDate(self::time() + (int)$ttl) :
-            new MongoDB\BSON\UTCDatetime((self::time() + (int)$ttl) * 1000);
+        return isset($ttl) ? new BSONUTCDateTime($this->ttlToSeconds($ttl) * 1000) : null;
     }
 }

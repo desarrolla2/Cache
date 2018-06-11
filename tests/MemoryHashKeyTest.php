@@ -13,16 +13,32 @@
 
 namespace Desarrolla2\Test\Cache;
 
+use Desarrolla2\Cache\KeyMaker\HashKeyMaker;
 use Desarrolla2\Cache\Memory as MemoryCache;
 
 /**
- * MemoryTest
+ * Memory with HashKeyMaker.
+ * Doesn't adhere to PSR-16 keys.
  */
-class MemoryTest extends AbstractCacheTest
+class MemoryHashKeyTest extends AbstractCacheTest
 {
     public function createSimpleCache()
     {
-        return new MemoryCache();
+        return (new MemoryCache())->withKeyMaker(new HashKeyMaker());
+    }
+
+    /**
+     * Data provider for invalid keys.
+     *
+     * @return array
+     */
+    public static function invalidKeys()
+    {
+        return [
+            [null],
+            [new \stdClass()],
+            [['array']],
+        ];
     }
 
     public function testExceededLimit()

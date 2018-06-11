@@ -21,9 +21,8 @@ use Memcached as BaseMemcached;
  */
 class MemcachedTest extends AbstractCacheTest
 {
-    public function setUp()
+    public function createSimpleCache()
     {
-        parent::setup();
         if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
             $this->markTestSkipped(
                 'The Memcached extension is not available.'
@@ -37,7 +36,7 @@ class MemcachedTest extends AbstractCacheTest
             return $this->markTestSkipped("Unable to flush Memcached; not running?");
         }
 
-        $this->cache = new MemcachedCache($adapter);
+        return new MemcachedCache($adapter);
     }
 
     /**

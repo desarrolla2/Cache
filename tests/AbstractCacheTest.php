@@ -13,13 +13,13 @@
 
 namespace Desarrolla2\Test\Cache;
 
-use PHPUnit\Framework\TestCase;
-use Carbon\Carbon;
+use Cache\IntegrationTests\SimpleCacheTest;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * AbstractCacheTest
  */
-abstract class AbstractCacheTest extends TestCase
+abstract class AbstractCacheTest extends SimpleCacheTest
 {
     /**
      * @var \Desarrolla2\Cache\Cache
@@ -31,7 +31,7 @@ abstract class AbstractCacheTest extends TestCase
      */
     protected $config = [];
 
-    public function setup()
+    public function setUp()
     {
         $configurationFile = __DIR__.'/config.json';
 
@@ -39,22 +39,8 @@ abstract class AbstractCacheTest extends TestCase
             throw new \Exception(' Configuration file not found in "'.$configurationFile.'" ');
         }
         $this->config = json_decode(file_get_contents($configurationFile), true);
-    }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
-    {
-        return [
-            ['key1', 'value1', 1],
-            ['key2', 'value2', 100],
-            ['key3', 'value3', null],
-            ['key4', true, null],
-            ['key5', false, null],
-            ['key6', [], null],
-            ['key7', new \DateTime(), null],
-        ];
+        parent::setUp();
     }
 
     /**
@@ -68,65 +54,31 @@ abstract class AbstractCacheTest extends TestCase
     }
 
     /**
-     *
-     * @dataProvider dataProvider
-     *
-     * @param string   $key
-     * @param mixed    $value
-     * @param int|null $ttl
-     */
-    public function testHas($key, $value, $ttl)
-    {
-        $this->cache->delete($key);
-        $this->assertFalse($this->cache->has($key));
-
-        $this->assertTrue($this->cache->set($key, $value, $ttl));
-        $this->assertTrue($this->cache->has($key));
-    }
-
-    /**
-     *
-     * @dataProvider dataProvider
-     *
-     * @param string   $key
-     * @param mixed    $value
-     * @param int|null $ttl
-     */
-    public function testGet($key, $value, $ttl)
-    {
-        $this->cache->set($key, $value, $ttl);
-        $this->assertEquals($value, $this->cache->get($key));
-    }
-
-    /**
-     *
-     * @dataProvider dataProvider
-     *
-     * @param string   $key
-     * @param mixed    $value
-     * @param int|null $ttl
-     */
-    public function testDelete($key, $value, $ttl)
-    {
-        $this->cache->set($key, $value, $ttl);
-        $this->assertTrue($this->cache->delete($key));
-        $this->assertFalse($this->cache->has($key));
-    }
-
-    public function testDeleteNonExisting()
-    {
-        $this->assertFalse($this->cache->delete('key0'));
-    }
-
-    /**
      * @dataProvider dataProviderForOptions
      *
      * @param string $key
      * @param mixed  $value
      */
-    public function testSetOption($key, $value)
+    public function testWithOption($key, $value)
     {
-        $this->assertTrue($this->cache->setOption($key, $value));
+        $base = $this->createSimpleCache();
+        $cache = $base->withOption($key, $value);
+        $this->assertEquals($value, $cache->getOption($key));
+
+        // Check immutability
+        $this->assertNotSame($base, $cache);
+        $this->assertNotEquals($value, $base->getOption($key));
+    }
+
+    /**
+     * @return array
+     */
+    public function dataProviderForOptionsException()
+    {
+        return [
+            ['ttl', 0, InvalidArgumentException::class],
+            ['file', 100, InvalidArgumentException::class]
+        ];
     }
 
     /**
@@ -136,39 +88,9 @@ abstract class AbstractCacheTest extends TestCase
      * @param mixed    $value
      * @param string   $expectedException
      */
-    public function testSetOptionException($key, $value, $expectedException)
+    public function testWithOptionException($key, $value, $expectedException)
     {
         $this->expectException($expectedException);
-        $this->cache->setOption($key, $value);
-    }
-
-
-    public function testHasWithTtlExpired()
-    {
-        Carbon::setTestNow(Carbon::now()->subRealSecond(10)); // Pretend it's 10 seconds ago
-
-        $this->cache->set('key1', 'value1', 1); // TTL of 1 second
-
-        Carbon::setTestNow(); // Back to actual time, cache is now timed out
-        static::sleep(2);
-
-        $this->assertFalse($this->cache->has('key1'));
-    }
-
-
-    public function testReturnDefaultValue()
-    {
-        $this->assertEquals($this->cache->get('key0', 'foo'), 'foo');
-    }
-
-
-    /**
-     * Tests can overwrite if they don't need to sleep and can work with carbon
-     *
-     * @param int $seconds
-     */
-    protected static function sleep($seconds)
-    {
-        sleep($seconds);
+        $this->createSimpleCache()->withOption($key, $value);
     }
 }

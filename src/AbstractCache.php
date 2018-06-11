@@ -9,19 +9,22 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\CacheInterface;
 use Desarrolla2\Cache\Packer\PackerInterface;
-use Desarrolla2\Cache\Packer\SerializePacker;
 use Desarrolla2\Cache\KeyMaker\KeyMakerInterface;
 use Desarrolla2\Cache\KeyMaker\PlainKeyMaker;
 use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Carbon\Carbon;
+use DateTimeImmutable;
+use DateInterval;
 
 /**
  * AbstractAdapter
@@ -29,9 +32,9 @@ use Carbon\Carbon;
 abstract class AbstractCache implements CacheInterface
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $ttl = 3600;
+    protected $ttl;
 
     /**
      * @var PackerInterface 
@@ -45,18 +48,41 @@ abstract class AbstractCache implements CacheInterface
 
 
     /**
+     * Make a clone of this object.
+     *
+     * @return static
+     */
+    protected function cloneSelf()
+    {
+        return clone $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function setOption($key, $value)
+    public function withOption($key, $value)
     {
-        $method = "set" . str_replace('-', '', $key) . "Option";
-        
-        if (empty($key) || !method_exists($this, $method)) {
-            throw new InvalidArgumentException("unknown option '$key'");
+        return $this->withOptions([$key => $value]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function withOptions(array $options)
+    {
+        $cache = $this->cloneSelf();
+
+        foreach ($options as $key => $value) {
+            $method = "set" . str_replace('-', '', $key) . "Option";
+
+            if (empty($key) || !method_exists($cache, $method)) {
+                throw new InvalidArgumentException("unknown option '$key'");
+            }
+
+            $cache->$method($value);
         }
-        
-        $this->$method($value);
-        return true;
+
+        return $cache;
     }
     
     /**
@@ -72,64 +98,53 @@ abstract class AbstractCache implements CacheInterface
         
         return $this->$method();
     }
-    
+
+
     /**
      * Set the time to live (ttl)
      * 
-     * @param int $value  Seconds
+     * @param int|null $value  Seconds
      * @throws InvalidArgumentException
      */
-    protected function setTtlOption($value)
+    protected function setTtlOption(?int $value)
     {
-        $ttl = (int)$value;
-        if ($ttl < 1) {
+        if (isset($value) && $value < 1) {
             throw new InvalidArgumentException('ttl cant be lower than 1');
         }
         
-        $this->ttl = $ttl;
+        $this->ttl = $value;
     }
     
     /**
      * Get the time to live (ttl)
      * 
-     * @return int
+     * @return ?int
      */
-    protected function getTtlOption()
+    protected function getTtlOption(): ?int
     {
         return $this->ttl;
     }
-    
-    /**
-     * Set the key prefix.
-     * @deprecated
-     * 
-     * @param string $value
-     */
-    protected function setPrefixOption($value)
-    {
-        $this->keyMaker = new PlainKeyMaker($value);
-    }
+
 
     /**
-     * Get the key prefix
-     * @deprecated
+     * Create the default packer for this cache implementation
      *
-     * @return string
+     * @return PackerInterface
      */
-    protected function getPrefixOption()
-    {
-        return $this->keyMaker()->getPrefix();
-    }
-    
-    
+    abstract protected static function createDefaultPacker(): PackerInterface;
+
     /**
-     * Set the packer
-     * 
+     * Set a packer to pack (serialialize) and unpack (unserialize) the data.
+     *
      * @param PackerInterface $packer
+     * @return static
      */
-    public function setPacker(PackerInterface $packer)
+    public function withPacker(PackerInterface $packer)
     {
-        $this->packer = $packer;
+        $cache = $this->cloneSelf();
+        $cache->packer = $packer;
+
+        return $cache;
     }
     
     /**
@@ -137,20 +152,20 @@ abstract class AbstractCache implements CacheInterface
      * 
      * @return PackerInterface
      */
-    protected function getPacker()
+    protected function getPacker(): PackerInterface
     {
         if (!isset($this->packer)) {
-            $this->packer = new SerializePacker();
+            $this->packer = static::createDefaultPacker();
         }
         
         return $this->packer;
     }
 
     /**
-     * Pack the value, optionally include the ttl
+     * Pack the value
      *
      * @param mixed $value
-     * @return string|mixed $data
+     * @return string|mixed
      */
     protected function pack($value)
     {
@@ -171,13 +186,14 @@ abstract class AbstractCache implements CacheInterface
 
 
     /**
-     * Set the key maker
-     *
-     * @param KeyMakerInterface $keyMaker
+     * {@inheritdoc}
      */
-    public function setKeyMaker(KeyMakerInterface $keyMaker)
+    public function withKeyMaker(KeyMakerInterface $keyMaker)
     {
-        $this->keyMaker = $keyMaker;
+        $cache = clone $this;
+        $cache->keyMaker = $keyMaker;
+
+        return $cache;
     }
 
     /**
@@ -197,10 +213,10 @@ abstract class AbstractCache implements CacheInterface
     /**
      * Get the key with prefix
      *
-     * @param string $key
+     * @param mixed $key
      * @return string
      */
-    protected function getKey($key)
+    protected function getKey($key): string
     {
         return $this->getKeyMaker()->make($key);
     }
@@ -219,7 +235,7 @@ abstract class AbstractCache implements CacheInterface
             ? is_iterable($subject)
             : is_array($subject) || $subject instanceof Traversable;
         
-        if (~$iterable) {
+        if (!$iterable) {
             throw new InvalidArgumentException($msg);
         }
     }
@@ -232,29 +248,6 @@ abstract class AbstractCache implements CacheInterface
         throw new CacheException('not ready yet');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteMultiple($keys)
-    {
-        $this->assertIterable($keys, 'keys not iterable');
-        
-        $success = true;
-        
-        foreach ($keys as $key) {
-            $success &= $this->delete($key);
-        }
-        
-        return $success;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($key, $default = null)
-    {
-        throw new CacheException('not ready yet');
-    }
 
     /**
      * {@inheritdoc}
@@ -275,22 +268,6 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function has($key)
-    {
-        throw new CacheException('not ready yet');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function set($key, $value, $ttl = null)
-    {
-        throw new CacheException('not ready yet');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function setMultiple($values, $ttl = null)
     {
         $this->assertIterable($values, 'values not iterable');
@@ -298,27 +275,75 @@ abstract class AbstractCache implements CacheInterface
         $success = true;
         
         foreach ($values as $key => $value) {
-            $success = $this->set($key, $value, $ttl) && $success;
+            $success = $this->set(is_int($key) ? (string)$key : $key, $value, $ttl) && $success;
         }
         
         return $success;
     }
-    
+
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function deleteMultiple($keys)
     {
-        throw new CacheException('not ready yet');
+        $this->assertIterable($keys, 'keys not iterable');
+
+        $success = true;
+
+        foreach ($keys as $key) {
+            $success = $this->delete($key) && $success;
+        }
+
+        return $success;
+    }
+
+
+    /**
+     * Convert TTL to seconds from now
+     *
+     * @param null|int|DateInterval $ttl
+     * @return int|null
+     * @throws InvalidArgumentException
+     */
+    protected function ttlToSeconds($ttl): ?int
+    {
+        if (!isset($ttl) || is_int($ttl)) {
+            return $ttl;
+        }
+
+        if ($ttl instanceof DateInterval) {
+            $reference = new DateTimeImmutable();
+            $endTime = $reference->add($ttl);
+
+            return $endTime->getTimestamp() - $reference->getTimestamp();
+        }
+
+        $type = (is_object($ttl) ? get_class($ttl) . ' ' : '') . gettype($ttl);
+        throw new InvalidArgumentException("ttl should be of type int or DateInterval, not $type");
     }
 
     /**
-     * Get the current time
+     * Convert TTL to epoch timestamp
      *
-     * @return int
+     * @param null|int|DateInterval $ttl
+     * @return int|null
+     * @throws InvalidArgumentException
      */
-    protected static function time()
+    protected function ttlToTimestamp($ttl): ?int
     {
-        return class_exists('Carbon\\Carbon') ? Carbon::now()->timestamp : time();
+        if (!isset($ttl)) {
+            return null;
+        }
+
+        if (is_int($ttl)) {
+            return time() + $ttl;
+        }
+
+        if ($ttl instanceof DateInterval) {
+            return (new DateTimeImmutable())->add($ttl)->getTimestamp();
+        }
+
+        $type = (is_object($ttl) ? get_class($ttl) . ' ' : '') . gettype($ttl);
+        throw new InvalidArgumentException("ttl should be of type int or DateInterval, not $type");
     }
 }

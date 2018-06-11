@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
 
 namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\AbstractCache;
 use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
-use Desarrolla2\Cache\Packer\PhpPacker;
 
 /**
- * FlatFile.
+ * Abstract class for using files as cache.
+ *
+ * @package Desarrolla2\Cache
  */
 abstract class AbstractFile extends AbstractCache
 {
@@ -32,21 +32,22 @@ abstract class AbstractFile extends AbstractCache
     /**
      * @var string
      */
-    protected $filePrefix = '__';
+    protected $filePrefix = '';
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $fileSuffix;
+
 
     /**
      * @param string $cacheDir
      * @throws CacheException
      */
-    public function __construct($cacheDir = null)
+    public function __construct(string $cacheDir = null)
     {
         if (!$cacheDir) {
-            $cacheDir = realcacheFile(sys_get_temp_dir()) . '/cache';
+            $cacheDir = realpath(sys_get_temp_dir()) . '/cache';
         }
 
         $this->cacheDir = (string)$cacheDir;
@@ -57,8 +58,9 @@ abstract class AbstractFile extends AbstractCache
      * Set the file prefix
      *
      * @param string $filePrefix
+     * @return void
      */
-    public function setFilePrefixOption($filePrefix)
+    protected function setFilePrefixOption(string $filePrefix): void
     {
         $this->filePrefix = $filePrefix;
     }
@@ -68,7 +70,7 @@ abstract class AbstractFile extends AbstractCache
      *
      * @return string
      */
-    public function getFilePrefixOption()
+    protected function getFilePrefixOption(): string
     {
         return $this->filePrefix;
     }
@@ -77,8 +79,9 @@ abstract class AbstractFile extends AbstractCache
      * Set the file extension
      *
      * @param string $fileSuffix
+     * @return void
      */
-    public function setFileSuffixOption($fileSuffix)
+    protected function setFileSuffixOption(string $fileSuffix): void
     {
         $this->fileSuffix = $fileSuffix;
     }
@@ -88,7 +91,7 @@ abstract class AbstractFile extends AbstractCache
      *
      * @return string
      */
-    public function getFileSuffixOption()
+    protected function getFileSuffixOption(): string
     {
         return isset($this->fileSuffix) ? $this->fileSuffix : ('.' . $this->getPacker()->getType());
     }
@@ -98,8 +101,10 @@ abstract class AbstractFile extends AbstractCache
      * Create the cache directory
      *
      * @param string $cacheFile
+     * @return void
+     * @throws CacheException
      */
-    protected function createCacheDirectory($path)
+    protected function createCacheDirectory(string $path): void
     {
         if (!is_dir($path)) {
             if (!mkdir($path, 0777, true)) {
@@ -113,23 +118,61 @@ abstract class AbstractFile extends AbstractCache
     }
 
     /**
+     * Read the cache file
+     *
+     * @param $cacheFile
+     * @return string
+     */
+    protected function readFile($cacheFile): string
+    {
+        return file_get_contents($cacheFile);
+    }
+
+    /**
+     * Read the first line of the cache file
+     *
+     * @param string $cacheFile
+     * @return string
+     */
+    protected function readLine(string $cacheFile): string
+    {
+        $fp = fopen($cacheFile, 'r');
+        $line = fgets($fp);
+        fclose($fp);
+
+        return $line;
+    }
+
+    /**
+     * Create a cache file
+     *
+     * @param string $cacheFile
+     * @param string $contents
+     * @return bool
+     */
+    protected function writeFile(string $cacheFile, string $contents): bool
+    {
+        return (bool)file_put_contents($cacheFile, $contents);
+    }
+
+    /**
      * Delete a cache file
      *
      * @param string $file
      * @return bool
      */
-    protected function deleteFile($file)
+    protected function deleteFile(string $file): bool
     {
-        return is_file($file) && unlink($file);
+        return !is_file($file) || unlink($file);
     }
 
     /**
      * Create a filename based on the key
      *
-     * @param $key
+     * @param string|mixed $key
      * @return string
      */
-    protected function getFileName($key)
+    protected function getFileName($key): string
     {
         return $this->cacheDir.
             DIRECTORY_SEPARATOR.
@@ -137,5 +180,4 @@ abstract class AbstractFile extends AbstractCache
             $this->getKey($key).
             $this->getFileSuffixOption();
     }
-
 }

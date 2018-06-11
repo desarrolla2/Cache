@@ -20,11 +20,17 @@ use Desarrolla2\Cache\Mysqli as MysqliCache;
  */
 class MysqliTest extends AbstractCacheTest
 {
+    /**
+     * @var \mysqli
+     */
     protected $mysqli;
 
     public function setUp()
     {
-        parent::setup();
+        if (!class_exists('mysqli')) {
+            return $this->markTestSkipped("mysqli extension not loaded");
+        }
+
         $this->mysqli = new \mysqli(
             $this->config['mysql']['host'],
             $this->config['mysql']['user'],
@@ -33,44 +39,25 @@ class MysqliTest extends AbstractCacheTest
             $this->config['mysql']['port']
         );
 
-        $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `'.$this->config['mysql']['database'].'`;');
+        if ($this->mysqli->errno) {
+            return $this->markTestSkipped($this->mysqli->error);
+        }
+
+        $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . $this->config['mysql']['database'] . '`;');
         $this->mysqli->select_db($this->config['mysql']['database']);
 
         $this->mysqli->query('CREATE TEMPORARY TABLE IF NOT EXISTS `cache`( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED )');
-        $this->cache = new MysqliCache($this->mysqli);
+
+        parent::setUp();
+    }
+
+    public function createSimpleCache()
+    {
+        return new MysqliCache($this->mysqli);
     }
 
     public function tearDown()
     {
         $this->mysqli->query('DROP DATABASE IF EXISTS `'.$this->config['mysql']['database'].'`;');
-    }
-
-    /**
-     * No sleep
-     */
-    protected static function sleep($seconds)
-    {
-        return;
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptions()
-    {
-        return [
-            ['ttl', 100]
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptionsException()
-    {
-        return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
-        ];
     }
 }

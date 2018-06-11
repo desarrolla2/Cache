@@ -9,11 +9,14 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
 
 namespace Desarrolla2\Cache;
 
 use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
+use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\KeyMaker\KeyMakerInterface;
 
 /**
  * CacheInterface
@@ -25,13 +28,40 @@ interface CacheInterface extends PsrCacheInterface
      *
      * @param string $key
      * @param string $value
+     * @return static
      */
-    public function setOption($key, $value);
-    
+    public function withOption($key, $value);
+
+    /**
+     * Set multiple options for cache
+     *
+     * @param array $options
+     * @return static
+     */
+    public function withOptions(array $options);
+
     /**
      * Get option for cache
      *
      * @param string $key
+     * @return mixed
      */
     public function getOption($key);
+
+    /**
+     * Set the packer
+     *
+     * @param PackerInterface $packer
+     * @return static
+     */
+    public function withPacker(PackerInterface $packer);
+
+    /**
+     * Set the key maker
+     *
+     * @param KeyMakerInterface $keyMaker
+     * @return static
+     */
+    public function withKeyMaker(KeyMakerInterface $keyMaker);
+
 }

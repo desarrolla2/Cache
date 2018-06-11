@@ -20,11 +20,14 @@ use Desarrolla2\Cache\Apcu as ApcuCache;
  */
 class ApcuCacheTest extends AbstractCacheTest
 {
-    public function setUp()
+    public static function setUpBeforeClass()
     {
         // Required to check the TTL for new entries
         ini_set('apc.use_request_time', false);
+    }
 
+    public function createSimpleCache()
+    {
         if (!extension_loaded('apcu')) {
             $this->markTestSkipped(
                 'The APCu extension is not available.'
@@ -36,17 +39,6 @@ class ApcuCacheTest extends AbstractCacheTest
             );
         }
         
-        $this->cache = new ApcuCache();
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptionsException()
-    {
-        return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
-        ];
+        return new ApcuCache();
     }
 }

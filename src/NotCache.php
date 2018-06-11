@@ -9,20 +9,32 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\AbstractCache;
+use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Packer\NopPacker;
 
 /**
  * Dummy cache handler
  */
 class NotCache extends AbstractCache
 {
+    /**
+     * Create the default packer for this cache implementation.
+     *
+     * @return PackerInterface
+     */
+    protected static function createDefaultPacker(): PackerInterface
+    {
+        return new NopPacker();
+    }
+
     /**
      * {@inheritdoc}
      */

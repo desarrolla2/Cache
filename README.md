@@ -1,7 +1,9 @@
 # Cache [<img alt="SensioLabsInsight" src="https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88/small.png" align="right">](https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88)
 
-A simple cache library, implementing the [PSR-16](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) standard.
+A simple cache library, implementing the [PSR-16](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) standard using **immutable** objects.
 
+Caching is typically used throughout an applicatiton. Immutability ensure that modifying the cache behaviour in one
+location doesn't result in unexpect behaviour in unrelated code.
 
 [![Latest version][ico-version]][link-packagist]
 [![Latest version][ico-pre-release]][link-packagist]
@@ -14,31 +16,40 @@ A simple cache library, implementing the [PSR-16](https://github.com/php-fig/fig
 [![Today Downloads][ico-today-downloads]][link-downloads]
 [![Gitter][ico-gitter]][link-gitter]
 
-
 ## Installation
 
 ```
 composer require desarrolla2/cache
 ```
 
-
 ## Usage
 
 
 ``` php
-<?php
+use Desarrolla2\Cache\Memory as Cache;
 
-use Desarrolla2\Cache\NotCache;
-
-$cache = new NotCache();
+$cache = new Cache();
 
 $cache->set('key', 'myKeyValue', 3600);
 
 // later ...
 
 echo $cache->get('key');
-
 ```
+
+### Options
+
+You can set options for cache using the `withOption` or `withOptions` method.
+Note that all cache objects are immutable, setting an option creates a new
+object.
+
+#### TTL
+
+All cache implementations support the `ttl` option. This sets the default
+time (in seconds) that cache will survive. It defaults to one hour (3600
+seconds).
+
+Setting the TTL to 0 or a negative number, means the cache should live forever.
 
 ## Cache implementations
 
@@ -48,88 +59,139 @@ Use [APCu cache](http://php.net/manual/en/book.apcu.php) to cache to shared
 memory.
 
 ``` php
-<?php
-    
 use Desarrolla2\Cache\Apcu as ApcuCache;
 
 $cache = new ApcuCache();
-$cache->setOption('ttl', 3600);
-$cache->setOption('pack-ttl', true);
-
 ```
 
-If the `pack-ttl` option is set to false, the cache will rely on APCu's TTL and
-not verify the TTL itself.
+_Note: by default APCu uses the time at the beginning of a request for ttl. In
+some cases, like with a long running script, this can be a problem. You can
+change this behaviour `ini_set('apc.use_request_time', false)`._
 
-### File
+### CacheFile
 
-Save the cache as file to on the filesystem
+Save the cache as file to on the filesystem. The file contains the TTL as well
+as the data.
 
 ``` php
-<?php
-    
-use Desarrolla2\Cache\File as FileCache;
+use Desarrolla2\Cache\CacheFile as CacheFileCache;
 
-$cacheDir = '/tmp';
-$cache = new FileCache($cacheDir);
-$cache->setOption('ttl', 3600);
-$cache->setOption('pack-ttl', true);
-
+$cache = new CacheFileCache();
 ```
 
-If the `pack-ttl` option is set to false, the cache file will only contain the
-cached value. The TTL is written a file suffixed with `.ttl`.
+You may set the following options;
 
+``` php
+use Desarrolla2\Cache\CacheFile as CacheFileCache;
 
-### Memcache
+$cache = (new CacheFileCache())->withOptions([
+    'dir' => '/tmp/mycache',
+    'file-prefix' => '',
+    'file-suffix' => '.php.cache',
+    'ttl' => 3600
+]);
+```
+
+### FlatFile
+
+Save the cache as file to on the filesystem. The TTL is saved in a separate
+file. If TTL is disabled, the TTL file is not created.
+
+When storing string content, consider using the `NopPacker` to store the data
+as-is. This can also be use for creating (HTML) files with the intend to serve
+them directly.
+
+``` php
+use Desarrolla2\Cache\FlatFile as FlatFileCache;
+
+$cache = new FlatFileCache();
+```
+
+You may set the following options;
+
+``` php
+use Desarrolla2\Cache\CacheFile as FlatFileCache;
+
+$cache = (new FileCache())->withOptions([
+    'dir' => '/tmp/mycache',
+    'file-prefix' => '',
+    'file-suffix' => '.php.cache',
+    'ttl' => 3600
+]);
+```
+
+### PhpFile
+
+Save the cache as PHP script to on the filesystem using `var_export` when
+storing the cache and `include` when loading the cache. This method is
+particularly fast in PHP7.2+ due to opcache optimizations.
+
+``` php
+use Desarrolla2\Cache\PhpFile as PhpFileCache;
+
+$cache = new FileCache();
+```
+
+You may set the following options;
+
+``` php
+use Desarrolla2\Cache\CacheFile as CacheFileCache;
+
+$cache = (new FileCache())->withOptions([
+    'dir' => '/tmp/mycache',
+    'file-prefix' => '',
+    'ttl' => 3600
+]);
+```
+
+### Memcached
 
 Store cache to [Memcached](https://memcached.org/). Memcached is a high
 performance distributed caching system.
 
 ``` php
-<?php
-    
-use Desarrolla2\Cache\Memcache as MemcacheCache;
+use Desarrolla2\Cache\Memcached as MemcacheCache;
 
 $cache = new MemcacheCache();
-
 ```
 
 You can config your connection before
 
-
 ``` php
-<?php
-    
-use Desarrolla2\Cache\Memcache as MemcacheCache;
-use \Memcache as Backend
+use Desarrolla2\Cache\Memcached as MemcachedCache;
+use Memcached;
 
-$backend = new Backend();
+$server = new Memcached();
 // configure it here
 
-$cache = new MemcacheCache($backend))
+$cache = new MemcachedCache($server);
 ```
 
-### Memcached
-
-Is the same like memcache adapter.
+This implementation uses the [memcached](https://php.net/memcached) php
+extension. The (alternative) memcache extension is not supported.
 
 ### Memory
 
 Store the cache in process memory. Cache Memory is removed when the PHP process
 exist. Also it is not shared between different processes.
 
-Memory cache have a option "limit", that limit the max items in cache.
+Memory cache have a option `limit`, that limit the max items in cache.
 
 ``` php
-<?php
-    
 use Desarrolla2\Cache\Memory as MemoryCache;
 
 $cache = new MemoryCache();
-$cache->setOption('ttl', 3600);
-$cache->setOption('limit', 200);
+```
 
+You may set the following options;
+
+``` php
+use Desarrolla2\Cache\Memory as MemoryCache;
+
+$cache = (new MemoryCache())->withOptions([
+    'ttl' => 3600,
+    'limit' => 200
+]);
 ```
 
 ### Mongo
@@ -309,7 +371,6 @@ Available packers are:
 * `JsonPacker` using `json_encode` and `json_decode`
 * `NopPacker` does no packing
 * `SerializePacker` using `serialize` and `unserialize`
-* `PhpPacker` uses `var_export` and `include`/`eval`
 
 #### PSR-16 incompatible packers
 
@@ -318,17 +379,14 @@ unpacking an object will probably not result in an object of the same class.
 
 The `NopPacker` is intended when caching string data only (like HTML output) or
 if the caching backend supports structured data. Using it when storing objects
-will likely yield unexpected results.
-
-
-## Contact
-
-You can contact with me on [@desarrolla2](https://twitter.com/desarrolla2).
+will might give unexpected results.
 
 ## Contributors
 
-[![Daniel González](https://avatars1.githubusercontent.com/u/661529?v=3&s=80)](https://github.com/desarrolla2)
-[![Arnold Daniels](https://avatars3.githubusercontent.com/u/100821?v=3&s=80)](https://github.com/jasny)
+* [![Daniel González](https://avatars1.githubusercontent.com/u/661529?v=3&s=80)](https://github.com/desarrolla2)
+/ Twitter: [@desarrolla2](https://twitter.com/desarrolla2)
+* [![Arnold Daniels](https://avatars3.githubusercontent.com/u/100821?v=3&s=80)](https://github.com/jasny)
+/ Twitter: [@ArnoldDaniels](https://twitter.com/ArnoldDaniels)
 
 [ico-version]: https://img.shields.io/packagist/v/desarrolla2/Cache.svg?style=flat-square
 [ico-pre-release]: https://img.shields.io/packagist/vpre/desarrolla2/Cache.svg?style=flat-square

@@ -1,18 +1,14 @@
 <?php
 
 namespace Desarrolla2\Cache\KeyMaker;
-use Desarrolla2\Cache\KeyMaker\KeyMakerInterface;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\KeyMaker\AbstractKeyMaker;
 
 /**
  * Generates a key for storage
  */
-class PlainKeyMaker implements KeyMakerInterface
+class PlainKeyMaker extends AbstractKeyMaker
 {
-    /**
-     * @var string
-     */
-    protected $prefix;
-
     /**
      * class constructor
      *
@@ -24,23 +20,16 @@ class PlainKeyMaker implements KeyMakerInterface
     }
 
     /**
-     * Get the key prefix
-     *
-     * @return string
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    /**
      * Get the key with prefix
      *
-     * @param string $key
+     * @param string|mixed $key
      * @return string
+     * @throws InvalidArgumentException  if key is not a alphanumeric string
      */
-    public function make($key)
+    public function make($key): string
     {
+        $this->validateKey($key);
+
         return sprintf('%s%s', $this->prefix, $key);
     }
 }

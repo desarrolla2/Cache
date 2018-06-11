@@ -9,14 +9,16 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\AbstractCache;
+use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Packer\SerializePacker;
 use Predis\Client;
 
 /**
@@ -53,14 +55,21 @@ class Predis extends AbstractCache
     }
 
     /**
+     * Create the default packer for this cache implementation.
+     *
+     * @return PackerInterface
+     */
+    protected static function createDefaultPacker(): PackerInterface
+    {
+        return new SerializePacker();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function delete($key)
     {
-        $cmd = $this->predis->createCommand('DEL');
-        $cmd->setArguments([$this->getKey($key)]);
-
-        $this->predis->executeCommand($cmd);
+        return $this->predis->executeRaw(['DEL', $this->getKey($key)]);
     }
 
     /**
@@ -76,12 +85,29 @@ class Predis extends AbstractCache
     /**
      * {@inheritdoc}
      */
+    public function getMultiple($keys, $default = null)
+    {
+        $this->assertIterable($keys, 'keys not iterable');
+
+        $transaction = $this->predis->transaction();
+
+        foreach ($keys as $key) {
+            $transaction->get($key);
+        }
+
+        $responses = $transaction->execute();
+
+        return array_map(function ($value) use ($default) {
+            return is_string($value) ? $this->unpack($value) : $default;
+        }, $responses);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function has($key)
     {
-        $cmd = $this->predis->createCommand('EXISTS');
-        $cmd->setArguments([$this->getKey($key)]);
-
-        return $this->predis->executeCommand($cmd);
+        return $this->predis->executeRaw(['EXISTS', $this->getKey($key)]);
     }
 
     /**
@@ -93,15 +119,42 @@ class Predis extends AbstractCache
 
         $set = $this->predis->set($cacheKey, $this->pack($value));
 
-        if (!$set) {
-            return false;
+        if ($set && isset($ttl)) {
+            $this->predis->executeRaw(['EXPIRE', $cacheKey, $this->ttlToSeconds($ttl)]);
         }
 
-        $cmd = $this->predis->createCommand('EXPIRE');
-        $cmd->setArguments([$cacheKey, $ttl]);
+        return $set;
+    }
 
-        $this->predis->executeCommand($cmd);
+    /**
+     * {@inheritdoc}
+     */
+    public function setMultiple($values, $ttl = null)
+    {
+        $this->assertIterable($values, 'values not iterable');
 
-        return true;
+        $transaction = $this->predis->transaction();
+        $ttlSeconds = $this->ttlToSeconds($ttl);
+
+        foreach ($values as $key => $value) {
+            $cacheKey = $this->getKey($key);
+            $transaction->set($cacheKey);
+
+            if (isset($ttlSeconds)) {
+                $transaction->executeRaw(['EXPIRE', $cacheKey, $ttlSeconds]);
+            }
+        }
+
+        $responses = $transaction->execute();
+
+        return count(array_filter($responses)) > 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->predis->executeRaw(['FLUSHDB']);
     }
 }

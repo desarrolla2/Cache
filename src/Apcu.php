@@ -9,13 +9,16 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\Exception\CacheException;
-use Desarrolla2\Cache\Packer\NopPacker;
 use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Packer\NopPacker;
 
 /**
  * Apcu
@@ -23,26 +26,28 @@ use Desarrolla2\Cache\Packer\PackerInterface;
 class Apcu extends AbstractCache
 {
     /**
-     * Get the packer
+     * Create the default packer for this cache implementation
      *
      * @return PackerInterface
      */
-    protected function getPacker()
+    protected static function createDefaultPacker(): PackerInterface
     {
-        if (!isset($this->packer)) {
-            $this->packer = new NopPacker();
-        }
-
-        return $this->packer;
+        return new NopPacker();
     }
 
 
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function set($key, $value, $ttl = null)
     {
-        return apcu_delete($this->getKey($key));
+        $ttlSeconds = $this->ttlToSeconds($ttl ?? $this->ttl);
+
+        if (isset($ttlSeconds) && $ttlSeconds <= 0) {
+            return $this->delete($key);
+        }
+
+        return apcu_store($this->getKey($key), $this->pack($value), $ttlSeconds ?? 0);
     }
 
     /**
@@ -64,9 +69,19 @@ class Apcu extends AbstractCache
      */
     public function has($key)
     {
-        return apcu_exists($key);
+        return apcu_exists($this->getKey($key));
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($key)
+    {
+        $cacheKey = $this->getKey($key);
+
+        return apcu_delete($cacheKey) || !apcu_exists($cacheKey);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -75,11 +90,4 @@ class Apcu extends AbstractCache
         return apcu_clear_cache();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function set($key, $value, $ttl = null)
-    {
-        return apcu_store($this->getKey($key), $this->pack($value), $ttl ?: $this->ttl);
-    }
 }

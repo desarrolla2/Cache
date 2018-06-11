@@ -1,52 +1,58 @@
 <?php
 
 namespace Desarrolla2\Cache\KeyMaker;
-use Desarrolla2\Cache\KeyMaker\KeyMakerInterface;
+
+use Desarrolla2\Cache\KeyMaker\AbstractKeyMaker;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * Generates a key for storage by hashing it
  */
-class HashKeyMaker implements KeyMakerInterface
+class HashKeyMaker extends AbstractKeyMaker
 {
-    /**
-     * @var string
-     */
-    protected $prefix;
-
     /**
      * @var string
      */
     protected $algo;
 
+
     /**
      * class constructor
      *
+     * @param string $algo
      * @param string $prefix
+     * @param bool   $psr16  PSR-16 key validation
      */
-    public function __construct($algo = 'sha1', $prefix = '')
+    public function __construct(string $algo = 'sha1', string $prefix = '')
     {
-        $this->prefix = $prefix;
         $this->algo = $algo;
+        $this->prefix = $prefix;
     }
 
     /**
-     * Get the key prefix
+     * Lenient key validation
      *
-     * @return string
+     * @param string|mixed $key
+     * @throws InvalidArgumentException
      */
-    public function getPrefix()
+    protected function validateKey($key)
     {
-        return $this->prefix;
+        if (!is_scalar($key)) {
+            $type = (is_object($key) ? get_class($key) . ' ' : '') . gettype($key);
+            throw new InvalidArgumentException("Expected key to be a scalar, not $type");
+        }
     }
 
     /**
      * Get the key with prefix
      *
-     * @param string $key
+     * @param string|mixed $key
      * @return string
      */
-    public function make($key)
+    public function make($key): string
     {
+        $this->validateKey($key);
+
         return hash($this->algo, sprintf('%s%s', $this->prefix, $key));
     }
 }

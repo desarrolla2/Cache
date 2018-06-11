@@ -13,35 +13,20 @@
 
 namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\FlatFile as FileCache;
+use Desarrolla2\Cache\File as FileCache;
 
 /**
  * FileTest
  */
 class FileTest extends AbstractCacheTest
 {
-    public function setUp()
-    {
-        parent::setup();
-        $this->cache = new FileCache($this->config['file']['dir']);
-    }
+    protected $skippedTests = [
+        'testBasicUsageWithLongKey' => 'Only support keys up to 64 bytes'
+    ];
 
-    /**
-     * No sleep
-     */
-    protected static function sleep($seconds)
+    public function createSimpleCache()
     {
-        return;
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptionsException()
-    {
-        return array(
-            array('ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException')
-        );
+        return new FileCache($this->config['file']['dir']);
     }
 
     /**
@@ -49,7 +34,8 @@ class FileTest extends AbstractCacheTest
      */
     public function tearDown() 
     {
-        array_map('unlink', glob($this->config['file']['dir']."/*"));
+        parent::tearDown();
+
         rmdir($this->config['file']['dir']);
     }
 }

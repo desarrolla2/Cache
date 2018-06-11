@@ -12,13 +12,13 @@ interface KeyMakerInterface
      *
      * @return string
      */
-    public function getPrefix();
+    public function getPrefix(): string;
 
     /**
      * Get the key with prefix
      *
-     * @param string $key
+     * @param string|mixed $key
      * @return string
      */
-    public function make($key);
+    public function make($key): string;
 }

@@ -9,11 +9,16 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
 use mysqli as Server;
+use Desarrolla2\Cache\Packer\PackerInterface;
+use Desarrolla2\Cache\Packer\SerializePacker;
 
 /**
  * Mysqli
@@ -36,6 +41,16 @@ class Mysqli extends AbstractCache
     public function __construct(Server $server = null)
     {
         $this->server = $server ?: new Server();
+    }
+
+    /**
+     * Create the default packer for this cache implementation.
+     *
+     * @return PackerInterface
+     */
+    protected static function createDefaultPacker(): PackerInterface
+    {
+        return new SerializePacker();
     }
 
     /**
@@ -75,7 +90,7 @@ class Mysqli extends AbstractCache
         $row = $this->fetchRow(
             'SELECT `value` FROM {table} WHERE `key` = %s AND `ttl` >= %d LIMIT 1',
             $this->getKey($key),
-            self::time()
+            $this->time()
         );
 
         return $row ? $this->unpack($row[0]) : $default;
@@ -98,7 +113,7 @@ class Mysqli extends AbstractCache
         $ret = $this->query(
             'SELECT `key`, `value` FROM {table} WHERE `key` IN `%s` AND `ttl` >= %d',
             $cacheKeys,
-            self::time()
+            $this->time()
         );
 
         while ((list($key, $value) = $ret->fetch_assoc())) {
@@ -116,7 +131,7 @@ class Mysqli extends AbstractCache
         $row = $this->fetchRow(
             'SELECT `key` FROM {table} WHERE `key` = %s AND `ttl` >= %d LIMIT 1',
             $this->getKey($key),
-            self::time()
+            $this->time()
         );
 
         return !empty($row);
@@ -131,7 +146,7 @@ class Mysqli extends AbstractCache
             'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES (%s, %s, %d)',
             $this->getKey($key),
             $this->pack($value),
-            self::time() + ($ttl ?: $this->ttl)
+            $this->time() + ($ttl ?: $this->ttl)
         );
 
         return $res !== false;
@@ -148,7 +163,7 @@ class Mysqli extends AbstractCache
             return true;
         }
 
-        $timeTtl = self::time() + ($ttl ?: $this->ttl);
+        $timeTtl = $this->time() + ($ttl ?: $this->ttl);
         $query = 'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES';
 
         foreach ($values as $key => $value) {
