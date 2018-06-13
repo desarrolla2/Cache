@@ -59,7 +59,7 @@ class Memory extends AbstractCache
      *
      * @return static
      */
-    protected function cloneSelf()
+    protected function cloneSelf(): AbstractCache
     {
         $clone = clone $this;
 

@@ -53,6 +53,16 @@ Setting the TTL to 0 or a negative number, means the cache should live forever.
 
 ## Cache implementations
 
+* [Apcu](#apcu)
+* [File](#file)
+* [Memcached](#memcached)
+* [Memory](#memory)
+* [Mongo](#mongo)
+* [Mysqli](#mysqli)
+* [NotCache](#notcache)
+* [PhpFile](#phpfile)
+* [Predis](#predis)
+
 ### Apcu
 
 Use [APCu cache](http://php.net/manual/en/book.apcu.php) to cache to shared
@@ -68,9 +78,11 @@ _Note: by default APCu uses the time at the beginning of a request for ttl. In
 some cases, like with a long running script, this can be a problem. You can
 change this behaviour `ini_set('apc.use_request_time', false)`._
 
-### CacheFile
+### File
 
-Save the cache as file to on the filesystem. The file contains the TTL as well
+Save the cache as file to on the filesystem.
+
+The file contains the TTL as well
 as the data.
 
 ``` php
@@ -88,58 +100,6 @@ $cache = (new CacheFileCache())->withOptions([
     'dir' => '/tmp/mycache',
     'file-prefix' => '',
     'file-suffix' => '.php.cache',
-    'ttl' => 3600
-]);
-```
-
-### FlatFile
-
-Save the cache as file to on the filesystem. The TTL is saved in a separate
-file. If TTL is disabled, the TTL file is not created.
-
-When storing string content, consider using the `NopPacker` to store the data
-as-is. This can also be use for creating (HTML) files with the intend to serve
-them directly.
-
-``` php
-use Desarrolla2\Cache\FlatFile as FlatFileCache;
-
-$cache = new FlatFileCache();
-```
-
-You may set the following options;
-
-``` php
-use Desarrolla2\Cache\CacheFile as FlatFileCache;
-
-$cache = (new FileCache())->withOptions([
-    'dir' => '/tmp/mycache',
-    'file-prefix' => '',
-    'file-suffix' => '.php.cache',
-    'ttl' => 3600
-]);
-```
-
-### PhpFile
-
-Save the cache as PHP script to on the filesystem using `var_export` when
-storing the cache and `include` when loading the cache. This method is
-particularly fast in PHP7.2+ due to opcache optimizations.
-
-``` php
-use Desarrolla2\Cache\PhpFile as PhpFileCache;
-
-$cache = new FileCache();
-```
-
-You may set the following options;
-
-``` php
-use Desarrolla2\Cache\CacheFile as CacheFileCache;
-
-$cache = (new FileCache())->withOptions([
-    'dir' => '/tmp/mycache',
-    'file-prefix' => '',
     'ttl' => 3600
 ]);
 ```
@@ -288,6 +248,30 @@ $cache = new NotCache();
 
 ```
 
+### PhpFile
+
+Save the cache as PHP script to on the filesystem using `var_export` when
+storing the cache and `include` when loading the cache. This method is
+particularly fast in PHP7.2+ due to opcache optimizations.
+
+``` php
+use Desarrolla2\Cache\PhpFile as PhpFileCache;
+
+$cache = new FileCache();
+```
+
+You may set the following options;
+
+``` php
+use Desarrolla2\Cache\CacheFile as CacheFileCache;
+
+$cache = (new FileCache())->withOptions([
+    'dir' => '/tmp/mycache',
+    'file-prefix' => '',
+    'ttl' => 3600
+]);
+```
+
 ### Predis
 
 Use it if you will you have redis available in your system.
@@ -327,8 +311,8 @@ $cache = new PredisCache($backend);
 
 ## Methods
 
-The `Desarrolla2\Cache\CacheInterface` extends `Psr\SimpleCache\CacheInterface`
-and defines the following methods:
+Each cache implementation has the following `Psr\SimpleCache\CacheInterface`
+methods:
 
 ##### `get(string $key)`
 Retrieve the value corresponding to a provided key
@@ -354,11 +338,16 @@ Persists a set of key => value pairs in the cache
 ##### `deleteMultiple(array $keys)`
 Deletes multiple cache items in a single operation
 
-##### `setOption(string $key, string $value)`
-Set option for Adapter _(Not in PSR-16)_
+The `Desarrolla2\Cache\CacheInterface` also has the following methods:
+
+##### `withOption(string $key, string $value)`
+Set option for implementation. Creates a new instance.
+
+##### `withOptions(array $options)`
+Set multiple options for implementation. Creates a new instance.
 
 ##### `getOption(string $key)`
-Get an option for Adapter _(Not in PSR-16)_
+Get option for implementation.
 
 
 ## Packers
@@ -383,10 +372,10 @@ will might give unexpected results.
 
 ## Contributors
 
-* [![Daniel González](https://avatars1.githubusercontent.com/u/661529?v=3&s=80)](https://github.com/desarrolla2)
-/ Twitter: [@desarrolla2](https://twitter.com/desarrolla2)
-* [![Arnold Daniels](https://avatars3.githubusercontent.com/u/100821?v=3&s=80)](https://github.com/jasny)
-/ Twitter: [@ArnoldDaniels](https://twitter.com/ArnoldDaniels)
+[![Daniel González](https://avatars1.githubusercontent.com/u/661529?v=3&s=80)](https://github.com/desarrolla2)
+Twitter: [@desarrolla2](https://twitter.com/desarrolla2)\
+[![Arnold Daniels](https://avatars3.githubusercontent.com/u/100821?v=3&s=80)](https://github.com/jasny)
+Twitter: [@ArnoldDaniels](https://twitter.com/ArnoldDaniels)
 
 [ico-version]: https://img.shields.io/packagist/v/desarrolla2/Cache.svg?style=flat-square
 [ico-pre-release]: https://img.shields.io/packagist/vpre/desarrolla2/Cache.svg?style=flat-square

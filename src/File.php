@@ -122,7 +122,7 @@ class File extends AbstractFile
             return $default;
         }
 
-        $cacheFile = $this->getFileName($key);
+        $cacheFile = $this->getFilename($key);
         $packed = $this->readFile($cacheFile);
 
         if ($this->ttlStrategy === 'embed') {
@@ -137,7 +137,7 @@ class File extends AbstractFile
      */
     public function has($key)
     {
-        $cacheFile = $this->getFileName($key);
+        $cacheFile = $this->getFilename($key);
 
         if (!file_exists($cacheFile)) {
             return false;
@@ -158,7 +158,7 @@ class File extends AbstractFile
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheFile = $this->getFileName($key);
+        $cacheFile = $this->getFilename($key);
 
         $packed = $this->pack($value);
 
@@ -169,30 +169,5 @@ class File extends AbstractFile
         $contents = $this->setTtl($this->ttlToTimestamp($ttl), $packed, $cacheFile);
 
         return $this->writeFile($cacheFile, $contents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($key)
-    {
-        $cacheFile = $this->getFileName($key);
-
-        return $this->deleteFile($cacheFile);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clear()
-    {
-        $pattern = $this->cacheDir . DIRECTORY_SEPARATOR .
-            $this->getFilePrefixOption() . '*' . $this->getFileSuffixOption();
-
-        foreach (glob($pattern) as $file) {
-            $this->deleteFile($file);
-        }
-
-        return true;
     }
 }

@@ -46,13 +46,18 @@ abstract class AbstractCache implements CacheInterface
      */
     protected $keyMaker;
 
+    /**
+     * @var string
+     */
+    protected $prefix;
+
 
     /**
      * Make a clone of this object.
      *
      * @return static
      */
-    protected function cloneSelf()
+    protected function cloneSelf(): self
     {
         return clone $this;
     }
@@ -60,7 +65,7 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function withOption($key, $value)
+    public function withOption(string $key, $value): self
     {
         return $this->withOptions([$key => $value]);
     }
@@ -68,7 +73,7 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function withOptions(array $options)
+    public function withOptions(array $options): self
     {
         $cache = $this->cloneSelf();
 
@@ -106,7 +111,7 @@ abstract class AbstractCache implements CacheInterface
      * @param int|null $value  Seconds
      * @throws InvalidArgumentException
      */
-    protected function setTtlOption(?int $value)
+    protected function setTtlOption(?int $value): void
     {
         if (isset($value) && $value < 1) {
             throw new InvalidArgumentException('ttl cant be lower than 1');
@@ -123,6 +128,27 @@ abstract class AbstractCache implements CacheInterface
     protected function getTtlOption(): ?int
     {
         return $this->ttl;
+    }
+
+    /**
+     * Set the key prefix
+     *
+     * @param string $prefix
+     * @return void
+     */
+    protected function setPrefixOption(string $prefix): void
+    {
+        $this->prefix = $prefix;
+    }
+
+    /**
+     * Get the key prefix
+     *
+     * @return string
+     */
+    protected function getPrefixOption(): string
+    {
+        return $this->prefix;
     }
 
 
@@ -186,39 +212,23 @@ abstract class AbstractCache implements CacheInterface
 
 
     /**
-     * {@inheritdoc}
-     */
-    public function withKeyMaker(KeyMakerInterface $keyMaker)
-    {
-        $cache = clone $this;
-        $cache->keyMaker = $keyMaker;
-
-        return $cache;
-    }
-
-    /**
-     * Get the key maker
+     * Validate and return the key with prefix
      *
-     * @return KeyMakerInterface
-     */
-    protected function getKeyMaker()
-    {
-        if (!isset($this->keyMaker)) {
-            $this->keyMaker = new PlainKeyMaker();
-        }
-
-        return $this->keyMaker;
-    }
-
-    /**
-     * Get the key with prefix
-     *
-     * @param mixed $key
+     * @param string $key
      * @return string
      */
     protected function getKey($key): string
     {
-        return $this->getKeyMaker()->make($key);
+        if (!is_string($key)) {
+            $type = (is_object($key) ? get_class($key) . ' ' : '') . gettype($key);
+            throw new InvalidArgumentException("Expected key to be a string, not $type");
+        }
+
+        if ($key === '' || preg_match('~[{}()/\\\\@:]~', $key)) {
+            throw new InvalidArgumentException("Invalid key '$key'");
+        }
+
+        return sprintf('%s%s', $this->prefix, $key);
     }
 
 

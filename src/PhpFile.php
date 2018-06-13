@@ -26,11 +26,6 @@ use Desarrolla2\Cache\Packer\SerializePacker;
 class PhpFile extends AbstractFile
 {
     /**
-     * @var string
-     */
-    protected $fileSuffix = '.php';
-
-    /**
      * Create the default packer for this cache implementation.
      *
      * @return PackerInterface
@@ -38,6 +33,20 @@ class PhpFile extends AbstractFile
     protected static function createDefaultPacker(): PackerInterface
     {
         return new SerializePacker();
+    }
+
+    /**
+     * Get the filename callable
+     *
+     * @return callable
+     */
+    protected function getFilenameOption(): callable
+    {
+        if (!isset($this->filename)) {
+            $this->filename = new SimplePath('%s.php');
+        }
+
+        return $this->filename;
     }
 
     /**
@@ -67,7 +76,7 @@ class PhpFile extends AbstractFile
      */
     public function get($key, $default = null)
     {
-        $cacheFile = $this->getFileName($key);
+        $cacheFile = $this->getFilename($key);
 
         if (!file_exists($cacheFile)) {
             return $default;
@@ -91,24 +100,11 @@ class PhpFile extends AbstractFile
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheFile = $this->getFileName($key);
+        $cacheFile = $this->getFilename($key);
 
         $packed = $this->pack($value);
         $script = $this->createScript($packed, $this->ttlToTimestamp($ttl));
 
         return $this->write($cacheFile, $script);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clear()
-    {
-        $pattern = $this->cacheDir . DIRECTORY_SEPARATOR .
-            $this->getFilePrefixOption() . '*' . $this->getFileSuffixOption();
-
-        foreach (glob($pattern) as $file) {
-            $this->deleteFile($file);
-        }
     }
 }

@@ -16,6 +16,8 @@ namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\AbstractCache;
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use Desarrolla2\Cache\File\BasicFilename;
 
 /**
  * Abstract class for using files as cache.
@@ -30,14 +32,9 @@ abstract class AbstractFile extends AbstractCache
     protected $cacheDir;
 
     /**
-     * @var string
+     * @var callable
      */
-    protected $filePrefix = '';
-
-    /**
-     * @var string
-     */
-    protected $fileSuffix;
+    protected $filename;
 
 
     /**
@@ -47,7 +44,7 @@ abstract class AbstractFile extends AbstractCache
     public function __construct(string $cacheDir = null)
     {
         if (!$cacheDir) {
-            $cacheDir = realpath(sys_get_temp_dir()) . '/cache';
+            $cacheDir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'cache';
         }
 
         $this->cacheDir = (string)$cacheDir;
@@ -55,45 +52,37 @@ abstract class AbstractFile extends AbstractCache
     }
 
     /**
-     * Set the file prefix
+     * Filename format or callable.
+     * The filename format will be applied using sprintf, replacing `%s` with the key.
      *
-     * @param string $filePrefix
+     * @param string|callable $filename
      * @return void
      */
-    protected function setFilePrefixOption(string $filePrefix): void
+    protected function setFilenameOption($filename): void
     {
-        $this->filePrefix = $filePrefix;
+        if (is_string($filename)) {
+            $filename = new BasicFilename($filename);
+        }
+
+        if (!is_callable($filename) || !is_object($filename)) {
+            throw new \TypeError("Filename should be a string or callable");
+        }
+
+        $this->filename = $filename;
     }
 
     /**
-     * Get the file prefix
+     * Get the filename callable
      *
-     * @return string
+     * @return callable
      */
-    protected function getFilePrefixOption(): string
+    protected function getFilenameOption(): callable
     {
-        return $this->filePrefix;
-    }
+        if (!isset($this->filename)) {
+            $this->filename = new BasicFilename('%s.' . $this->getPacker()->getType());
+        }
 
-    /**
-     * Set the file extension
-     *
-     * @param string $fileSuffix
-     * @return void
-     */
-    protected function setFileSuffixOption(string $fileSuffix): void
-    {
-        $this->fileSuffix = $fileSuffix;
-    }
-
-    /**
-     * Get the file extension
-     *
-     * @return string
-     */
-    protected function getFileSuffixOption(): string
-    {
-        return isset($this->fileSuffix) ? $this->fileSuffix : ('.' . $this->getPacker()->getType());
+        return $this->filename;
     }
 
 
@@ -172,12 +161,37 @@ abstract class AbstractFile extends AbstractCache
      * @param string|mixed $key
      * @return string
      */
-    protected function getFileName($key): string
+    protected function getFilename($key): string
     {
-        return $this->cacheDir.
-            DIRECTORY_SEPARATOR.
-            $this->getFilePrefixOption().
-            $this->getKey($key).
-            $this->getFileSuffixOption();
+        $cacheKey = $this->getKey($key);
+        $generator = $this->getFilenameOption();
+
+        return $this->cacheDir . DIRECTORY_SEPARATOR . $generator($key);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($key)
+    {
+        $cacheFile = $this->getFilename($key);
+
+        return $this->deleteFile($cacheFile);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $generator = $this->getFilenameOption();
+        $pattern = $this->cacheDir . DIRECTORY_SEPARATOR . $generator('');
+
+        foreach (glob($pattern) as $file) {
+            $this->deleteFile($file);
+        }
+
+        return true;
     }
 }

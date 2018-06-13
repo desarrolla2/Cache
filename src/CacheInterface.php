@@ -27,10 +27,10 @@ interface CacheInterface extends PsrCacheInterface
      * Set option for cache
      *
      * @param string $key
-     * @param string $value
+     * @param mixed $value
      * @return static
      */
-    public function withOption($key, $value);
+    public function withOption(string $key, $value);
 
     /**
      * Set multiple options for cache
@@ -55,13 +55,4 @@ interface CacheInterface extends PsrCacheInterface
      * @return static
      */
     public function withPacker(PackerInterface $packer);
-
-    /**
-     * Set the key maker
-     *
-     * @param KeyMakerInterface $keyMaker
-     * @return static
-     */
-    public function withKeyMaker(KeyMakerInterface $keyMaker);
-
 }
