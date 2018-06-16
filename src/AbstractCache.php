@@ -18,8 +18,9 @@ namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\CacheInterface;
 use Desarrolla2\Cache\Packer\PackerInterface;
-use Desarrolla2\Cache\KeyMaker\KeyMakerInterface;
-use Desarrolla2\Cache\KeyMaker\PlainKeyMaker;
+use Desarrolla2\Cache\Option\PrefixTrait as PrefixOption;
+use Desarrolla2\Cache\Option\TtlTrait as TtlOption;
+use Desarrolla2\Cache\Packer\PackingTrait as Packing;
 use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Exception\CacheExpiredException;
@@ -31,26 +32,9 @@ use DateInterval;
  */
 abstract class AbstractCache implements CacheInterface
 {
-    /**
-     * @var int|null
-     */
-    protected $ttl;
-
-    /**
-     * @var PackerInterface 
-     */
-    protected $packer;
-
-    /**
-     * @var KeyMakerInterface
-     */
-    protected $keyMaker;
-
-    /**
-     * @var string
-     */
-    protected $prefix;
-
+    use PrefixOption;
+    use TtlOption;
+    use Packing;
 
     /**
      * Make a clone of this object.
@@ -106,118 +90,13 @@ abstract class AbstractCache implements CacheInterface
 
 
     /**
-     * Set the time to live (ttl)
-     * 
-     * @param int|null $value  Seconds
-     * @throws InvalidArgumentException
-     */
-    protected function setTtlOption(?int $value): void
-    {
-        if (isset($value) && $value < 1) {
-            throw new InvalidArgumentException('ttl cant be lower than 1');
-        }
-        
-        $this->ttl = $value;
-    }
-    
-    /**
-     * Get the time to live (ttl)
-     * 
-     * @return ?int
-     */
-    protected function getTtlOption(): ?int
-    {
-        return $this->ttl;
-    }
-
-    /**
-     * Set the key prefix
-     *
-     * @param string $prefix
-     * @return void
-     */
-    protected function setPrefixOption(string $prefix): void
-    {
-        $this->prefix = $prefix;
-    }
-
-    /**
-     * Get the key prefix
-     *
-     * @return string
-     */
-    protected function getPrefixOption(): string
-    {
-        return $this->prefix;
-    }
-
-
-    /**
-     * Create the default packer for this cache implementation
-     *
-     * @return PackerInterface
-     */
-    abstract protected static function createDefaultPacker(): PackerInterface;
-
-    /**
-     * Set a packer to pack (serialialize) and unpack (unserialize) the data.
-     *
-     * @param PackerInterface $packer
-     * @return static
-     */
-    public function withPacker(PackerInterface $packer)
-    {
-        $cache = $this->cloneSelf();
-        $cache->packer = $packer;
-
-        return $cache;
-    }
-    
-    /**
-     * Get the packer
-     * 
-     * @return PackerInterface
-     */
-    protected function getPacker(): PackerInterface
-    {
-        if (!isset($this->packer)) {
-            $this->packer = static::createDefaultPacker();
-        }
-        
-        return $this->packer;
-    }
-
-    /**
-     * Pack the value
-     *
-     * @param mixed $value
-     * @return string|mixed
-     */
-    protected function pack($value)
-    {
-        return $this->getPacker()->pack($value);
-    }
-
-    /**
-     * Unpack the data to retrieve the value
-     *
-     * @param string|mixed $packed
-     * @return mixed
-     * @throws UnexpectedValueException
-     */
-    protected function unpack($packed)
-    {
-        return $this->getPacker()->unpack($packed);
-    }
-
-
-    /**
-     * Validate and return the key with prefix
+     * Validate the key
      *
      * @param string $key
-     * @return string
+     * @return void
+     * @throws InvalidArgumentException
      */
-    protected function getKey($key): string
+    protected function assertKey($key): void
     {
         if (!is_string($key)) {
             $type = (is_object($key) ? get_class($key) . ' ' : '') . gettype($key);
@@ -227,19 +106,17 @@ abstract class AbstractCache implements CacheInterface
         if ($key === '' || preg_match('~[{}()/\\\\@:]~', $key)) {
             throw new InvalidArgumentException("Invalid key '$key'");
         }
-
-        return sprintf('%s%s', $this->prefix, $key);
     }
-
 
     /**
      * Assert that the keys are an array or traversable
      * 
      * @param iterable $subject
      * @param string   $msg
+     * @return void
      * @throws InvalidArgumentException if subject are not iterable
      */
-    protected function assertIterable($subject, $msg)
+    protected function assertIterable($subject, $msg): void
     {
         $iterable = function_exists('is_iterable')
             ? is_iterable($subject)
@@ -249,14 +126,60 @@ abstract class AbstractCache implements CacheInterface
             throw new InvalidArgumentException($msg);
         }
     }
-    
+
     /**
-     * {@inheritdoc}
+     * Turn the key into a cache identifier
+     *
+     * @param string $key
+     * @return string
+     * @throws InvalidArgumentException
      */
-    public function delete($key)
+    protected function keyToId($key): string
     {
-        throw new CacheException('not ready yet');
+        $this->assertKey($key);
+
+        return sprintf('%s%s', $this->prefix, $key);
     }
+
+    /**
+     * Create a map with keys and ids
+     *
+     * @param iterable $keys
+     * @return array
+     * @throws InvalidArgumentException
+     */
+    protected function mapKeysToIds($keys): array
+    {
+        $this->assertIterable($keys, 'keys not iterable');
+
+        $map = [];
+
+        foreach ($keys as $key) {
+            $map[$key] = $this->keyToId($key);
+        }
+
+        return $map;
+    }
+
+
+    /**
+     * Pack all values and turn keys into ids
+     *
+     * @param iterable $values
+     * @return array
+     */
+    protected function packValues(iterable $values): array
+    {
+        $packed = [];
+
+        foreach ($values as $key => $value) {
+            $id = $this->keyToId(is_int($key) ? (string)$key : $key);
+            $packed[$id] = $this->pack($value);
+        }
+
+        return $packed;
+    }
+
 
 
     /**
@@ -317,19 +240,23 @@ abstract class AbstractCache implements CacheInterface
      */
     protected function ttlToSeconds($ttl): ?int
     {
-        if (!isset($ttl) || is_int($ttl)) {
-            return $ttl;
+        if (!isset($ttl)) {
+            return $this->ttl;
         }
 
         if ($ttl instanceof DateInterval) {
             $reference = new DateTimeImmutable();
             $endTime = $reference->add($ttl);
 
-            return $endTime->getTimestamp() - $reference->getTimestamp();
+            $ttl = $endTime->getTimestamp() - $reference->getTimestamp();
         }
 
-        $type = (is_object($ttl) ? get_class($ttl) . ' ' : '') . gettype($ttl);
-        throw new InvalidArgumentException("ttl should be of type int or DateInterval, not $type");
+        if (!is_int($ttl)) {
+            $type = (is_object($ttl) ? get_class($ttl) . ' ' : '') . gettype($ttl);
+            throw new InvalidArgumentException("ttl should be of type int or DateInterval, not $type");
+        }
+
+        return isset($this->ttl) ? min($ttl, $this->ttl) : $ttl;
     }
 
     /**
@@ -342,15 +269,17 @@ abstract class AbstractCache implements CacheInterface
     protected function ttlToTimestamp($ttl): ?int
     {
         if (!isset($ttl)) {
-            return null;
+            return isset($this->ttl) ? time() + $this->ttl : null;
         }
 
         if (is_int($ttl)) {
-            return time() + $ttl;
+            return time() + (isset($this->ttl) ? min($ttl, $this->ttl) : $ttl);
         }
 
         if ($ttl instanceof DateInterval) {
-            return (new DateTimeImmutable())->add($ttl)->getTimestamp();
+            $timestamp = (new DateTimeImmutable())->add($ttl)->getTimestamp();
+
+            return isset($this->ttl) ? min($timestamp, time() + $this->ttl) : $timestamp;
         }
 
         $type = (is_object($ttl) ? get_class($ttl) . ' ' : '') . gettype($ttl);

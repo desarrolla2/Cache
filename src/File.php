@@ -50,7 +50,7 @@ class File extends AbstractFile
     protected function setTtlStrategyOption($strategy)
     {
         if (!in_array($strategy, ['embed', 'file', 'mtime'])) {
-            throw new InvalidArgumentException("Unknown strategry '$strategy', should be 'embed', 'file' or 'mtime'");
+            throw new InvalidArgumentException("Unknown strategy '$strategy', should be 'embed', 'file' or 'mtime'");
         }
 
         $this->ttlStrategy = $strategy;
@@ -159,7 +159,6 @@ class File extends AbstractFile
     public function set($key, $value, $ttl = null)
     {
         $cacheFile = $this->getFilename($key);
-
         $packed = $this->pack($value);
 
         if (!is_string($packed)) {

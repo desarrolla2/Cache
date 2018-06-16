@@ -41,13 +41,13 @@ class Apcu extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $ttlSeconds = $this->ttlToSeconds($ttl ?? $this->ttl);
+        $ttlSeconds = $this->ttlToSeconds($ttl);
 
         if (isset($ttlSeconds) && $ttlSeconds <= 0) {
             return $this->delete($key);
         }
 
-        return apcu_store($this->getKey($key), $this->pack($value), $ttlSeconds ?? 0);
+        return apcu_store($this->keyToId($key), $this->pack($value), $ttlSeconds ?? 0);
     }
 
     /**
@@ -55,13 +55,9 @@ class Apcu extends AbstractCache
      */
     public function get($key, $default = null)
     {
-        $packed = apcu_fetch($this->getKey($key), $success);
+        $packed = apcu_fetch($this->keyToId($key), $success);
 
-        if (!$success) {
-            return $default;
-        }
-
-        return $this->unpack($packed);
+        return $success ? $this->unpack($packed) : $default;
     }
 
     /**
@@ -69,7 +65,7 @@ class Apcu extends AbstractCache
      */
     public function has($key)
     {
-        return apcu_exists($this->getKey($key));
+        return apcu_exists($this->keyToId($key));
     }
 
     /**
@@ -77,9 +73,9 @@ class Apcu extends AbstractCache
      */
     public function delete($key)
     {
-        $cacheKey = $this->getKey($key);
+        $id = $this->keyToId($key);
 
-        return apcu_delete($cacheKey) || !apcu_exists($cacheKey);
+        return apcu_delete($id) || !apcu_exists($id);
     }
 
     /**
@@ -89,5 +85,4 @@ class Apcu extends AbstractCache
     {
         return apcu_clear_cache();
     }
-
 }

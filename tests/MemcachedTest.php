@@ -15,12 +15,17 @@ namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\Memcached as MemcachedCache;
 use Memcached as BaseMemcached;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * MemcachedTest
  */
 class MemcachedTest extends AbstractCacheTest
 {
+    protected $skippedTests = [
+        'testBasicUsageWithLongKey' => 'Only support keys up to 250 bytes'
+    ];
+
     public function createSimpleCache()
     {
         if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
@@ -45,8 +50,8 @@ class MemcachedTest extends AbstractCacheTest
     public function dataProviderForOptionsException()
     {
         return [
-            ['ttl', 0, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
-            ['file', 100, '\Desarrolla2\Cache\Exception\InvalidArgumentException'],
+            ['ttl', 0, InvalidArgumentException::class],
+            ['file', 100, InvalidArgumentException::class],
         ];
     }
 }

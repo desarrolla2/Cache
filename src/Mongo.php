@@ -124,7 +124,7 @@ class Mongo extends AbstractCache
             return [];
         }
 
-        $cacheKeys = array_map([$this, 'getKey'], $keys);
+        $cacheKeys = array_map([$this, 'getKey'], is_array($keys) ? $keys : iterator_to_array($keys));
         $items = array_fill_keys($cacheKeys, $default);
 
         $rows = $this->collection->find(['_id' => ['$in' => $cacheKeys]]);

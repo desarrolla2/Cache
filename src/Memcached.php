@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\NopPacker;
 use Memcached as BaseMemcached;
@@ -43,6 +44,7 @@ class Memcached extends AbstractCache
         $this->server = $server;
     }
 
+
     /**
      * Create the default packer for this cache implementation
      *
@@ -53,23 +55,73 @@ class Memcached extends AbstractCache
         return new NopPacker();
     }
 
+    /**
+     * Set the key prefix
+     *
+     * @param string $prefix
+     * @return void
+     */
+    protected function setPrefixOption(string $prefix): void
+    {
+        $this->server->setOption(Memcached::OPT_PREFIX_KEY, $prefix);
+    }
 
     /**
-     * {@inheritdoc}
+     * Get the key prefix
+     *
+     * @return string
      */
-    public function delete($key)
+    protected function getPrefixOption(): string
     {
-        return $this->server->delete($this->getKey($key));
+        return $this->server->getOption(Memcached::OPT_PREFIX_KEY) ?? '';
     }
+
+
+    /**
+     * Validate the key
+     *
+     * @param string $key
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    protected function assertKey($key): void
+    {
+        parent::assertKey($key);
+
+        if (strlen($key) > 250) {
+            throw new InvalidArgumentException("Key to long, max 250 characters");
+        }
+    }
+
+    /**
+     * Pack all values and turn keys into ids
+     *
+     * @param iterable $values
+     * @return array
+     */
+    protected function packValues(iterable $values): array
+    {
+        $packed = [];
+
+        foreach ($values as $key => $value) {
+            $this->assertKey(is_int($key) ? (string)$key : $key);
+            $packed[$key] = $this->pack($value);
+        }
+
+        return $packed;
+    }
+
 
     /**
      * {@inheritdoc}
      */
     public function get($key, $default = null)
     {
-        $data = $this->server->get($this->getKey($key));
+        $this->assertKey($key);
 
-        if ($data === false) {
+        $data = $this->server->get($key);
+
+        if ($this->server->getResultCode() !== BaseMemcached::RES_SUCCESS) {
             return $default;
         }
 
@@ -79,27 +131,14 @@ class Memcached extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function getMultiple($keys, $default = null)
-    {
-        $this->assertIterable($keys, 'keys not iterable');
-
-        $cacheKeys = array_map([$this, 'getKey'], $keys);
-
-        $items = $this->server->getMulti($cacheKeys);
-
-        $result = array_map(function($item) {
-            return $this->unpack($item);
-        }, $items);
-
-        return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function has($key)
     {
-        return $this->server->get($this->getKey($key)) !== false;
+        $this->assertKey($key);
+        $this->server->get($key);
+
+        $result = $this->server->getResultCode();
+
+        return $result === BaseMemcached::RES_SUCCESS;
     }
 
     /**
@@ -107,10 +146,54 @@ class Memcached extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $packed = $this->pack($value, $ttl);
-        $ttlTime = $this->ttlToTimestamp($ttl);
+        $this->assertKey($key);
 
-        return $this->server->set($this->getKey($key), $packed, $ttlTime);
+        $packed = $this->pack($value);
+        $ttlTime = $this->ttlToMemcachedTime($ttl);
+
+        if ($ttlTime === false) {
+            return $this->delete($key);
+        }
+
+        $success = $this->server->set($key, $packed, $ttlTime);
+
+        return $success;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($key)
+    {
+        $this->server->delete($this->keyToId($key));
+
+        $result = $this->server->getResultCode();
+
+        return $result === BaseMemcached::RES_SUCCESS || $result === BaseMemcached::RES_NOTFOUND;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple($keys, $default = null)
+    {
+        $this->assertIterable($keys, 'keys not iterable');
+        $keysArr = is_array($keys) ? $keys : iterator_to_array($keys, false);
+        array_walk($keysArr, [$this, 'assertKey']);
+
+        $result = $this->server->getMulti($keysArr);
+
+        if ($result === false) {
+            return false;
+        }
+
+        $items = array_fill_keys($keysArr, $default);
+
+        foreach ($result as $key => $value) {
+            $items[$key] = $this->unpack($value);
+        }
+
+        return $items;
     }
 
     /**
@@ -120,13 +203,14 @@ class Memcached extends AbstractCache
     {
         $this->assertIterable($values, 'values not iterable');
 
-        $cacheKeys = array_map([$this, 'getKey'], array_keys($values));
+        $packed = $this->packValues($values);
+        $ttlTime = $this->ttlToMemcachedTime($ttl);
 
-        $packed = array_map(function($value) {
-            $this->pack($value);
-        }, $values);
+        if ($ttlTime === false) {
+            return $this->server->deleteMulti(array_keys($packed));
+        }
 
-        return $this->server->setMulti(array_combine($cacheKeys, $packed), $this->ttlToTimestamp($ttl));
+        return $this->server->setMulti($packed, $ttlTime);
     }
 
     /**
@@ -134,6 +218,28 @@ class Memcached extends AbstractCache
      */
     public function clear()
     {
-        $this->server->flush();
+       return $this->server->flush();
+    }
+
+
+    /**
+     * Convert ttl to timestamp or seconds.
+     *
+     * @see http://php.net/manual/en/memcached.expiration.php
+     *
+     * @param null|int|DateInterval $ttl
+     * @return int|null
+     * @throws InvalidArgumentException
+     */
+    protected function ttlToMemcachedTime($ttl)
+    {
+        $seconds = $this->ttlToSeconds($ttl);
+
+        if ($seconds <= 0) {
+            return isset($seconds) ? false : 0;
+        }
+
+        /* 2592000 seconds = 30 days */
+        return $seconds <= 2592000 ? $seconds : $this->ttlToTimestamp($ttl);
     }
 }

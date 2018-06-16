@@ -19,6 +19,7 @@ namespace Desarrolla2\Cache;
 use Desarrolla2\Cache\AbstractFile;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
+use Desarrolla2\Cache\File\BasicFilename;
 
 /**
  * Cache file as PHP script.
@@ -43,7 +44,7 @@ class PhpFile extends AbstractFile
     protected function getFilenameOption(): callable
     {
         if (!isset($this->filename)) {
-            $this->filename = new SimplePath('%s.php');
+            $this->filename = new BasicFilename('%s.php');
         }
 
         return $this->filename;
@@ -67,7 +68,7 @@ class PhpFile extends AbstractFile
         }
 
         return $ttl !== null
-            ? "<?php return time() <= {$ttl} ? {$macro} : false;"
+            ? "<?php return time() < {$ttl} ? {$macro} : false;"
             : "<?php return {$macro};";
     }
 
@@ -105,6 +106,6 @@ class PhpFile extends AbstractFile
         $packed = $this->pack($value);
         $script = $this->createScript($packed, $this->ttlToTimestamp($ttl));
 
-        return $this->write($cacheFile, $script);
+        return $this->writeFile($cacheFile, $script);
     }
 }

@@ -22,6 +22,11 @@ use Desarrolla2\Cache\PhpFile;
  */
 class PhpFileTest extends AbstractCacheTest
 {
+    protected $skippedTests = [
+        'testBasicUsageWithLongKey' => 'Only support keys up to 64 bytes'
+    ];
+
+
     public function createSimpleCache()
     {
         return new PhpFile($this->config['file']['dir']);
