@@ -2,10 +2,8 @@ language: php
 #sudo: false
 
 php:
-    - 5.4
-    - 5.5
-    - 5.6
-    - 7.0
+    - 7.1
+    - 7.2
     - hhvm
 
 matrix:
@@ -23,13 +21,12 @@ notifications:
         - daniel.gonzalez@freelancemadrid.es
 
 before_script:
-
     # Create Mysql Database
     - mysql -e 'CREATE DATABASE IF NOT EXISTS `cache`;'
     - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
     # Install apcu
-    - "if [ $TRAVIS_PHP_VERSION == '7.0' ] || [ $TRAVIS_PHP_VERSION == 'hhvm' ]; then export APCU_VERSION=5.1.0; else export APCU_VERSION=4.0.8; fi"
+    - "if [ $TRAVIS_PHP_VERSION == 'hhvm' ]; then export APCU_VERSION=5.1.0; else export APCU_VERSION=4.0.8; fi"
     - sh -c "yes '' | pecl install apcu-$APCU_VERSION"
     - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then phpenv config-add ./tests/travis/php.ini; fi"
 
