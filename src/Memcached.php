@@ -19,7 +19,7 @@ namespace Desarrolla2\Cache;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\NopPacker;
-use Memcached as BaseMemcached;
+use Memcached as MemcachedServer;
 
 /**
  * Memcached
@@ -27,20 +27,15 @@ use Memcached as BaseMemcached;
 class Memcached extends AbstractCache
 {
     /**
-     * @var BaseMemcached
+     * @var Server
      */
     protected $server;
 
     /**
-     * @param BaseMemcached|null $server
+     * @param MemcachedServer|null $server
      */
-    public function __construct(BaseMemcached $server = null)
+    public function __construct(MemcachedServer $server)
     {
-        if (!$server) {
-            $server = new BaseMemcached();
-            $server->addServer('localhost', 11211);
-        }
-
         $this->server = $server;
     }
 
@@ -54,28 +49,6 @@ class Memcached extends AbstractCache
     {
         return new NopPacker();
     }
-
-    /**
-     * Set the key prefix
-     *
-     * @param string $prefix
-     * @return void
-     */
-    protected function setPrefixOption(string $prefix): void
-    {
-        $this->server->setOption(Memcached::OPT_PREFIX_KEY, $prefix);
-    }
-
-    /**
-     * Get the key prefix
-     *
-     * @return string
-     */
-    protected function getPrefixOption(): string
-    {
-        return $this->server->getOption(Memcached::OPT_PREFIX_KEY) ?? '';
-    }
-
 
     /**
      * Validate the key
@@ -121,7 +94,7 @@ class Memcached extends AbstractCache
 
         $data = $this->server->get($key);
 
-        if ($this->server->getResultCode() !== BaseMemcached::RES_SUCCESS) {
+        if ($this->server->getResultCode() !== MemcachedServer::RES_SUCCESS) {
             return $default;
         }
 
@@ -138,7 +111,7 @@ class Memcached extends AbstractCache
 
         $result = $this->server->getResultCode();
 
-        return $result === BaseMemcached::RES_SUCCESS;
+        return $result === MemcachedServer::RES_SUCCESS;
     }
 
     /**
@@ -169,7 +142,7 @@ class Memcached extends AbstractCache
 
         $result = $this->server->getResultCode();
 
-        return $result === BaseMemcached::RES_SUCCESS || $result === BaseMemcached::RES_NOTFOUND;
+        return $result === MemcachedServer::RES_SUCCESS || $result === MemcachedServer::RES_NOTFOUND;
     }
 
     /**

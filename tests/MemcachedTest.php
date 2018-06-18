@@ -26,7 +26,7 @@ class MemcachedTest extends AbstractCacheTest
         'testBasicUsageWithLongKey' => 'Only support keys up to 250 bytes'
     ];
 
-    public function createSimpleCache()
+    public function setUp()
     {
         if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
             $this->markTestSkipped(
@@ -34,6 +34,11 @@ class MemcachedTest extends AbstractCacheTest
             );
         }
 
+        parent::setUp();
+    }
+
+    public function createSimpleCache()
+    {
         list($host, $port) = explode(':', CACHE_TESTS_MEMCACHED_SERVER) + [1 => 11211];
 
         $adapter = new Memcached();
