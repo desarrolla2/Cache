@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * This file is part of the Cache package.
  *
  * Copyright (c) Daniel González
@@ -16,6 +15,8 @@ declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
+use Desarrolla2\Cache\Option\InitializeTrait;
 use mysqli as Server;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
@@ -25,6 +26,8 @@ use Desarrolla2\Cache\Packer\SerializePacker;
  */
 class Mysqli extends AbstractCache
 {
+    use InitializeTrait;
+
     /**
      * @var Server
      */
@@ -35,12 +38,40 @@ class Mysqli extends AbstractCache
      */
     protected $table  = 'cache';
 
+
     /**
-     * @param Server|null $server
+     * Class constructor
+     *
+     * @param Server $server
      */
-    public function __construct(Server $server = null)
+    public function __construct(Server $server)
     {
-        $this->server = $server ?: new Server();
+        $this->server = $server;
+    }
+
+
+    /**
+     * Initialize table.
+     * Automatically delete old cache.
+     */
+    protected function initialize()
+    {
+        if ($this->initialized !== false) {
+            return;
+        }
+
+        $this->query(
+            "CREATE TABLE IF NOT EXISTS `{table}` "
+            . "( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )"
+        );
+
+        $this->query(
+            "CREATE EVENT IF NOT EXISTS `apply_ttl_{$this->table}` ON SCHEDULE EVERY 1 HOUR DO BEGIN"
+            . " DELETE FROM {table} WHERE ttl < NOW();"
+            . " END"
+        );
+
+        $this->initialized = true;
     }
 
     /**
@@ -53,14 +84,16 @@ class Mysqli extends AbstractCache
         return new SerializePacker();
     }
 
+
     /**
      * Set the table name
      *
      * @param string $table
      */
-    public function setTableOption($table)
+    public function setTableOption(string $table)
     {
-        $this->table = (string)$table;
+        $this->table = $table;
+        $this->requireInitialization();
     }
 
     /**
@@ -68,7 +101,7 @@ class Mysqli extends AbstractCache
      *
      * @return string
      */
-    public function getTableOption()
+    public function getTableOption(): string
     {
         return $this->table;
     }
@@ -77,21 +110,17 @@ class Mysqli extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
-    {
-        return $this->query('DELETE FROM {table} WHERE `key` = %s', $this->getKey($key)) !== false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function get($key, $default = null)
     {
-        $row = $this->fetchRow(
-            'SELECT `value` FROM {table} WHERE `key` = %s AND `ttl` >= %d LIMIT 1',
-            $this->getKey($key),
-            $this->time()
+        $this->initialize();
+
+        $result = $this->query(
+            'SELECT `value` FROM {table} WHERE `key` = %s AND (`ttl` > %d OR `ttl` IS NULL) LIMIT 1',
+            $this->keyToId($key),
+            $this->currentTimestamp()
         );
+
+        $row = $result !== false ? $result->fetch_row() : null;
 
         return $row ? $this->unpack($row[0]) : $default;
     }
@@ -101,26 +130,28 @@ class Mysqli extends AbstractCache
      */
     public function getMultiple($keys, $default = null)
     {
-        $this->assertIterable($keys, 'keys not iterable');
+        $idKeyPairs = $this->mapKeysToIds($keys);
 
-        if (empty($keys)) {
+        if (empty($idKeyPairs)) {
             return [];
         }
 
-        $cacheKeys = array_map([$this, 'getKey'], $keys);
-        $items = array_fill_keys($cacheKeys, $default);
+        $this->initialize();
 
-        $ret = $this->query(
-            'SELECT `key`, `value` FROM {table} WHERE `key` IN `%s` AND `ttl` >= %d',
-            $cacheKeys,
-            $this->time()
+        $values = array_fill_keys(array_values($idKeyPairs), $default);
+
+        $result = $this->query(
+            'SELECT `key`, `value` FROM {table} WHERE `key` IN (%s) AND (`ttl` > %d OR `ttl` IS NULL)',
+            array_keys($idKeyPairs),
+            $this->currentTimestamp()
         );
 
-        while ((list($key, $value) = $ret->fetch_assoc())) {
-            $items[$key] = $this->unpack($value);
+        while ((list($id, $value) = $result->fetch_row())) {
+            $key = $idKeyPairs[$id];
+            $values[$key] = $this->unpack($value);
         }
 
-        return $keys === $cacheKeys ? $items : array_merge($keys, array_values($items));
+        return $values;
     }
 
     /**
@@ -128,13 +159,17 @@ class Mysqli extends AbstractCache
      */
     public function has($key)
     {
-        $row = $this->fetchRow(
-            'SELECT `key` FROM {table} WHERE `key` = %s AND `ttl` >= %d LIMIT 1',
-            $this->getKey($key),
-            $this->time()
+        $this->initialize();
+
+        $result = $this->query(
+            'SELECT COUNT(`key`) FROM {table} WHERE `key` = %s AND (`ttl` > %d OR `ttl` IS NULL) LIMIT 1',
+            $this->keyToId($key),
+            $this->currentTimestamp()
         );
 
-        return !empty($row);
+        list($count) = $result ? $result->fetch_row() : null;
+
+        return isset($count) && $count > 0;
     }
 
     /**
@@ -142,14 +177,16 @@ class Mysqli extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $res = $this->query(
-            'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES (%s, %s, %d)',
-            $this->getKey($key),
+        $this->initialize();
+
+        $result = $this->query(
+            'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES (%s, %s, %s)',
+            $this->keyToId($key),
             $this->pack($value),
-            $this->time() + ($ttl ?: $this->ttl)
+            $this->ttlToTimestamp($ttl)
         );
 
-        return $res !== false;
+        return $result !== false;
     }
 
     /**
@@ -163,13 +200,15 @@ class Mysqli extends AbstractCache
             return true;
         }
 
-        $timeTtl = $this->time() + ($ttl ?: $this->ttl);
+        $this->initialize();
+
+        $timeTtl = $this->ttlToTimestamp($ttl);
         $query = 'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES';
 
         foreach ($values as $key => $value) {
             $query .= sprintf(
-                '(%s, %s, %d),',
-                $this->quote($this->getKey($key)),
+                ' (%s, %s, %s),',
+                $this->quote($this->keyToId(is_int($key) ? (string)$key : $key)),
                 $this->quote($this->pack($value)),
                 $this->quote($timeTtl)
             );
@@ -181,35 +220,45 @@ class Mysqli extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function delete($key)
     {
-        $this->query('TRUNCATE {table}');
+        $this->initialize();
+
+        return (bool)$this->query('DELETE FROM {table} WHERE `key` = %s', $this->keyToId($key));
     }
 
     /**
-     * Fetch a row from a MySQL table
-     *
-     * @param string     $query
-     * @param string[]   $params
-     * @return array|false
+     * {@inheritdoc}
      */
-    protected function fetchRow($query, ...$params)
+    public function deleteMultiple($keys)
     {
-        $res = $this->query($query, ...$params);
+        $idKeyPairs = $this->mapKeysToIds($keys);
 
-        if ($res === false) {
-            return false;
+        if (empty($idKeyPairs)) {
+            return true;
         }
 
-        return $res->fetch_row();
+        $this->initialize();
+
+        return (bool)$this->query('DELETE FROM {table} WHERE `key` IN (%s)', array_keys($idKeyPairs));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->initialize();
+        return (bool)$this->query('TRUNCATE {table}');
+    }
+
 
     /**
      * Query the MySQL server
      *
      * @param string  $query
      * @param mixed[] $params
-     * @return \mysqli_result|false;
+     * @return \mysqli_result|false
      */
     protected function query($query, ...$params)
     {
@@ -221,7 +270,7 @@ class Mysqli extends AbstractCache
         $ret = $this->server->query($sql);
 
         if ($ret === false) {
-            trigger_error($this->server->error, E_USER_NOTICE);
+            trigger_error($this->server->error . " $sql", E_USER_NOTICE);
         }
 
         return $ret;
@@ -235,6 +284,10 @@ class Mysqli extends AbstractCache
      */
     protected function quote($value)
     {
+        if ($value === null) {
+            return 'NULL';
+        }
+
         if (is_array($value)) {
             return join(', ', array_map([$this, 'quote'], $value));
         }

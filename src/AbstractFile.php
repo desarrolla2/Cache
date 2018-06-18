@@ -16,7 +16,9 @@ namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\AbstractCache;
 use Desarrolla2\Cache\Exception\CacheException;
+use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Option\FilenameTrait as FilenameOption;
+use Webmozart\Glob\Iterator\GlobIterator;
 
 /**
  * Abstract class for using files as cache.
@@ -34,39 +36,36 @@ abstract class AbstractFile extends AbstractCache
 
 
     /**
-     * @param string $cacheDir
+     * Class constructor
+     *
+     * @param string|null $cacheDir
      * @throws CacheException
      */
-    public function __construct(string $cacheDir = null)
+    public function __construct(?string $cacheDir = null)
     {
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'cache';
         }
 
-        $this->cacheDir = (string)$cacheDir;
-        $this->createCacheDirectory($cacheDir);
+        $this->cacheDir = rtrim($cacheDir, '/');
     }
-
 
     /**
-     * Create the cache directory
+     * Validate the key
      *
-     * @param string $cacheFile
+     * @param string $key
      * @return void
-     * @throws CacheException
+     * @throws InvalidArgumentException
      */
-    protected function createCacheDirectory(string $path): void
+    protected function assertKey($key): void
     {
-        if (!is_dir($path)) {
-            if (!mkdir($path, 0777, true)) {
-                throw new CacheException($path.' is not writable');
-            }
-        }
+        parent::assertKey($key);
 
-        if (!is_writable($path)) {
-            throw new CacheException($path.' is not writable');
+        if (strpos($key, '*')) {
+            throw new InvalidArgumentException("Key may not contain the character '*'");
         }
     }
+
 
     /**
      * Read the cache file
@@ -103,6 +102,12 @@ abstract class AbstractFile extends AbstractCache
      */
     protected function writeFile(string $cacheFile, string $contents): bool
     {
+        $dir = dirname($cacheFile);
+
+        if ($dir !== $this->cacheDir && !is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
         return (bool)file_put_contents($cacheFile, $contents);
     }
 
@@ -117,6 +122,47 @@ abstract class AbstractFile extends AbstractCache
         return !is_file($file) || unlink($file);
     }
 
+    /**
+     * Recursive delete an empty directory.
+     *
+     * @return bool
+     */
+    protected function removeFiles()
+    {
+        $generator = $this->getFilenameOption();
+        $pattern = $this->cacheDir . DIRECTORY_SEPARATOR . $generator('*');
+
+        $objects = new GlobIterator($pattern);
+
+        foreach ($objects as $object) {
+            unlink($object);
+        }
+    }
+
+    /**
+     * Recursive delete an empty directory.
+     *
+     * @param string $dir
+     * @return bool
+     */
+    protected function removeChildDirecotries(string $dir = null)
+    {
+        if (empty($dir)) {
+            $dir = $this->cacheDir;
+        }
+
+        $success = true;
+        $objects = new GlobIterator($dir);
+
+        foreach ($objects as $object) {
+            if (!is_dir("$dir/$object") && is_link("$dir/$object")) {
+                $success = $this->recursiveRemove("$dir/$object") && rmdir($dir) && $success;
+            }
+        }
+
+        return $success;
+    }
+
 
     /**
      * {@inheritdoc}
@@ -129,16 +175,14 @@ abstract class AbstractFile extends AbstractCache
     }
 
     /**
+     * Delete cache directory.
+     *
      * {@inheritdoc}
      */
     public function clear()
     {
-        $pattern = $this->getWildcard();
+        $this->removeFiles();
 
-        foreach (glob($pattern) as $file) {
-            $this->deleteFile($file);
-        }
-
-        return true;
+        return $this->removeChildDirecotries();
     }
 }

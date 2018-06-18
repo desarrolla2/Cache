@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * This file is part of the Cache package.
  *
  * Copyright (c) Daniel González
@@ -12,17 +11,17 @@
  * @author Arnold Daniels <arnold@jasny.net>
  */
 
-declare(strict_types=1);
-
 namespace Desarrolla2\Cache\Packer;
 
 use Desarrolla2\Cache\Packer\PackerInterface;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
+use MongoDB\BSON\Binary;
 
 /**
- * Pack value through serialization
+ * Pack as BSON binary
+ *
+ * @todo Don't use serialize when packer chain is here.
  */
-class SerializePacker implements PackerInterface
+class MongoDBBinaryPacker implements PackerInterface
 {
     /**
      * @var array
@@ -46,33 +45,33 @@ class SerializePacker implements PackerInterface
      */
     public function getType()
     {
-        return 'php.cache';
+        return 'bson';
     }
 
     /**
      * Pack the value
-     * 
+     *
      * @param mixed $value
      * @return string
      */
     public function pack($value)
     {
-        return serialize($value);
+        return new Binary(serialize($value), Binary::TYPE_GENERIC);
     }
-    
+
     /**
      * Unpack the value
-     * 
+     *
      * @param string $packed
      * @return string
      * @throws \UnexpectedValueException if he value can't be unpacked
      */
     public function unpack($packed)
     {
-        if (!is_string($packed)) {
-            throw new InvalidArgumentException("packed value should be a string");
+        if (!$packed instanceof Binary) {
+            throw new InvalidArgumentException("packed value should be BSON binary");
         }
 
-        return unserialize($packed, $this->options);
+        return unserialize((string)$packed, $this->options);
     }
 }

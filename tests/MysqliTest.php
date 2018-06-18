@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * This file is part of the Cache package.
  *
  * Copyright (c) Daniel González
@@ -25,39 +24,44 @@ class MysqliTest extends AbstractCacheTest
      */
     protected $mysqli;
 
+    protected $skippedTests = [
+        'testBasicUsageWithLongKey' => 'Only support keys up to 255 bytes'
+    ];
+
     public function setUp()
     {
         if (!class_exists('mysqli')) {
             return $this->markTestSkipped("mysqli extension not loaded");
         }
 
-        $this->mysqli = new \mysqli(
-            $this->config['mysql']['host'],
-            $this->config['mysql']['user'],
-            $this->config['mysql']['password'],
-            null,
-            $this->config['mysql']['port']
-        );
+        $this->mysqli = new \mysqli(ini_get('mysqli.default_host'));
 
         if ($this->mysqli->errno) {
             return $this->markTestSkipped($this->mysqli->error);
         }
 
-        $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . $this->config['mysql']['database'] . '`;');
-        $this->mysqli->select_db($this->config['mysql']['database']);
+        $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
+        $this->mysqli->select_db(CACHE_TESTS_MYSQLI_DATABASE);
 
-        $this->mysqli->query('CREATE TEMPORARY TABLE IF NOT EXISTS `cache`( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED )');
+        $this->mysqli->query("CREATE TABLE IF NOT EXISTS `cache` "
+            ."( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )");
+
+        if ($this->mysqli->error) {
+            $this->markTestSkipped($this->mysqli->error);
+        }
 
         parent::setUp();
     }
 
     public function createSimpleCache()
     {
-        return new MysqliCache($this->mysqli);
+        return (new MysqliCache($this->mysqli))
+            ->withOption('initialize', false);
     }
 
     public function tearDown()
     {
-        $this->mysqli->query('DROP DATABASE IF EXISTS `'.$this->config['mysql']['database'].'`;');
+        $this->mysqli->query('DROP DATABASE IF EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
+        $this->mysqli->close();
     }
 }

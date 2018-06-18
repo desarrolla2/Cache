@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Cache package.
  *
  * Copyright (c) Daniel González
@@ -9,18 +9,20 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
  */
 
 namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\File as FileCache;
+use Desarrolla2\Cache\File\TrieFilename;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
 /**
- * FileTest
+ * FileTest with Trie structure
  */
-class FileTest extends AbstractCacheTest
+class FileTrieTest extends AbstractCacheTest
 {
     /**
      * @var vfsStreamDirectory
@@ -40,7 +42,8 @@ class FileTest extends AbstractCacheTest
 
     public function createSimpleCache()
     {
-        return new FileCache(vfsStream::url('cache'));
+        return (new FileCache(vfsStream::url('cache')))
+            ->withOption('filename', new TrieFilename('%s.php.cache',4));
     }
 
 

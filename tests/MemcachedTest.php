@@ -14,7 +14,7 @@
 namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\Memcached as MemcachedCache;
-use Memcached as BaseMemcached;
+use Memcached;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
@@ -34,24 +34,15 @@ class MemcachedTest extends AbstractCacheTest
             );
         }
 
-        $adapter = new BaseMemcached();
-        $adapter->addServer($this->config['memcached']['host'], $this->config['memcached']['port']);
+        list($host, $port) = explode(':', CACHE_TESTS_MEMCACHED_SERVER) + [1 => 11211];
+
+        $adapter = new Memcached();
+        $adapter->addServer($host, (int)$port);
 
         if (!$adapter->flush()) {
             return $this->markTestSkipped("Unable to flush Memcached; not running?");
         }
 
         return new MemcachedCache($adapter);
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProviderForOptionsException()
-    {
-        return [
-            ['ttl', 0, InvalidArgumentException::class],
-            ['file', 100, InvalidArgumentException::class],
-        ];
     }
 }

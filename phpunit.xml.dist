@@ -11,10 +11,17 @@
         <whitelist>
             <directory>./tests</directory>
         </whitelist>
-        <blacklist>
-            <directory>/usr/share/pear/</directory>
-            <directory>./vendor</directory>
-            <directory>./build</directory>
-        </blacklist>
     </filter>
+
+    <php>
+        <!--ini name="mysqli.default_host" value="localhost" /-->
+        <!--ini name="mysqli.default_user" value="root" /-->
+        <!--ini name="mysqli.default_pw" value=""/-->
+        <const name="CACHE_TESTS_MYSQLI_DATABASE" value="cache_tests" />
+
+        <const name="CACHE_TESTS_MONGO_DSN" value="mongodb://localhost:27017" />
+        <const name="CACHE_TESTS_MONGO_DATABASE" value="cache_tests" />
+
+        <const name="CACHE_TESTS_MEMCACHED_SERVER" value="localhost:11211" />
+    </php>
 </phpunit>

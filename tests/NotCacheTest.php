@@ -78,9 +78,11 @@ class NoCacheTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function testSetOption()
+    public function testWithOption()
     {
-        $this->cache->setOption('ttl', 3600);
-        $this->assertSame(3600, $this->cache->getOption('ttl'));
+        $cache = $this->cache->withOption('ttl', 3600);
+        $this->assertSame(3600, $cache->getOption('ttl'));
+
+        $this->assertNotSame($this->cache, $cache);
     }
 }

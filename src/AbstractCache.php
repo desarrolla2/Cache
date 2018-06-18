@@ -155,7 +155,8 @@ abstract class AbstractCache implements CacheInterface
         $map = [];
 
         foreach ($keys as $key) {
-            $map[$key] = $this->keyToId($key);
+            $id = $this->keyToId($key);
+            $map[$id] = $key;
         }
 
         return $map;
@@ -230,6 +231,16 @@ abstract class AbstractCache implements CacheInterface
         return $success;
     }
 
+
+    /**
+     * Get the current time.
+     *
+     * @return int
+     */
+    protected function currentTimestamp(): int
+    {
+        return time();
+    }
 
     /**
      * Convert TTL to seconds from now

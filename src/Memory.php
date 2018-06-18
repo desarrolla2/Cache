@@ -93,26 +93,15 @@ class Memory extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
-    {
-        $cacheKey = $this->getKey($key);
-        unset($this->cache[$cacheKey], $this->cacheTtl[$cacheKey]);
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function get($key, $default = null)
     {
         if (!$this->has($key)) {
             return $default;
         }
 
-        $cacheKey = $this->getKey($key);
+        $id = $this->keyToId($key);
 
-        return $this->unpack($this->cache[$cacheKey]);
+        return $this->unpack($this->cache[$id]);
     }
 
     /**
@@ -120,14 +109,14 @@ class Memory extends AbstractCache
      */
     public function has($key)
     {
-        $cacheKey = $this->getKey($key);
+        $id = $this->keyToId($key);
 
-        if (!isset($this->cacheTtl[$cacheKey])) {
+        if (!isset($this->cacheTtl[$id])) {
             return false;
         }
 
-        if ($this->cacheTtl[$cacheKey] <= time()) {
-            unset($this->cache[$cacheKey], $this->cacheTtl[$cacheKey]);
+        if ($this->cacheTtl[$id] <= time()) {
+            unset($this->cache[$id], $this->cacheTtl[$id]);
             return false;
         }
 
@@ -144,10 +133,21 @@ class Memory extends AbstractCache
             unset($this->cache[$deleteKey], $this->cacheTtl[$deleteKey]);
         }
 
-        $cacheKey = $this->getKey($key);
+        $id = $this->keyToId($key);
 
-        $this->cache[$cacheKey] = $this->pack($value);
-        $this->cacheTtl[$cacheKey] = $this->ttlToTimestamp($ttl ?? $this->ttl) ?? PHP_INT_MAX;
+        $this->cache[$id] = $this->pack($value);
+        $this->cacheTtl[$id] = $this->ttlToTimestamp($ttl) ?? PHP_INT_MAX;
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($key)
+    {
+        $id = $this->keyToId($key);
+        unset($this->cache[$id], $this->cacheTtl[$id]);
 
         return true;
     }

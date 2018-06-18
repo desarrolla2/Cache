@@ -12,6 +12,8 @@
  * @author Arnold Daniels <arnold@jasny.net>
  */
 
+declare(strict_types=1);
+
 namespace Desarrolla2\Cache\Packer;
 
 /**

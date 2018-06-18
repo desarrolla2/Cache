@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * This file is part of the Cache package.
  *
  * Copyright (c) Daniel González
@@ -22,34 +21,13 @@ use Desarrolla2\Cache\Exception\InvalidArgumentException;
 abstract class AbstractCacheTest extends SimpleCacheTest
 {
     /**
-     * @var \Desarrolla2\Cache\Cache
-     */
-    protected $cache;
-
-    /**
-     * @var array
-     */
-    protected $config = [];
-
-    public function setUp()
-    {
-        $configurationFile = __DIR__.'/config.json';
-
-        if (!is_file($configurationFile)) {
-            throw new \Exception(' Configuration file not found in "'.$configurationFile.'" ');
-        }
-        $this->config = json_decode(file_get_contents($configurationFile), true);
-
-        parent::setUp();
-    }
-
-    /**
      * @return array
      */
     public function dataProviderForOptions()
     {
         return [
             ['ttl', 100],
+            ['prefix', 'test']
         ];
     }
 
@@ -70,6 +48,27 @@ abstract class AbstractCacheTest extends SimpleCacheTest
         $this->assertNotEquals($value, $base->getOption($key));
     }
 
+    public function testWithOptions()
+    {
+        $data = $this->dataProviderForOptions();
+        $options = array_combine(array_column($data, 0), array_column($data, 1));
+
+        $base = $this->createSimpleCache();
+        $cache = $base->withOptions($options);
+
+        foreach ($options as $key => $value) {
+            $this->assertEquals($value, $cache->getOption($key));
+        }
+
+        // Check immutability
+        $this->assertNotSame($base, $cache);
+
+        foreach ($options as $key => $value) {
+            $this->assertNotEquals($value, $base->getOption($key));
+        }
+    }
+
+
     /**
      * @return array
      */
@@ -77,7 +76,7 @@ abstract class AbstractCacheTest extends SimpleCacheTest
     {
         return [
             ['ttl', 0, InvalidArgumentException::class],
-            ['file', 100, InvalidArgumentException::class]
+            ['foo', 'bar', InvalidArgumentException::class]
         ];
     }
 

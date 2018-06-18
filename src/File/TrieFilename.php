@@ -1,4 +1,17 @@
 <?php
+/**
+ * This file is part of the Cache package.
+ *
+ * Copyright (c) Daniel González
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Daniel González <daniel@desarrolla2.com>
+ * @author Arnold Daniels <arnold@jasny.net>
+ */
+
+declare(strict_types=1);
 
 namespace Desarrolla2\Cache\File;
 
@@ -29,7 +42,7 @@ class TrieFilename
      * TrieFilename constructor.
      *
      * @param string $format
-     * @parma int    $levels  The depth of the structure
+     * @param int    $levels  The depth of the structure
      * @param bool   $hash    MD5 hash the key to get a better spread
      */
     public function __construct(string $format, int $levels = 1, bool $hash = false)
