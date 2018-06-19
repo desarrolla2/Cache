@@ -1,9 +1,13 @@
-# Cache [<img alt="SensioLabsInsight" src="https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88/small.png" align="right">](https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88)
+# Desarollo2 Cache
 
 A simple cache library, implementing the [PSR-16](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) standard using **immutable** objects.
 
+![life-is-hard-cache-is](https://user-images.githubusercontent.com/100821/41566888-ecd60cde-735d-11e8-893f-da42b2cd65e7.jpg)
+
 Caching is typically used throughout an applicatiton. Immutability ensure that modifying the cache behaviour in one
-location doesn't result in unexpect behaviour in unrelated code.
+location doesn't result in unexpected behaviour due to changes in unrelated code.
+
+_Desarollo2 Cache aims to be the most complete, correct and best performing PSR-16 implementation available._
 
 [![Latest version][ico-version]][link-packagist]
 [![Latest version][ico-pre-release]][link-packagist]
@@ -15,6 +19,7 @@ location doesn't result in unexpect behaviour in unrelated code.
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Today Downloads][ico-today-downloads]][link-downloads]
 [![Gitter][ico-gitter]][link-gitter]
+
 
 ## Installation
 
@@ -30,12 +35,32 @@ use Desarrolla2\Cache\Memory as Cache;
 
 $cache = new Cache();
 
-$cache->set('key', 'myKeyValue', 3600);
+$value = $cache->get('key');
 
-// later ...
+if (!isset($value)) {
+    $value = do_something(); 
+    $cache->set('key', $value, 3600);
+}
 
-echo $cache->get('key');
+echo $value;
 ```
+
+## Cache implementations
+
+* [Apcu](docs/implementations/apcu.md)
+* [File](docs/implementations/file.md)
+* [Memcached](docs/implementations/memcached.md)
+* [Memory](docs/implementations/memory.md)
+* [MongoDB](docs/implementations/mongodb.md)
+* [Mysqli](docs/implementations/mysqli.md)
+* [NotCache](docs/implementations/notcache.md)
+* [PhpFile](docs/implementations/phpfile.md)
+* [Predis](docs/implementations/predis.md)
+
+[Other implementations][todo-implementations] are planned. Please vote or
+provide a PR to speed up the process of adding the to this library.
+
+[todo-implementations]: https://github.com/desarrolla2/Cache/issues?q=is%3Aissue+is%3Aopen+label%3Aadapter
 
 ### Options
 
@@ -51,270 +76,12 @@ seconds).
 
 Setting the TTL to 0 or a negative number, means the cache should live forever.
 
-## Cache implementations
-
-* [Apcu](#apcu)
-* [File](#file)
-* [Memcached](#memcached)
-* [Memory](#memory)
-* [Mongo](#mongo)
-* [Mysqli](#mysqli)
-* [NotCache](#notcache)
-* [PhpFile](#phpfile)
-* [Predis](#predis)
-
-### Apcu
-
-Use [APCu cache](http://php.net/manual/en/book.apcu.php) to cache to shared
-memory.
-
-``` php
-use Desarrolla2\Cache\Apcu as ApcuCache;
-
-$cache = new ApcuCache();
-```
-
-_Note: by default APCu uses the time at the beginning of a request for ttl. In
-some cases, like with a long running script, this can be a problem. You can
-change this behaviour `ini_set('apc.use_request_time', false)`._
-
-### File
-
-Save the cache as file to on the filesystem.
-
-The file contains the TTL as well
-as the data.
-
-``` php
-use Desarrolla2\Cache\CacheFile as CacheFileCache;
-
-$cache = new CacheFileCache();
-```
-
-You may set the following options;
-
-``` php
-use Desarrolla2\Cache\CacheFile as CacheFileCache;
-
-$cache = (new CacheFileCache())->withOptions([
-    'dir' => '/tmp/mycache',
-    'file-prefix' => '',
-    'file-suffix' => '.php.cache',
-    'ttl' => 3600
-]);
-```
-
-### Memcached
-
-Store cache to [Memcached](https://memcached.org/). Memcached is a high
-performance distributed caching system.
-
-``` php
-use Desarrolla2\Cache\Memcached as MemcacheCache;
-
-$cache = new MemcacheCache();
-```
-
-You can config your connection before
-
-``` php
-use Desarrolla2\Cache\Memcached as MemcachedCache;
-use Memcached;
-
-$server = new Memcached();
-// configure it here
-
-$cache = new MemcachedCache($server);
-```
-
-This implementation uses the [memcached](https://php.net/memcached) php
-extension. The (alternative) memcache extension is not supported.
-
-### Memory
-
-Store the cache in process memory. Cache Memory is removed when the PHP process
-exist. Also it is not shared between different processes.
-
-Memory cache have a option `limit`, that limit the max items in cache.
-
-``` php
-use Desarrolla2\Cache\Memory as MemoryCache;
-
-$cache = new MemoryCache();
-```
-
-You may set the following options;
-
-``` php
-use Desarrolla2\Cache\Memory as MemoryCache;
-
-$cache = (new MemoryCache())->withOptions([
-    'ttl' => 3600,
-    'limit' => 200
-]);
-```
-
-### Mongo
-
-Use it to store the cache in a Mongo database. Requires the
-[(legacy) mongo extension](http://php.net/mongo) or the
-[mongodb/mongodb](https://github.com/mongodb/mongo-php-library) library.
-
-You may pass either a database or collection object to the constructor. If a
-database object is passed, the `items` collection within that DB is used.
-
-``` php
-<?php
-
-use Desarrolla2\Cache\Mongo as MongoCache;
-
-$client = new MongoClient($dsn);
-$database = $client->selectDatabase($dbname);
-
-$cache = new MongoCache($database);
-$cache->setOption('ttl', 3600);
-
-```
-
-``` php
-<?php
-
-use Desarrolla2\Cache\Mongo as MongoCache;
-
-$client = new MongoClient($dsn);
-$database = $client->selectDatabase($dbName);
-$collection = $database->selectCollection($collectionName);
-
-$cache = new MongoCache($collection);
-$cache->setOption('ttl', 3600);
-
-```
-
-_Note that expired cache items aren't automatically deleted. To keep your
-database clean, you should create a
-[ttl index](https://docs.mongodb.org/manual/core/index-ttl/)._
-
-
-```
-db.items.createIndex( { "ttl": 1 }, { expireAfterSeconds: 30 } )
-```
-
-### Mysqli
-
-Use it if you will you have mysqlnd available in your system.
-
-``` php
-<?php
-
-use Desarrolla2\Cache\Mysqli as MysqliCache;
-
-$cache = new MysqliCache();
-$cache->setOption('ttl', 3600);
-
-```
-
-
-``` php
-<?php
-    
-use Desarrolla2\Cache\Mysqli as MysqliCache;
-
-$backend = new mysqli($dsn);
-$cache = new MysqliCache($backend);
-```
-
-_Note that expired cache items aren't automatically deleted. To keep your
-database clean, you should create a
-[scheduled event](https://dev.mysql.com/doc/refman/5.7/en/event-scheduler.html)._
-
-```
-CREATE EVENT `clean_cache` ON SCHEDULE 1 DAY 
-DO BEGIN
-    DELETE FROM `cache
-END;
-```
-
-### NotCache
-
-Use it if you will not implement any cache adapter is an adapter that will
-serve to fool the test environments.
-
-``` php
-<?php
-
-use Desarrolla2\Cache\NotCache;
-
-$cache = new NotCache();
-
-```
-
-### PhpFile
-
-Save the cache as PHP script to on the filesystem using `var_export` when
-storing the cache and `include` when loading the cache. This method is
-particularly fast in PHP7.2+ due to opcache optimizations.
-
-``` php
-use Desarrolla2\Cache\PhpFile as PhpFileCache;
-
-$cache = new FileCache();
-```
-
-You may set the following options;
-
-``` php
-use Desarrolla2\Cache\CacheFile as CacheFileCache;
-
-$cache = (new FileCache())->withOptions([
-    'dir' => '/tmp/mycache',
-    'file-prefix' => '',
-    'ttl' => 3600
-]);
-```
-
-### Predis
-
-Use it if you will you have redis available in your system.
-
-You need to add predis as dependency in your composer file.
-
-``` json
-"require": {
-    //...
-    "predis/predis": "~1.0.0"
-}
-```
-
-other version will have compatibility issues.
-
-``` php
-<?php
-
-use Desarrolla2\Cache\Predis as PredisCache;
-
-$cache = new PredisCache();
-```
-
-If you need to configure your predis client, you will instantiate it and pass
-it to constructor.
-
-``` php
-<?php
-
-use Desarrolla2\Cache\Predis as PredisCache;
-use Predis\Client as PredisClient;
-
-$backend = new PredisClient($options);
-$cache = new PredisCache($backend);
-
-```
-
 ## Methods
 
 Each cache implementation has the following `Psr\SimpleCache\CacheInterface`
 methods:
 
-##### `get(string $key)`
+##### `get(string $key [, mixed $default])`
 Retrieve the value corresponding to a provided key
 
 ##### `has(string $key)`
