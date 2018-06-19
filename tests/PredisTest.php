@@ -22,19 +22,36 @@ use Predis\Connection\ConnectionException;
  */
 class PredisTest extends AbstractCacheTest
 {
-    public function createSimpleCache()
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    public function setUp()
     {
         if (!class_exists('Predis\Client')) {
             return $this->markTestSkipped('The predis library is not available');
         }
 
         try {
-            $predis = new Client();
-            $predis->connect();
+            $this->client = new Client(CACHE_TESTS_PREDIS_DSN, ['exceptions' => false]);
+            $this->client->connect();
         } catch (ConnectionException $e) {
             return $this->markTestSkipped($e->getMessage());
         }
 
-        return new PredisCache($predis);
+        parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
+        $this->client->disconnect();
+    }
+
+    public function createSimpleCache()
+    {
+        return new PredisCache($this->client);
     }
 }

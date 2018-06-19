@@ -22,7 +22,10 @@ use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
 
 /**
- * Mysqli
+ * Mysqli cache adapter.
+ *
+ * Errors are silently ignored but exceptions are **not** caught. Beware when using `mysqli_report()` to throw a
+ * `mysqli_sql_exception` on error.
  */
 class Mysqli extends AbstractCache
 {
@@ -67,7 +70,7 @@ class Mysqli extends AbstractCache
 
         $this->query(
             "CREATE EVENT IF NOT EXISTS `apply_ttl_{$this->table}` ON SCHEDULE EVERY 1 HOUR DO BEGIN"
-            . " DELETE FROM {table} WHERE ttl < NOW();"
+            . " DELETE FROM {table} WHERE `ttl` < NOW();"
             . " END"
         );
 

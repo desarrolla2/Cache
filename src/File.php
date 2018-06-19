@@ -79,8 +79,8 @@ class File extends AbstractFile
             case 'embed':
                 return (int)$this->readLine($cacheFile);
             case 'file':
-                return file_exists($cacheFile . '.ttl')
-                    ? (int)file_get_contents($cacheFile . '.ttl')
+                return file_exists("$cacheFile.ttl")
+                    ? (int)file_get_contents("$cacheFile.ttl")
                     : PHP_INT_MAX;
             case 'mtime':
                 return $this->getTtl() > 0 ? filemtime($cacheFile) + $this->ttl : PHP_INT_MAX;
@@ -99,10 +99,12 @@ class File extends AbstractFile
     {
         switch ($this->ttlStrategy) {
             case 'embed':
-                $contents = ($expiration ?: PHP_INT_MAX) . "\n" . $contents;
+                $contents = ($expiration ?? PHP_INT_MAX) . "\n" . $contents;
                 break;
             case 'file':
-                file_put_contents("$cacheFile.ttl", $expiration);
+                if (isset($expiration)) {
+                    file_put_contents("$cacheFile.ttl", $expiration);
+                }
                 break;
             case 'mtime':
                 // nothing

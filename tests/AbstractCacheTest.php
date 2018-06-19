@@ -39,13 +39,12 @@ abstract class AbstractCacheTest extends SimpleCacheTest
      */
     public function testWithOption($key, $value)
     {
-        $base = $this->createSimpleCache();
-        $cache = $base->withOption($key, $value);
+        $cache = $this->cache->withOption($key, $value);
         $this->assertEquals($value, $cache->getOption($key));
 
         // Check immutability
-        $this->assertNotSame($base, $cache);
-        $this->assertNotEquals($value, $base->getOption($key));
+        $this->assertNotSame($this->cache, $cache);
+        $this->assertNotEquals($value, $this->cache->getOption($key));
     }
 
     public function testWithOptions()
@@ -53,18 +52,17 @@ abstract class AbstractCacheTest extends SimpleCacheTest
         $data = $this->dataProviderForOptions();
         $options = array_combine(array_column($data, 0), array_column($data, 1));
 
-        $base = $this->createSimpleCache();
-        $cache = $base->withOptions($options);
+        $cache = $this->cache->withOptions($options);
 
         foreach ($options as $key => $value) {
             $this->assertEquals($value, $cache->getOption($key));
         }
 
         // Check immutability
-        $this->assertNotSame($base, $cache);
+        $this->assertNotSame($this->cache, $cache);
 
         foreach ($options as $key => $value) {
-            $this->assertNotEquals($value, $base->getOption($key));
+            $this->assertNotEquals($value, $this->cache->getOption($key));
         }
     }
 

@@ -17,12 +17,19 @@ declare(strict_types=1);
 namespace Desarrolla2\Cache;
 
 use Desarrolla2\Cache\AbstractCache;
+use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
 use Predis\Client;
+use Predis\Response\ServerException;
+use Predis\Response\Status;
+use Predis\Response\ErrorInterface;
 
 /**
- * Predis
+ * Predis cache adapter.
+ *
+ * Errors are silently ignored but ServerExceptions are **not** caught. To PSR-16 compliant disable the `exception`
+ * option.
  */
 class Predis extends AbstractCache
 {
@@ -37,21 +44,9 @@ class Predis extends AbstractCache
      *
      * @param Client $client
      */
-    public function __construct(Client $client = null)
+    public function __construct(Client $client)
     {
-        if (!$client) {
-            $client = new Client();
-        }
-
         $this->predis = $client;
-    }
-
-    /**
-     * Class destructor
-     */
-    public function __destruct()
-    {
-        $this->predis->disconnect();
     }
 
     /**
@@ -64,22 +59,76 @@ class Predis extends AbstractCache
         return new SerializePacker();
     }
 
+
     /**
-     * {@inheritdoc}
+     * Run a predis command.
+     *
+     * @param string $cmd
+     * @param mixed
+     * @return mixed|bool
      */
-    public function delete($key)
+    protected function execCommand(string $cmd, ...$args)
     {
-        return $this->predis->executeRaw(['DEL', $this->getKey($key)]);
+        $command = $this->predis->createCommand($cmd, $args);
+        $response = $this->predis->executeCommand($command);
+
+        if ($response instanceof ErrorInterface) {
+            return false;
+        }
+
+        if ($response instanceof Status) {
+            return $response->getPayload() === 'OK';
+        }
+
+        return $response;
     }
+
+    /**
+     * Set multiple (mset) with expire
+     *
+     * @param array    $dictionary
+     * @param int|null $ttlSeconds
+     * @return bool
+     */
+    protected function msetExpire(array $dictionary, ?int $ttlSeconds): bool
+    {
+        if (empty($dictionary)) {
+            return true;
+        }
+
+        if (!isset($ttlSeconds)) {
+            return $this->execCommand('MSET', $dictionary);
+        }
+
+        $transaction = $this->predis->transaction();
+
+        foreach ($dictionary as $key => $value) {
+            $transaction->set($key, $value, 'EX', $ttlSeconds);
+        }
+
+        try {
+            $responses = $transaction->execute();
+        } catch (ServerException $e) {
+            return false;
+        }
+
+        $ok = array_reduce($responses, function($ok, $response) {
+            return $ok && $response instanceof Status && $response->getPayload() === 'OK';
+        }, true);
+
+        return $ok;
+    }
+
 
     /**
      * {@inheritdoc}
      */
     public function get($key, $default = null)
     {
-        $packed = $this->predis->get($this->getKey($key));
+        $id = $this->keyToId($key);
+        $response = $this->execCommand('GET', $id);
 
-        return $this->unpack($packed);
+        return !empty($response) ? $this->unpack($response) : $default;
     }
 
     /**
@@ -87,19 +136,23 @@ class Predis extends AbstractCache
      */
     public function getMultiple($keys, $default = null)
     {
-        $this->assertIterable($keys, 'keys not iterable');
+        $idKeyPairs = $this->mapKeysToIds($keys);
+        $ids = array_keys($idKeyPairs);
 
-        $transaction = $this->predis->transaction();
+        $response = $this->execCommand('MGET', $ids);
 
-        foreach ($keys as $key) {
-            $transaction->get($key);
+        if ($response === false) {
+            return false;
         }
 
-        $responses = $transaction->execute();
+        $items = [];
+        $packedItems = array_combine(array_values($idKeyPairs), $response);
 
-        return array_map(function ($value) use ($default) {
-            return is_string($value) ? $this->unpack($value) : $default;
-        }, $responses);
+        foreach ($packedItems as $key => $packed) {
+            $items[$key] = isset($packed) ? $this->unpack($packed) : $default;
+        }
+
+        return $items;
     }
 
     /**
@@ -107,7 +160,7 @@ class Predis extends AbstractCache
      */
     public function has($key)
     {
-        return $this->predis->executeRaw(['EXISTS', $this->getKey($key)]);
+        return $this->execCommand('EXISTS', $this->keyToId($key));
     }
 
     /**
@@ -115,15 +168,22 @@ class Predis extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheKey = $this->getKey($key);
+        $id = $this->keyToId($key);
+        $packed = $this->pack($value);
 
-        $set = $this->predis->set($cacheKey, $this->pack($value));
-
-        if ($set && isset($ttl)) {
-            $this->predis->executeRaw(['EXPIRE', $cacheKey, $this->ttlToSeconds($ttl)]);
+        if (!is_string($packed)) {
+            throw new UnexpectedValueException("Packer must create a string for the data");
         }
 
-        return $set;
+        $ttlSeconds = $this->ttlToSeconds($ttl);
+
+        if (isset($ttlSeconds) && $ttlSeconds <= 0) {
+            return $this->execCommand('DEL', [$id]);
+        }
+
+        return !isset($ttlSeconds)
+            ? $this->execCommand('SET', $id, $packed)
+            : $this->execCommand('SETEX', $id, $ttlSeconds, $packed);
     }
 
     /**
@@ -133,21 +193,46 @@ class Predis extends AbstractCache
     {
         $this->assertIterable($values, 'values not iterable');
 
-        $transaction = $this->predis->transaction();
-        $ttlSeconds = $this->ttlToSeconds($ttl);
+        $dictionary = [];
 
         foreach ($values as $key => $value) {
-            $cacheKey = $this->getKey($key);
-            $transaction->set($cacheKey);
+            $id = $this->keyToId(is_int($key) ? (string)$key : $key);
+            $packed = $this->pack($value);
 
-            if (isset($ttlSeconds)) {
-                $transaction->executeRaw(['EXPIRE', $cacheKey, $ttlSeconds]);
+            if (!is_string($packed)) {
+                throw new UnexpectedValueException("Packer must create a string for the data");
             }
+
+            $dictionary[$id] = $packed;
         }
 
-        $responses = $transaction->execute();
+        $ttlSeconds = $this->ttlToSeconds($ttl);
 
-        return count(array_filter($responses)) > 0;
+        if (isset($ttlSeconds) && $ttlSeconds <= 0) {
+            return $this->execCommand('DEL', array_keys($dictionary));
+        }
+
+        return $this->msetExpire($dictionary, $ttlSeconds);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($key)
+    {
+        $id = $this->keyToId($key);
+
+        return $this->execCommand('DEL', [$id]) !== false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteMultiple($keys)
+    {
+        $ids = array_keys($this->mapKeysToIds($keys));
+
+        return empty($ids) || $this->execCommand('DEL', $ids) !== false;
     }
 
     /**
@@ -155,6 +240,6 @@ class Predis extends AbstractCache
      */
     public function clear()
     {
-        $this->predis->executeRaw(['FLUSHDB']);
+        return $this->execCommand('FLUSHDB');
     }
 }
