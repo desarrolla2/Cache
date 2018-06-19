@@ -26,9 +26,9 @@ before_script:
     - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
     # Enable extensions
+    - sh -c "yes '' | pecl install --soft mongodb"
+    - sh -c "if [ $TRAVIS_PHP_VERSION == 'nightly' ]; then yes '' | pecl install --soft memcached; fi"
     - sh -c "ls .travis/*.ini | xargs phpenv config-add"
-    - sh -c "yes '' | pecl install --soft mongodb && phpenv config-rm mongodb"
-    - sh -c "if [ $TRAVIS_PHP_VERSION == 'nightly' ]; then yes '' | pecl install --soft memcached && phpenv config-rm memcached.ini; fi"
 
     # Install dependencies
     - composer self-update
