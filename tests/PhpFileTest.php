@@ -13,31 +13,39 @@
 
 namespace Desarrolla2\Test\Cache;
 
-use Desarrolla2\Cache\FlatFile as FileCache;
-use Desarrolla2\Cache\Packer\PhpPacker;
-use Desarrolla2\Cache\PhpFile;
+use Desarrolla2\Cache\PhpFile as PhpFileCache;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 /**
  * FileTest with PhpPacker
  */
 class PhpFileTest extends AbstractCacheTest
 {
+    /**
+     * @var vfsStreamDirectory
+     */
+    private $root;
+
     protected $skippedTests = [
         'testBasicUsageWithLongKey' => 'Only support keys up to 64 bytes'
     ];
 
+    public function setUp()
+    {
+        $this->root = vfsStream::setup('cache');
+
+        parent::setUp();
+    }
 
     public function createSimpleCache()
     {
-        return new PhpFile($this->config['file']['dir']);
+        return new PhpFileCache(vfsStream::url('cache'));
     }
 
-    /**
-     * Remove all temp dir with cache files
-     */
-    public function tearDown() 
+
+    public function tearDown()
     {
-        array_map('unlink', glob($this->config['file']['dir'] . "/*"));
-        rmdir($this->config['file']['dir']);
+        // No need to clear all files, as the virtual filesystem is cleared after each test.
     }
 }

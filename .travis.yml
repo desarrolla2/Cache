@@ -26,9 +26,8 @@ before_script:
     - mysql -e 'CREATE DATABASE IF NOT EXISTS `cache`;'
     - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
-    # Install apcu
-    - "if [ $TRAVIS_PHP_VERSION == 'hhvm' ]; then export APCU_VERSION=5.1.0; else export APCU_VERSION=4.0.8; fi"
-    - sh -c "yes '' | pecl install apcu-$APCU_VERSION"
+    # Enable extensions
+    - sh -c "yes '' | pecl install mongodb"
     - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then phpenv config-add ./tests/travis/php.ini; fi"
 
     # Install dependencies
