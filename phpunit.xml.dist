@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./vendor/autoload.php" colors="true">
+<phpunit
+  bootstrap="./vendor/autoload.php"
+  convertWarningsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertErrorsToExceptions="true"
+  backupStaticAttributes="false"
+  processIsolation="false"
+  stopOnFailure="false"
+  backupGlobals="false"
+  syntaxCheck="false"
+  colors="true"
+>
     <testsuites>
         <testsuite name="Desarrolla2 Cache test suite">
             <directory suffix="Test.php">./tests</directory>
