@@ -27,7 +27,18 @@ before_script:
 
     # Enable extensions
     - yes '' | pecl install --soft mongodb
-    - test "$TRAVIS_PHP_VERSION" != "nightly" || sh -c "cd /tmp && pecl download memcached-1.0.2 && tar zxvf memcached-1.0.2.tgz && cd memcached-1.0.2 && phpize && ./configure --with-php-config=/home/travis/.phpenv/versions/master/bin/php-config --with-libmemcached-dir=no --disable-memcached-sasl && make && make install"
+    - >
+        test "$TRAVIS_PHP_VERSION" != "nightly" ||
+        sh -c "
+          cd /tmp &&
+          pecl download memcached-3.0.4 &&
+          tar zxvf memcached-3.0.4.tgz &&
+          cd memcached-3.0.4 &&
+          phpize &&
+          ./configure --with-php-config=/home/travis/.phpenv/versions/master/bin/php-config --with-libmemcached-dir=no --disable-memcached-sasl &&
+          make &&
+          make install
+        "
     - ls .travis/*.ini | xargs phpenv config-add
 
     # Install dependencies
