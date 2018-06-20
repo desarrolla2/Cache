@@ -34,10 +34,13 @@ class MysqliTest extends AbstractCacheTest
             return $this->markTestSkipped("mysqli extension not loaded");
         }
 
-        $this->mysqli = new \mysqli(ini_get('mysqli.default_host'));
-
-        if ($this->mysqli->errno) {
-            return $this->markTestSkipped($this->mysqli->error);
+        try {
+            $this->mysqli = new \mysqli(
+                ini_get('mysqli.default_host'),
+                ini_get('mysqli.default_user') ?: 'root'
+            );
+        } catch (\Exception $e) {
+            return $this->markTestSkipped("skipping mysqli test; " . mysqli_connect_error());
         }
 
         $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
