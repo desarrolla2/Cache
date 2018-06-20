@@ -27,23 +27,13 @@ before_script:
 
     # Enable extensions
     - yes '' | pecl install --soft mongodb
-    - >
-        test "$TRAVIS_PHP_VERSION" != "nightly" ||
-        sh -c "
-          cd /tmp &&
-          pecl download memcached-3.0.4 &&
-          tar zxvf memcached-3.0.4.tgz &&
-          cd memcached-3.0.4 &&
-          phpize &&
-          ./configure --with-php-config=/home/travis/.phpenv/versions/master/bin/php-config --with-libmemcached-dir=no --disable-memcached-sasl &&
-          make &&
-          make install
-        "
     - ls .travis/*.ini | xargs phpenv config-add
+    - test "$TRAVIS_PHP_VERSION" != "nightly" || phpenv config-rm memcached.ini || true
 
     # Install dependencies
     - composer self-update
-    - composer require --dev "satooshi/php-coveralls:~0.6"
+    - composer install --ignore-platform-reqs
+    - composer require --dev "satooshi/php-coveralls:~0.6" --ignore-platform-reqs
     - mkdir -p build/logs
 
 script:
