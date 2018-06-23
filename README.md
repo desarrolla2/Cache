@@ -45,7 +45,7 @@ if (!isset($value)) {
 echo $value;
 ```
 
-## Cache implementations
+## Adapters
 
 * [Apcu](docs/implementations/apcu.md)
 * [File](docs/implementations/file.md)
@@ -56,6 +56,10 @@ echo $value;
 * [NotCache](docs/implementations/notcache.md)
 * [PhpFile](docs/implementations/phpfile.md)
 * [Predis](docs/implementations/predis.md)
+
+The following implementation allows you to combine cache adapters.
+
+* [Chain](docs/implementations/chain.md)
 
 [Other implementations][todo-implementations] are planned. Please vote or
 provide a PR to speed up the process of adding the to this library.
@@ -104,6 +108,8 @@ Persists a set of key => value pairs in the cache
 
 ##### `deleteMultiple(array $keys)`
 Deletes multiple cache items in a single operation
+
+.
 
 The `Desarrolla2\Cache\CacheInterface` also has the following methods:
 

@@ -25,6 +25,11 @@ class MemoryTest extends AbstractCacheTest
         return new MemoryCache();
     }
 
+    public function tearDown()
+    {
+        // No need to clear cache, as the adapters don't persist between tests.
+    }
+
     public function testExceededLimit()
     {
         $cache = $this->createSimpleCache()->withOption('limit', 1);
