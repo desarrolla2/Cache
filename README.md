@@ -1,19 +1,19 @@
-# Desarollo2 Cache
+# Desarolla2 Cache
 
-A simple cache library, implementing the [PSR-16](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) standard using **immutable** objects.
+A **simple cache** library, implementing the [PSR-16](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) standard using **immutable** objects.
 
 ![life-is-hard-cache-is](https://user-images.githubusercontent.com/100821/41566888-ecd60cde-735d-11e8-893f-da42b2cd65e7.jpg)
 
 Caching is typically used throughout an applicatiton. Immutability ensure that modifying the cache behaviour in one
 location doesn't result in unexpected behaviour due to changes in unrelated code.
 
-_Desarollo2 Cache aims to be the most complete, correct and best performing PSR-16 implementation available._
+_Desarolla2 Cache aims to be the most complete, correct and best performing PSR-16 implementation available._
 
 [![Latest version][ico-version]][link-packagist]
 [![Latest version][ico-pre-release]][link-packagist]
 [![Software License][ico-license]][link-license]
 [![Build Status][ico-travis]][link-travis]
-[![Coverage Status][ico-coveralls]][link-coveralls]
+[![Coverage Status][icoe-coveralls]][link-coveralls]
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Sensiolabs Insight][ico-sensiolabs]][link-sensiolabs]
 [![Total Downloads][ico-downloads]][link-downloads]
@@ -130,9 +130,10 @@ object. By default, packing is done using `serialize` and `unserialize`.
 
 Available packers are:
 
+* `SerializePacker` using `serialize` and `unserialize`
 * `JsonPacker` using `json_encode` and `json_decode`
 * `NopPacker` does no packing
-* `SerializePacker` using `serialize` and `unserialize`
+* `MongoDBBinaryPacker` using `serialize` and `unserialize` to store as [BSON Binary](http://php.net/manual/en/class.mongodb-bson-binary.php)
 
 #### PSR-16 incompatible packers
 
