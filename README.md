@@ -13,7 +13,7 @@ _Desarolla2 Cache aims to be the most complete, correct and best performing PSR-
 [![Latest version][ico-pre-release]][link-packagist]
 [![Software License][ico-license]][link-license]
 [![Build Status][ico-travis]][link-travis]
-[![Coverage Status][icoe-coveralls]][link-coveralls]
+[![Coverage Status][ico-coveralls]][link-coveralls]
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Sensiolabs Insight][ico-sensiolabs]][link-sensiolabs]
 [![Total Downloads][ico-downloads]][link-downloads]
