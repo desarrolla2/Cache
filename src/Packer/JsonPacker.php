@@ -54,7 +54,7 @@ class JsonPacker implements PackerInterface
      */
     public function unpack($packed)
     {
-        if (is_string($packed)) {
+        if (!is_string($packed)) {
             throw new InvalidArgumentException("packed value should be a string");
         }
 
