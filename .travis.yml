@@ -13,7 +13,7 @@ matrix:
 services:
     - mysql
     - mongodb
-    - redis-server
+    - redis
     - memcached
 
 notifications:
@@ -26,7 +26,7 @@ before_script:
     - mysql -e 'USE `cache`; CREATE TABLE `cache` (`k` varchar(255) NOT NULL, `v` text NOT NULL, `t` int(11) NOT NULL, PRIMARY KEY (`k`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
 
     # Enable extensions
-    - yes '' | pecl install --soft mongodb
+    - yes '' | pecl install --soft mongodb redis
     - ls .travis/*.ini | xargs phpenv config-add
     - test "$TRAVIS_PHP_VERSION" != "nightly" || phpenv config-rm memcached.ini || true
 
