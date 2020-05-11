@@ -35,5 +35,8 @@
         <const name="CACHE_TESTS_MEMCACHED_SERVER" value="localhost:11211" />
 
         <const name="CACHE_TESTS_PREDIS_DSN" value="tcp://localhost:6379" />
+
+        <const name="CACHE_TESTS_REDIS_HOST" value="localhost" />
+        <const name="CACHE_TESTS_REDIS_PORT" value="6379" />
     </php>
 </phpunit>
