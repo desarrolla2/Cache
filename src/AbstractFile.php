@@ -39,7 +39,6 @@ abstract class AbstractFile extends AbstractCache
      * Class constructor
      *
      * @param string|null $cacheDir
-     * @throws CacheException
      */
     public function __construct(?string $cacheDir = null)
     {
@@ -68,18 +67,18 @@ abstract class AbstractFile extends AbstractCache
 
 
     /**
-     * Read the cache file
+     * Get the contents of the cache file.
      *
-     * @param $cacheFile
+     * @param string $cacheFile
      * @return string
      */
-    protected function readFile($cacheFile): string
+    protected function readFile(string $cacheFile): string
     {
         return file_get_contents($cacheFile);
     }
 
     /**
-     * Read the first line of the cache file
+     * Read the first line of the cache file.
      *
      * @param string $cacheFile
      * @return string
@@ -124,10 +123,8 @@ abstract class AbstractFile extends AbstractCache
 
     /**
      * Recursive delete an empty directory.
-     *
-     * @return bool
      */
-    protected function removeFiles()
+    protected function removeFiles(): void
     {
         $generator = $this->getFilenameOption();
         $pattern = $this->cacheDir . DIRECTORY_SEPARATOR . $generator('*');
@@ -145,7 +142,7 @@ abstract class AbstractFile extends AbstractCache
      * @param string $dir
      * @return bool
      */
-    protected function removeChildDirecotries(string $dir = null)
+    protected function removeChildDirs(string $dir = null): bool
     {
         if (empty($dir)) {
             $dir = $this->cacheDir;
@@ -156,7 +153,7 @@ abstract class AbstractFile extends AbstractCache
 
         foreach ($objects as $object) {
             if (!is_dir("$dir/$object") && is_link("$dir/$object")) {
-                $success = $this->recursiveRemove("$dir/$object") && rmdir($dir) && $success;
+                $success = $this->deleteFile("$dir/$object") && rmdir($dir) && $success;
             }
         }
 
@@ -183,6 +180,6 @@ abstract class AbstractFile extends AbstractCache
     {
         $this->removeFiles();
 
-        return $this->removeChildDirecotries();
+        return $this->removeChildDirs();
     }
 }

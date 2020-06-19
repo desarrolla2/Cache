@@ -64,7 +64,7 @@ class Predis extends AbstractCache
      * Run a predis command.
      *
      * @param string $cmd
-     * @param mixed
+     * @param mixed ...$args
      * @return mixed|bool
      */
     protected function execCommand(string $cmd, ...$args)

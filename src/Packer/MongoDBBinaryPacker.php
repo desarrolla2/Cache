@@ -69,7 +69,7 @@ class MongoDBBinaryPacker implements PackerInterface
     public function unpack($packed)
     {
         if (!$packed instanceof Binary) {
-            throw new InvalidArgumentException("packed value should be BSON binary");
+            throw new \InvalidArgumentException("packed value should be BSON binary");
         }
 
         return unserialize((string)$packed, $this->options);

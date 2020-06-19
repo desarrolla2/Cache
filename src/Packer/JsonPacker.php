@@ -61,7 +61,7 @@ class JsonPacker implements PackerInterface
         $ret = json_decode($packed);
 
         if (!isset($ret) && json_last_error()) {
-            throw new UnexpectedValueException("packed value is not a valid JSON string");
+            throw new \UnexpectedValueException("packed value is not a valid JSON string");
         }
 
         return $ret;
