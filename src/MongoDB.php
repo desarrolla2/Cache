@@ -263,7 +263,7 @@ class MongoDB extends AbstractCache
     /**
      * Get TTL as Date type BSON object
      *
-     * @param null|int|DateInterval $ttl
+     * @param null|int|\DateInterval $ttl
      * @return BSONUTCDatetime|null
      */
     protected function getTtlBSON($ttl): ?BSONUTCDatetime

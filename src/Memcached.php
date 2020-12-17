@@ -27,12 +27,12 @@ use Memcached as MemcachedServer;
 class Memcached extends AbstractCache
 {
     /**
-     * @var Server
+     * @var MemcachedServer
      */
     protected $server;
 
     /**
-     * @param MemcachedServer|null $server
+     * @param MemcachedServer $server
      */
     public function __construct(MemcachedServer $server)
     {
@@ -200,7 +200,7 @@ class Memcached extends AbstractCache
      *
      * @see http://php.net/manual/en/memcached.expiration.php
      *
-     * @param null|int|DateInterval $ttl
+     * @param null|int|\DateInterval $ttl
      * @return int|null
      * @throws InvalidArgumentException
      */

@@ -77,7 +77,7 @@ trait PackingTrait
      *
      * @param string|mixed $packed
      * @return mixed
-     * @throws UnexpectedValueException
+     * @throws \UnexpectedValueException
      */
     protected function unpack($packed)
     {
