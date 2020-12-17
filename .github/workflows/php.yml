@@ -12,14 +12,22 @@ jobs:
     services:
       mysql:
         image: mysql:5.7
+        ports:
+          - 3306:3306
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
       redis:
         image: redis:6.0
+        ports:
+          - 6379:6379
       mongo:
         image: mongo:4.2-bionic
+        ports:
+          - 27017:27017
       memcached:
         image: memcached:1.6
+        ports:
+          - 11211:11211
 
     strategy:
       fail-fast: false
