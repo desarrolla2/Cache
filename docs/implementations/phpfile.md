@@ -17,7 +17,7 @@ performance benefit over APCu for storing strings.
 ``` php
 use Desarrolla2\Cache\PhpFile as PhpFileCache;
 
-$cache = new FileCache();
+$cache = new PhpFileCache();
 ```
 
 ### Options
