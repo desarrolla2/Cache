@@ -20,7 +20,7 @@ use Desarrolla2\Cache\Apcu as ApcuCache;
  */
 class ApcuCacheTest extends AbstractCacheTest
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // Required to check the TTL for new entries
         ini_set('apc.use_request_time', false);

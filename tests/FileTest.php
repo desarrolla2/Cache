@@ -31,20 +31,15 @@ class FileTest extends AbstractCacheTest
         'testBasicUsageWithLongKey' => 'Only support keys up to 64 bytes'
     ];
 
-    public function setUp()
+    public function createSimpleCache()
     {
         $this->root = vfsStream::setup('cache');
 
-        parent::setUp();
-    }
-
-    public function createSimpleCache()
-    {
         return new FileCache(vfsStream::url('cache'));
     }
 
 
-    public function tearDown()
+    public function tearDown(): void
     {
         // No need to clear all files, as the virtual filesystem is cleared after each test.
     }

@@ -29,7 +29,7 @@ class ChainTest extends AbstractCacheTest
     }
 
 
-    public function tearDown()
+    public function tearDown(): void
     {
         // No need to clear cache, as the adapters don't persist between tests.
     }
@@ -113,19 +113,19 @@ class ChainTest extends AbstractCacheTest
 
         $cache = new CacheChain([$adapter1, $adapter2]);
 
-        $this->assertEquals(["foo" => 1, "bar" => 2], $cache->getMultiple(["foo", "bar"], 42));
+        $this->assertEquals(["foo" => 1, "bar" => 2], $cache->getMultiple(["foo", "bar"]));
     }
 
     public function testChainGetMultipleMixed()
     {
         $adapter1 = $this->createMock(MemoryCache::class);
         $adapter1->expects($this->once())->method('getMultiple')
-            ->with($this->equalTo(["foo", "bar", "wux", "lot"], 0.0, 10, true))
+            ->with($this->equalTo(["foo", "bar", "wux", "lot"]))
             ->willReturn(["foo" => null, "bar" => 2, "wux" => null, "lot" => null]);
 
         $adapter2 = $this->createMock(MemoryCache::class);
         $adapter2->expects($this->once())->method('getMultiple')
-            ->with($this->equalTo(["foo", "wux", "lot"], 0.0, 10, true))
+            ->with($this->equalTo(["foo", "wux", "lot"]))
             ->willReturn(["foo" => 11, "wux" => 15, "lot" => null]);
 
         $cache = new CacheChain([$adapter1, $adapter2]);

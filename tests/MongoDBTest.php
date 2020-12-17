@@ -29,7 +29,7 @@ class MongoDBTest extends AbstractCacheTest
     /**
      * Use one client per test, as the MongoDB extension leaves connections open
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!extension_loaded('mongodb')) {
             return;
@@ -38,17 +38,12 @@ class MongoDBTest extends AbstractCacheTest
         self::$client = new Client(CACHE_TESTS_MONGO_DSN);
     }
 
-    public function setUp()
+    public function createSimpleCache()
     {
         if (!isset(self::$client)) {
             $this->markTestSkipped('The mongodb extension is not available');
         }
 
-        parent::setUp();
-    }
-
-    public function createSimpleCache()
-    {
         $collection = self::$client->selectCollection(CACHE_TESTS_MONGO_DATABASE, 'cache');
 
         return (new MongoDBCache($collection))
