@@ -9,6 +9,18 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      redis:
+        image: redis:6.0
+      mongo:
+        image: mongo:4.2-bionic
+      memcached:
+        image: memcached:1.6
+
     strategy:
       fail-fast: false
       matrix:
@@ -34,6 +46,9 @@ jobs:
       with:
         php-version: ${{ matrix.php }}
         coverage: xdebug
+
+    - name: Create MySQL cache database
+      run: php -r "mysqli_connect('localhost')->multi_query('CREATE DATABASE cache; CREATE TABLE cache.cache (k varchar(255) NOT NULL, v text NOT NULL, t int(11) NOT NULL, PRIMARY KEY (k)) ENGINE=InnoDB DEFAULT CHARSET=utf8;');"
 
     - name: Validate composer.json and composer.lock
       run: composer validate

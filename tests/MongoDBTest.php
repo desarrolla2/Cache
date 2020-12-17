@@ -36,6 +36,7 @@ class MongoDBTest extends AbstractCacheTest
         }
 
         self::$client = new Client(CACHE_TESTS_MONGO_DSN);
+        self::$client->listDatabases(); // Fail if unable to connect
     }
 
     public function createSimpleCache()
