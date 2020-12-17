@@ -28,10 +28,10 @@ class MysqliTest extends AbstractCacheTest
         'testBasicUsageWithLongKey' => 'Only support keys up to 255 bytes'
     ];
 
-    public function setUp()
+    public function connect(): void
     {
         if (!class_exists('mysqli')) {
-            return $this->markTestSkipped("mysqli extension not loaded");
+            $this->markTestSkipped("mysqli extension not loaded");
         }
 
         try {
@@ -40,7 +40,7 @@ class MysqliTest extends AbstractCacheTest
                 ini_get('mysqli.default_user') ?: 'root'
             );
         } catch (\Exception $e) {
-            return $this->markTestSkipped("skipping mysqli test; " . mysqli_connect_error());
+            $this->markTestSkipped("skipping mysqli test; " . mysqli_connect_error());
         }
 
         $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
@@ -52,17 +52,17 @@ class MysqliTest extends AbstractCacheTest
         if ($this->mysqli->error) {
             $this->markTestSkipped($this->mysqli->error);
         }
-
-        parent::setUp();
     }
 
     public function createSimpleCache()
     {
+        $this->connect();
+
         return (new MysqliCache($this->mysqli))
             ->withOption('initialize', false);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->mysqli->query('DROP DATABASE IF EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
         $this->mysqli->close();

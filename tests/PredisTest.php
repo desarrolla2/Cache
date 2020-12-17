@@ -27,31 +27,26 @@ class PredisTest extends AbstractCacheTest
      */
     protected $client;
 
-    public function setUp()
+    public function createSimpleCache()
     {
         if (!class_exists('Predis\Client')) {
-            return $this->markTestSkipped('The predis library is not available');
+            $this->markTestSkipped('The predis library is not available');
         }
 
         try {
             $this->client = new Client(CACHE_TESTS_PREDIS_DSN, ['exceptions' => false]);
             $this->client->connect();
         } catch (ConnectionException $e) {
-            return $this->markTestSkipped($e->getMessage());
+            $this->markTestSkipped($e->getMessage());
         }
 
-        parent::setUp();
+        return new PredisCache($this->client);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 
         $this->client->disconnect();
-    }
-
-    public function createSimpleCache()
-    {
-        return new PredisCache($this->client);
     }
 }
