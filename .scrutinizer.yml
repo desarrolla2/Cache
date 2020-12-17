@@ -8,10 +8,16 @@ build:
   nodes:
     analysis:
       environment:
-        php: 7.4
-        postgresql: true
-        redis: true
-        mongodb: true
+        php: 
+          version: 7.4
+          pecl_extensions:
+            - acpu
+            - mongodb
+            - memcached
+        mysql: false
+        postgresql: false
+        redis: false
+        mongodb: false
       tests:
         override:
             - phpcs-run src

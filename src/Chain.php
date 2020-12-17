@@ -121,14 +121,14 @@ class Chain extends AbstractCache
             }
 
             $found = [];
-            foreach ($adapter->getMultiple($missing) as $value) {
+            foreach ($adapter->getMultiple($missing) as $key => $value) {
                 if (isset($value)) {
-                    $found[] = $value;
+                    $found[$key] = $value;
                 }
             }
 
             $values = array_merge($values, $found);
-            $missing = array_diff($missing, array_keys($found));
+            $missing = array_values(array_diff($missing, array_keys($found)));
         }
 
         return $values;
