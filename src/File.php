@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractFile;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Packer\PackerInterface;
@@ -104,7 +103,7 @@ class File extends AbstractFile
                 $contents = ($expiration ?? PHP_INT_MAX) . "\n" . $contents;
                 break;
             case 'file':
-                if ($expiration === null) {
+                if ($expiration !== null) {
                     file_put_contents("$cacheFile.ttl", $expiration);
                 }
                 break;
