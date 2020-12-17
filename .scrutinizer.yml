@@ -27,4 +27,5 @@ build:
                     file: phpstan-checkstyle.xml
                     format: 'general-checkstyle'
             - php-scrutinizer-run
-
+tools:
+    external_code_coverage: true
