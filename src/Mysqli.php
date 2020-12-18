@@ -56,7 +56,7 @@ class Mysqli extends AbstractCache
      * Initialize table.
      * Automatically delete old cache.
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         if ($this->initialized !== false) {
             return;
