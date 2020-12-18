@@ -36,18 +36,23 @@ class MysqliTest extends AbstractCacheTest
 
         try {
             $this->mysqli = new \mysqli(
-                ini_get('mysqli.default_host'),
+                ini_get('mysqli.default_host') ?: 'localhost',
                 ini_get('mysqli.default_user') ?: 'root'
             );
         } catch (\Exception $e) {
             $this->markTestSkipped("skipping mysqli test; " . mysqli_connect_error());
         }
 
-        $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
-        $this->mysqli->select_db(CACHE_TESTS_MYSQLI_DATABASE);
+        try {
+            $this->mysqli = new \mysqli();
+            $this->mysqli->query('CREATE DATABASE IF NOT EXISTS `' . CACHE_TESTS_MYSQLI_DATABASE . '`');
+            $this->mysqli->select_db(CACHE_TESTS_MYSQLI_DATABASE);
 
-        $this->mysqli->query("CREATE TABLE IF NOT EXISTS `cache` "
-            ."( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )");
+            $this->mysqli->query("CREATE TABLE IF NOT EXISTS `cache` "
+                ."( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )");
+        } catch (\Exception $e) {
+            $this->markTestSkipped("skipping mysqli test; " . $e->getMessage());
+        }
 
         if ($this->mysqli->error) {
             $this->markTestSkipped($this->mysqli->error);
