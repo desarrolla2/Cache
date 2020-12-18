@@ -37,10 +37,4 @@ class FileTest extends AbstractCacheTest
 
         return new FileCache(vfsStream::url('cache'));
     }
-
-
-    public function tearDown(): void
-    {
-        // No need to clear all files, as the virtual filesystem is cleared after each test.
-    }
 }

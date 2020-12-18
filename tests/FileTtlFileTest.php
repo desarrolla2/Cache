@@ -39,10 +39,4 @@ class FileTtlFileTest extends AbstractCacheTest
         return (new FileCache(vfsStream::url('cache')))
             ->withOption('ttl-strategy', 'file');
     }
-
-
-    public function tearDown(): void
-    {
-        // No need to clear all files, as the virtual filesystem is cleared after each test.
-    }
 }

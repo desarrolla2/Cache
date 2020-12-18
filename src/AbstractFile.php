@@ -14,11 +14,8 @@
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractCache;
-use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Option\FilenameTrait as FilenameOption;
-use Webmozart\Glob\Iterator\GlobIterator;
 
 /**
  * Abstract class for using files as cache.
@@ -122,17 +119,16 @@ abstract class AbstractFile extends AbstractCache
     }
 
     /**
-     * Recursive delete an empty directory.
+     * Remove all files from a directory.
      */
-    protected function removeFiles(): void
+    protected function removeFiles(string $dir): void
     {
         $generator = $this->getFilenameOption();
-        $pattern = $this->cacheDir . DIRECTORY_SEPARATOR . $generator('*');
 
-        $objects = new GlobIterator($pattern);
+        $objects = $this->streamSafeGlob($dir, $generator('*'));
 
         foreach ($objects as $object) {
-            unlink($object);
+            $this->deleteFile($object);
         }
     }
 
@@ -140,24 +136,25 @@ abstract class AbstractFile extends AbstractCache
      * Recursive delete an empty directory.
      *
      * @param string $dir
-     * @return bool
      */
-    protected function removeChildDirs(string $dir = null): bool
+    protected function removeRecursively(string $dir): void
     {
-        if (empty($dir)) {
-            $dir = $this->cacheDir;
-        }
+        $this->removeFiles($dir);
 
-        $success = true;
-        $objects = new GlobIterator($dir);
+        $objects = $this->streamSafeGlob($dir, '*');
 
         foreach ($objects as $object) {
-            if (!is_dir("$dir/$object") && is_link("$dir/$object")) {
-                $success = $this->deleteFile("$dir/$object") && rmdir($dir) && $success;
+            if (!is_dir($object)) {
+                continue;
+            }
+
+            if (is_link($object)) {
+                unlink($object);
+            } else {
+                $this->removeRecursively($object);
+                rmdir($object);
             }
         }
-
-        return $success;
     }
 
 
@@ -178,8 +175,33 @@ abstract class AbstractFile extends AbstractCache
      */
     public function clear()
     {
-        $this->removeFiles();
+        $this->removeRecursively($this->cacheDir);
 
-        return $this->removeChildDirs();
+        return true;
+    }
+
+    /**
+     * Glob that is safe with streams (vfs for example)
+     *
+     * @param string $directory
+     * @param string $filePattern
+     * @return array
+     */
+    protected function streamSafeGlob(string $directory, string $filePattern): array
+    {
+        $files = scandir($directory);
+        $found = [];
+
+        foreach ($files as $filename) {
+            if (in_array($filename, ['.', '..'])) {
+                continue;
+            }
+
+            if (fnmatch($filePattern, $filename) || fnmatch($filePattern . '.ttl', $filename)) {
+                $found[] = "{$directory}/{$filename}";
+            }
+        }
+
+        return $found;
     }
 }

@@ -40,10 +40,4 @@ class FileTrieTest extends AbstractCacheTest
         return (new FileCache(vfsStream::url('cache')))
             ->withOption('filename', new TrieFilename('%s.php.cache',4));
     }
-
-
-    public function tearDown(): void
-    {
-        // No need to clear all files, as the virtual filesystem is cleared after each test.
-    }
 }
