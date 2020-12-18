@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Option\InitializeTrait;
 use mysqli as Server;
 use Desarrolla2\Cache\Packer\PackerInterface;
@@ -65,7 +64,7 @@ class Mysqli extends AbstractCache
 
         $this->query(
             "CREATE TABLE IF NOT EXISTS `{table}` "
-            . "( `key` VARCHAR(255), `value` TEXT, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )"
+            . "( `key` VARCHAR(255), `value` BLOB, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )"
         );
 
         $this->query(
@@ -118,7 +117,8 @@ class Mysqli extends AbstractCache
         $this->initialize();
 
         $result = $this->query(
-            'SELECT `value` FROM {table} WHERE `key` = %s AND (`ttl` > %d OR `ttl` IS NULL) LIMIT 1',
+            'SELECT `value` FROM {table} WHERE `key` = ? AND (`ttl` > ? OR `ttl` IS NULL) LIMIT 1',
+            'si',
             $this->keyToId($key),
             $this->currentTimestamp()
         );
@@ -143,13 +143,18 @@ class Mysqli extends AbstractCache
 
         $values = array_fill_keys(array_values($idKeyPairs), $default);
 
+        $placeholders = rtrim(str_repeat('?, ', count($idKeyPairs)), ', ');
+        $paramTypes = str_repeat('s', count($idKeyPairs)) . 'i';
+        $params = array_keys($idKeyPairs);
+        $params[] = $this->currentTimestamp();
+
         $result = $this->query(
-            'SELECT `key`, `value` FROM {table} WHERE `key` IN (%s) AND (`ttl` > %d OR `ttl` IS NULL)',
-            array_keys($idKeyPairs),
-            $this->currentTimestamp()
+            "SELECT `key`, `value` FROM {table} WHERE `key` IN ($placeholders) AND (`ttl` > ? OR `ttl` IS NULL)",
+            $paramTypes,
+            ...$params
         );
 
-        while ((list($id, $value) = $result->fetch_row())) {
+        while (([$id, $value] = $result->fetch_row())) {
             $key = $idKeyPairs[$id];
             $values[$key] = $this->unpack($value);
         }
@@ -165,12 +170,13 @@ class Mysqli extends AbstractCache
         $this->initialize();
 
         $result = $this->query(
-            'SELECT COUNT(`key`) FROM {table} WHERE `key` = %s AND (`ttl` > %d OR `ttl` IS NULL) LIMIT 1',
+            'SELECT COUNT(`key`) FROM {table} WHERE `key` = ? AND (`ttl` > ? OR `ttl` IS NULL) LIMIT 1',
+            'si',
             $this->keyToId($key),
             $this->currentTimestamp()
         );
 
-        list($count) = $result ? $result->fetch_row() : null;
+        [$count] = $result ? $result->fetch_row() : [null];
 
         return isset($count) && $count > 0;
     }
@@ -183,7 +189,8 @@ class Mysqli extends AbstractCache
         $this->initialize();
 
         $result = $this->query(
-            'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES (%s, %s, %s)',
+            'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES (?, ?, ?)',
+            'ssi',
             $this->keyToId($key),
             $this->pack($value),
             $this->ttlToTimestamp($ttl)
@@ -205,19 +212,21 @@ class Mysqli extends AbstractCache
 
         $this->initialize();
 
+        $count = 0;
+        $params = [];
         $timeTtl = $this->ttlToTimestamp($ttl);
-        $query = 'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES';
 
         foreach ($values as $key => $value) {
-            $query .= sprintf(
-                ' (%s, %s, %s),',
-                $this->quote($this->keyToId(is_int($key) ? (string)$key : $key)),
-                $this->quote($this->pack($value)),
-                $this->quote($timeTtl)
-            );
+            $count++;
+            $params[] = $this->keyToId(is_int($key) ? (string)$key : $key);
+            $params[] = $this->pack($value);
+            $params[] = $timeTtl;
         }
 
-        return $this->query(rtrim($query, ',')) !== false;
+        $query = 'REPLACE INTO {table} (`key`, `value`, `ttl`) VALUES '
+            . rtrim(str_repeat('(?, ?, ?), ', $count), ', ');
+
+        return (bool)$this->query($query, str_repeat('ssi', $count), ...$params);
     }
 
     /**
@@ -227,7 +236,11 @@ class Mysqli extends AbstractCache
     {
         $this->initialize();
 
-        return (bool)$this->query('DELETE FROM {table} WHERE `key` = %s', $this->keyToId($key));
+        return (bool)$this->query(
+            'DELETE FROM {table} WHERE `key` = ?',
+            's',
+            $this->keyToId($key)
+        );
     }
 
     /**
@@ -243,7 +256,14 @@ class Mysqli extends AbstractCache
 
         $this->initialize();
 
-        return (bool)$this->query('DELETE FROM {table} WHERE `key` IN (%s)', array_keys($idKeyPairs));
+        $placeholders = rtrim(str_repeat('?, ', count($idKeyPairs)), ', ');
+        $paramTypes = str_repeat('s', count($idKeyPairs));
+
+        return (bool)$this->query(
+            "DELETE FROM {table} WHERE `key` IN ($placeholders)",
+            $paramTypes,
+            ...array_keys($idKeyPairs)
+        );
     }
 
     /**
@@ -260,43 +280,31 @@ class Mysqli extends AbstractCache
      * Query the MySQL server
      *
      * @param string  $query
+     * @param string  $types
      * @param mixed[] $params
-     * @return \mysqli_result|false
+     * @return \mysqli_result|bool
      */
-    protected function query($query, ...$params)
+    protected function query($query, $types = '', ...$params)
     {
-        $saveParams = array_map([$this, 'quote'], $params);
+        $sql = str_replace('{table}', $this->table, $query);
 
-        $baseSql = str_replace('{table}', $this->table, $query);
-        $sql = vsprintf($baseSql, $saveParams);
+        if ($params === []) {
+            $ret = $this->server->query($sql);
+        } else {
+            $statement = $this->server->prepare($sql);
 
-        $ret = $this->server->query($sql);
+            if ($statement !== false) {
+                $statement->bind_param($types, ...$params);
 
-        if ($ret === false) {
+                $ret = $statement->execute();
+                $ret = $ret ? ($statement->get_result() ?: true) : false;
+            }
+        }
+
+        if ($this->server->error) {
             trigger_error($this->server->error . " $sql", E_USER_NOTICE);
         }
 
         return $ret;
-    }
-
-    /**
-     * Quote a value to be used in an array
-     *
-     * @param mixed $value
-     * @return mixed
-     */
-    protected function quote($value)
-    {
-        if ($value === null) {
-            return 'NULL';
-        }
-
-        if (is_array($value)) {
-            return join(', ', array_map([$this, 'quote'], $value));
-        }
-
-        return is_string($value)
-            ? ('"' . $this->server->real_escape_string($value) . '"')
-            : (is_float($value) ? (float)$value : (int)$value);
     }
 }

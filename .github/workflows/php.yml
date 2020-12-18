@@ -55,7 +55,7 @@ jobs:
         php-version: ${{ matrix.php }}
         coverage: xdebug
         extensions: apcu, mongodb, memcached
-        ini-values: mysqli.default_host=127.0.0.1,mysqli.default_port=3306,mysqli.default_user=root
+        ini-values: apc.enable_cli=1,mysqli.default_host=127.0.0.1,mysqli.default_port=3306,mysqli.default_user=root
 
     - name: Validate composer.json and composer.lock
       run: composer validate
