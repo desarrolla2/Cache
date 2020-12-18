@@ -49,7 +49,7 @@ class MongoDB extends AbstractCache
      * Initialize the DB collection.
      * Set TTL index.
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->collection->createIndex(['ttl' => 1], ['expireAfterSeconds' => 0]);
     }
