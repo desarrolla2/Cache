@@ -121,15 +121,18 @@ abstract class AbstractFile extends AbstractCache
     /**
      * Remove all files from a directory.
      */
-    protected function removeFiles(string $dir): void
+    protected function removeFiles(string $dir): bool
     {
-        $generator = $this->getFilenameOption();
+        $success = true;
 
+        $generator = $this->getFilenameOption();
         $objects = $this->streamSafeGlob($dir, $generator('*'));
 
         foreach ($objects as $object) {
-            $this->deleteFile($object);
+            $success = $this->deleteFile($object) && $success;
         }
+
+        return $success;
     }
 
     /**
@@ -137,9 +140,9 @@ abstract class AbstractFile extends AbstractCache
      *
      * @param string $dir
      */
-    protected function removeRecursively(string $dir): void
+    protected function removeRecursively(string $dir): bool
     {
-        $this->removeFiles($dir);
+        $success = $this->removeFiles($dir);
 
         $objects = $this->streamSafeGlob($dir, '*');
 
@@ -151,10 +154,12 @@ abstract class AbstractFile extends AbstractCache
             if (is_link($object)) {
                 unlink($object);
             } else {
-                $this->removeRecursively($object);
+                $success = $this->removeRecursively($object) && $success;
                 rmdir($object);
             }
         }
+
+        return $success;
     }
 
 
@@ -189,6 +194,7 @@ abstract class AbstractFile extends AbstractCache
      */
     protected function streamSafeGlob(string $directory, string $filePattern): array
     {
+        $filePattern = basename($filePattern);
         $files = scandir($directory);
         $found = [];
 
