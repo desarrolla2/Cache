@@ -12,10 +12,9 @@ _Desarolla2 Cache aims to be the most complete, correct and best performing PSR-
 [![Latest version][ico-version]][link-packagist]
 [![Latest version][ico-pre-release]][link-packagist]
 [![Software License][ico-license]][link-license]
-[![Build Status][ico-travis]][link-travis]
-[![Coverage Status][ico-coveralls]][link-coveralls]
-[![Quality Score][ico-code-quality]][link-code-quality]
-[![Sensiolabs Insight][ico-sensiolabs]][link-sensiolabs]
+[![Build Status][ico-github-actions]][link-github-actions]
+[![Coverage Status][ico-coverage]][link-scrutinizer]
+[![Quality Score][ico-code-quality]][link-scrutinizer]
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Today Downloads][ico-today-downloads]][link-downloads]
 [![Gitter][ico-gitter]][link-gitter]
@@ -157,16 +156,19 @@ Twitter: [@ArnoldDaniels](https://twitter.com/ArnoldDaniels)
 [ico-travis]: https://img.shields.io/travis/desarrolla2/Cache/master.svg?style=flat-square
 [ico-coveralls]: https://img.shields.io/coveralls/desarrolla2/Cache/master.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/desarrolla2/cache.svg?style=flat-square
+[ico-coverage]: https://scrutinizer-ci.com/g/desarrolla2/Cache/badges/coverage.png?b=master
 [ico-sensiolabs]: https://img.shields.io/sensiolabs/i/5f139261-1ac1-4559-846a-723e09319a88.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/desarrolla2/cache.svg?style=flat-square
 [ico-today-downloads]: https://img.shields.io/packagist/dd/desarrolla2/cache.svg?style=flat-square
 [ico-gitter]: https://img.shields.io/badge/GITTER-JOIN%20CHAT%20%E2%86%92-brightgreen.svg?style=flat-square
+[ico-github-actions]: https://github.com/desarrolla2/Cache/workflows/PHP/badge.svg
 
 [link-packagist]: https://packagist.org/packages/desarrolla2/cache
 [link-license]: http://hassankhan.mit-license.org
 [link-travis]: https://travis-ci.org/desarrolla2/Cache
+[link-github-actions]: https://github.com/desarrolla2/Cache/actions
 [link-coveralls]: https://coveralls.io/github/desarrolla2/Cache
-[link-code-quality]: https://scrutinizer-ci.com/g/desarrolla2/cache
+[link-scrutinizer]: https://scrutinizer-ci.com/g/desarrolla2/cache
 [link-sensiolabs]: https://insight.sensiolabs.com/projects/5f139261-1ac1-4559-846a-723e09319a88
 [link-downloads]: https://packagist.org/packages/desarrolla2/cache
 [link-gitter]: https://gitter.im/desarrolla2/Cache?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
