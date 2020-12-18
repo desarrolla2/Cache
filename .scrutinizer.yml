@@ -11,7 +11,7 @@ build:
         php: 
           version: 7.4
           pecl_extensions:
-            - acpu
+            - apcu
             - mongodb
             - memcached
         mysql: false
