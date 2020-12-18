@@ -22,7 +22,7 @@ build:
         override:
             - phpcs-run src
             -
-                command: php -m -1 vendor/bin/phpstan analyze --error-format=checkstyle | sed '/^\s*$/d' > phpstan-checkstyle.xml
+                command: vendor/bin/phpstan analyze --error-format=checkstyle | sed '/^\s*$/d' > phpstan-checkstyle.xml
                 analysis:
                     file: phpstan-checkstyle.xml
                     format: 'general-checkstyle'

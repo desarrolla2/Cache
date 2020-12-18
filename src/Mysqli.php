@@ -298,6 +298,8 @@ class Mysqli extends AbstractCache
 
                 $ret = $statement->execute();
                 $ret = $ret ? ($statement->get_result() ?: true) : false;
+            } else {
+                $ret = false;
             }
         }
 
