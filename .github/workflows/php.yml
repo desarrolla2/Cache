@@ -55,10 +55,10 @@ jobs:
         php-version: ${{ matrix.php }}
         coverage: xdebug
         extensions: apcu, mongodb, memcached
-        ini-values: mysqli.default_host=127.0.0.1:3306
+        ini-values: mysqli.default_host=127.0.0.1, mysqli.default_port=3306, mysqli.default_user=root
 
     - name: Create MySQL cache database
-      run: php -r "mysqli_connect('127.0.0.1:3306')->multi_query('CREATE DATABASE cache; CREATE TABLE cache.cache (k varchar(255) NOT NULL, v text NOT NULL, t int(11) NOT NULL, PRIMARY KEY (k)) ENGINE=InnoDB DEFAULT CHARSET=utf8;');"
+      run: php -r "mysqli_connect()->multi_query('CREATE DATABASE cache; CREATE TABLE cache.cache (k varchar(255) NOT NULL, v text NOT NULL, t int(11) NOT NULL, PRIMARY KEY (k)) ENGINE=InnoDB DEFAULT CHARSET=utf8;');"
 
     - name: Validate composer.json and composer.lock
       run: composer validate
