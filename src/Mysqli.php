@@ -64,12 +64,12 @@ class Mysqli extends AbstractCache
 
         $this->query(
             "CREATE TABLE IF NOT EXISTS `{table}` "
-            . "( `key` VARCHAR(255), `value` BLOB, `ttl` INT UNSIGNED, PRIMARY KEY (`key`) )"
+            . "( `key` VARCHAR(255), `value` BLOB, `ttl` BIGINT UNSIGNED, PRIMARY KEY (`key`) )"
         );
 
         $this->query(
             "CREATE EVENT IF NOT EXISTS `apply_ttl_{$this->table}` ON SCHEDULE EVERY 1 HOUR DO BEGIN"
-            . " DELETE FROM {table} WHERE `ttl` < NOW();"
+            . " DELETE FROM {table} WHERE `ttl` < UNIX_TIMESTAMP();"
             . " END"
         );
 
