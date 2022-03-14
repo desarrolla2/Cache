@@ -41,6 +41,9 @@ abstract class AbstractFile extends AbstractCache
     {
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'cache';
+            if(!is_dir($cacheDir)) {
+                mkdir($cacheDir, 0777, true);
+            }
         }
 
         $this->cacheDir = rtrim($cacheDir, '/');
