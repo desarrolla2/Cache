@@ -60,11 +60,6 @@ The following implementation allows you to combine cache adapters.
 
 * [Chain](docs/implementations/chain.md)
 
-[Other implementations][todo-implementations] are planned. Please vote or
-provide a PR to speed up the process of adding the to this library.
-
-[todo-implementations]: https://github.com/desarrolla2/Cache/issues?q=is%3Aissue+is%3Aopen+label%3Aadapter
-
 ### Options
 
 You can set options for cache using the `withOption` or `withOptions` method.
@@ -80,6 +75,8 @@ seconds).
 Setting the TTL to 0 or a negative number, means the cache should live forever.
 
 ## Methods
+
+### PSR-16 methods
 
 Each cache implementation has the following `Psr\SimpleCache\CacheInterface`
 methods:
@@ -108,7 +105,7 @@ Persists a set of key => value pairs in the cache
 ##### `deleteMultiple(array $keys)`
 Deletes multiple cache items in a single operation
 
-.
+### Additional methods
 
 The `Desarrolla2\Cache\CacheInterface` also has the following methods:
 
