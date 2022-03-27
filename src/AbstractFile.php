@@ -14,11 +14,8 @@
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractCache;
-use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Option\FilenameTrait as FilenameOption;
-use Webmozart\Glob\Iterator\GlobIterator;
 
 /**
  * Abstract class for using files as cache.
@@ -39,12 +36,14 @@ abstract class AbstractFile extends AbstractCache
      * Class constructor
      *
      * @param string|null $cacheDir
-     * @throws CacheException
      */
     public function __construct(?string $cacheDir = null)
     {
         if (!$cacheDir) {
             $cacheDir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'cache';
+            if(!is_dir($cacheDir)) {
+                mkdir($cacheDir, 0777, true);
+            }
         }
 
         $this->cacheDir = rtrim($cacheDir, '/');
@@ -68,18 +67,18 @@ abstract class AbstractFile extends AbstractCache
 
 
     /**
-     * Read the cache file
+     * Get the contents of the cache file.
      *
-     * @param $cacheFile
+     * @param string $cacheFile
      * @return string
      */
-    protected function readFile($cacheFile): string
+    protected function readFile(string $cacheFile): string
     {
         return file_get_contents($cacheFile);
     }
 
     /**
-     * Read the first line of the cache file
+     * Read the first line of the cache file.
      *
      * @param string $cacheFile
      * @return string
@@ -123,40 +122,43 @@ abstract class AbstractFile extends AbstractCache
     }
 
     /**
-     * Recursive delete an empty directory.
-     *
-     * @return bool
+     * Remove all files from a directory.
      */
-    protected function removeFiles()
+    protected function removeFiles(string $dir): bool
     {
-        $generator = $this->getFilenameOption();
-        $pattern = $this->cacheDir . DIRECTORY_SEPARATOR . $generator('*');
+        $success = true;
 
-        $objects = new GlobIterator($pattern);
+        $generator = $this->getFilenameOption();
+        $objects = $this->streamSafeGlob($dir, $generator('*'));
 
         foreach ($objects as $object) {
-            unlink($object);
+            $success = $this->deleteFile($object) && $success;
         }
+
+        return $success;
     }
 
     /**
      * Recursive delete an empty directory.
      *
      * @param string $dir
-     * @return bool
      */
-    protected function removeChildDirecotries(string $dir = null)
+    protected function removeRecursively(string $dir): bool
     {
-        if (empty($dir)) {
-            $dir = $this->cacheDir;
-        }
+        $success = $this->removeFiles($dir);
 
-        $success = true;
-        $objects = new GlobIterator($dir);
+        $objects = $this->streamSafeGlob($dir, '*');
 
         foreach ($objects as $object) {
-            if (!is_dir("$dir/$object") && is_link("$dir/$object")) {
-                $success = $this->recursiveRemove("$dir/$object") && rmdir($dir) && $success;
+            if (!is_dir($object)) {
+                continue;
+            }
+
+            if (is_link($object)) {
+                unlink($object);
+            } else {
+                $success = $this->removeRecursively($object) && $success;
+                rmdir($object);
             }
         }
 
@@ -181,8 +183,34 @@ abstract class AbstractFile extends AbstractCache
      */
     public function clear()
     {
-        $this->removeFiles();
+        $this->removeRecursively($this->cacheDir);
 
-        return $this->removeChildDirecotries();
+        return true;
+    }
+
+    /**
+     * Glob that is safe with streams (vfs for example)
+     *
+     * @param string $directory
+     * @param string $filePattern
+     * @return array
+     */
+    protected function streamSafeGlob(string $directory, string $filePattern): array
+    {
+        $filePattern = basename($filePattern);
+        $files = scandir($directory);
+        $found = [];
+
+        foreach ($files as $filename) {
+            if (in_array($filename, ['.', '..'])) {
+                continue;
+            }
+
+            if (fnmatch($filePattern, $filename) || fnmatch($filePattern . '.ttl', $filename)) {
+                $found[] = "{$directory}/{$filename}";
+            }
+        }
+
+        return $found;
     }
 }

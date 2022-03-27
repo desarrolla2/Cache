@@ -16,16 +16,13 @@ declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\CacheInterface;
-use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Option\PrefixTrait as PrefixOption;
 use Desarrolla2\Cache\Option\TtlTrait as TtlOption;
 use Desarrolla2\Cache\Packer\PackingTrait as Packing;
-use Desarrolla2\Cache\Exception\CacheException;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
-use Desarrolla2\Cache\Exception\CacheExpiredException;
 use DateTimeImmutable;
 use DateInterval;
+use Traversable;
 
 /**
  * AbstractAdapter

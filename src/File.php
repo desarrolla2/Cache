@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractFile;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Packer\PackerInterface;
@@ -59,11 +58,11 @@ class File extends AbstractFile
     /**
      * Get TTL strategy
      *
-     * @return bool
+     * @return string
      */
-    protected function getTtlStrategyOption()
+    protected function getTtlStrategyOption(): string
     {
-        return $this->useTtlFile;
+        return $this->ttlStrategy;
     }
 
 
@@ -83,16 +82,18 @@ class File extends AbstractFile
                     ? (int)file_get_contents("$cacheFile.ttl")
                     : PHP_INT_MAX;
             case 'mtime':
-                return $this->getTtl() > 0 ? filemtime($cacheFile) + $this->ttl : PHP_INT_MAX;
+                return $this->getTtl($cacheFile) > 0 ? filemtime($cacheFile) + $this->ttl : PHP_INT_MAX;
         }
+
+        throw new \InvalidArgumentException("Invalid TTL strategy '{$this->ttlStrategy}'");
     }
 
     /**
      * Set the TTL using one of the strategies
      *
-     * @param int    $expiration
-     * @param string $contents
-     * @param string $cacheFile
+     * @param int|null $expiration
+     * @param string   $contents
+     * @param string   $cacheFile
      * @return string  The (modified) contents
      */
     protected function setTtl($expiration, $contents, $cacheFile)
@@ -102,7 +103,7 @@ class File extends AbstractFile
                 $contents = ($expiration ?? PHP_INT_MAX) . "\n" . $contents;
                 break;
             case 'file':
-                if (isset($expiration)) {
+                if ($expiration !== null) {
                     file_put_contents("$cacheFile.ttl", $expiration);
                 }
                 break;

@@ -19,14 +19,14 @@ use PHPUnit\Framework\TestCase;
 /**
  * NotCacheTest
  */
-class NoCacheTest extends TestCase
+class NotCacheTest extends TestCase
 {
     /**
-     * @var \Desarrolla2\Cache\Cache
+     * @var \Desarrolla2\Cache\NotCache
      */
     protected $cache;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->cache = new NotCache();
     }

@@ -13,8 +13,7 @@
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractCache;
-use Desarrolla2\Cache\CacheInterface;
+use Desarrolla2\Cache\Packer\NopPacker;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
@@ -121,12 +120,15 @@ class Chain extends AbstractCache
                 break;
             }
 
-            $found = array_filter($adapter->getMultiple($missing), function($value) {
-                return isset($value);
-            });
+            $found = [];
+            foreach ($adapter->getMultiple($missing) as $key => $value) {
+                if (isset($value)) {
+                    $found[$key] = $value;
+                }
+            }
 
             $values = array_merge($values, $found);
-            $missing = array_diff($missing, array_keys($found));
+            $missing = array_values(array_diff($missing, array_keys($found)));
         }
 
         return $values;

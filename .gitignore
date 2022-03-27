@@ -6,3 +6,4 @@
 /TODO.md
 *~
 *.swp
+/.phpunit.result.cache

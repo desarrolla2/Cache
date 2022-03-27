@@ -1,0 +1,8 @@
+parameters:
+    level: 3
+    paths:
+        - src
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - /^Variable property access/
+

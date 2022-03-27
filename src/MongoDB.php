@@ -49,7 +49,7 @@ class MongoDB extends AbstractCache
      * Initialize the DB collection.
      * Set TTL index.
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->collection->createIndex(['ttl' => 1], ['expireAfterSeconds' => 0]);
     }
@@ -263,7 +263,7 @@ class MongoDB extends AbstractCache
     /**
      * Get TTL as Date type BSON object
      *
-     * @param null|int|DateInterval $ttl
+     * @param null|int|\DateInterval $ttl
      * @return BSONUTCDatetime|null
      */
     protected function getTtlBSON($ttl): ?BSONUTCDatetime

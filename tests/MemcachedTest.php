@@ -15,7 +15,6 @@ namespace Desarrolla2\Test\Cache;
 
 use Desarrolla2\Cache\Memcached as MemcachedCache;
 use Memcached;
-use Desarrolla2\Cache\Exception\InvalidArgumentException;
 
 /**
  * MemcachedTest
@@ -26,7 +25,7 @@ class MemcachedTest extends AbstractCacheTest
         'testBasicUsageWithLongKey' => 'Only support keys up to 250 bytes'
     ];
 
-    public function setUp()
+    public function createSimpleCache()
     {
         if (!extension_loaded('memcached') || !class_exists('\Memcached')) {
             $this->markTestSkipped(
@@ -34,18 +33,13 @@ class MemcachedTest extends AbstractCacheTest
             );
         }
 
-        parent::setUp();
-    }
-
-    public function createSimpleCache()
-    {
         list($host, $port) = explode(':', CACHE_TESTS_MEMCACHED_SERVER) + [1 => 11211];
 
         $adapter = new Memcached();
         $adapter->addServer($host, (int)$port);
 
         if (!$adapter->flush()) {
-            return $this->markTestSkipped("Unable to flush Memcached; not running?");
+            $this->markTestSkipped("Unable to flush Memcached; not running?");
         }
 
         return new MemcachedCache($adapter);
