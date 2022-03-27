@@ -55,6 +55,7 @@ echo $value;
 * [NotCache](docs/implementations/notcache.md)
 * [PhpFile](docs/implementations/phpfile.md)
 * [Predis](docs/implementations/predis.md)
+* [Redis](docs/implementations/redis.md)
 
 The following implementation allows you to combine cache adapters.
 

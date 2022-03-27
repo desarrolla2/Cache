@@ -9,44 +9,39 @@
  * file that was distributed with this source code.
  *
  * @author Daniel González <daniel@desarrolla2.com>
- * @author Arnold Daniels <arnold@jasny.net>
+ * @author Julián Gutiérrez <juliangut@gmail.com>
  */
 
 declare(strict_types=1);
 
 namespace Desarrolla2\Cache;
 
-use Desarrolla2\Cache\AbstractCache;
 use Desarrolla2\Cache\Exception\UnexpectedValueException;
 use Desarrolla2\Cache\Packer\PackerInterface;
 use Desarrolla2\Cache\Packer\SerializePacker;
-use Predis\Client;
-use Predis\Response\ServerException;
-use Predis\Response\Status;
-use Predis\Response\ErrorInterface;
+use Redis as PhpRedis;
 
 /**
- * Predis cache adapter.
+ * PHP Redis cache adapter.
  *
  * Errors are silently ignored but ServerExceptions are **not** caught. To PSR-16 compliant disable the `exception`
  * option.
  */
-class Predis extends AbstractCache
+class Redis extends AbstractCache
 {
     /**
-     * @var Client
+     * @var PhpRedis
      */
-    protected $predis;
+    protected $client;
 
     /**
-     * Class constructor
-     * @see predis documentation about how know your configuration https://github.com/nrk/predis
+     * Redis constructor.
      *
-     * @param Client $client
+     * @param PhpRedis $client
      */
-    public function __construct(Client $client)
+    public function __construct(PhpRedis $client)
     {
-        $this->predis = $client;
+        $this->client = $client;
     }
 
     /**
@@ -57,30 +52,6 @@ class Predis extends AbstractCache
     protected static function createDefaultPacker(): PackerInterface
     {
         return new SerializePacker();
-    }
-
-
-    /**
-     * Run a predis command.
-     *
-     * @param string $cmd
-     * @param mixed ...$args
-     * @return mixed|bool
-     */
-    protected function execCommand(string $cmd, ...$args)
-    {
-        $command = $this->predis->createCommand($cmd, $args);
-        $response = $this->predis->executeCommand($command);
-
-        if ($response instanceof ErrorInterface) {
-            return false;
-        }
-
-        if ($response instanceof Status) {
-            return $response->getPayload() === 'OK';
-        }
-
-        return $response;
     }
 
     /**
@@ -97,36 +68,32 @@ class Predis extends AbstractCache
         }
 
         if (!isset($ttlSeconds)) {
-            return $this->execCommand('MSET', $dictionary);
+            return $this->client->mset($dictionary);
         }
 
-        $transaction = $this->predis->transaction();
+        $transaction = $this->client->multi();
 
         foreach ($dictionary as $key => $value) {
-            $transaction->set($key, $value, 'EX', $ttlSeconds);
+            $transaction->set($key, $value, $ttlSeconds);
         }
 
-        try {
-            $responses = $transaction->execute();
-        } catch (ServerException $e) {
-            return false;
-        }
+        $responses = $transaction->exec();
 
-        $ok = array_reduce($responses, function($ok, $response) {
-            return $ok && $response instanceof Status && $response->getPayload() === 'OK';
-        }, true);
-
-        return $ok;
+        return array_reduce(
+            $responses,
+            function ($ok, $response) {
+                return $ok && $response;
+            },
+            true
+        );
     }
-
 
     /**
      * {@inheritdoc}
      */
     public function get($key, $default = null)
     {
-        $id = $this->keyToId($key);
-        $response = $this->execCommand('GET', $id);
+        $response = $this->client->get($this->keyToId($key));
 
         return $response !== false ? $this->unpack($response) : $default;
     }
@@ -137,22 +104,15 @@ class Predis extends AbstractCache
     public function getMultiple($keys, $default = null)
     {
         $idKeyPairs = $this->mapKeysToIds($keys);
-        $ids = array_keys($idKeyPairs);
 
-        $response = $this->execCommand('MGET', $ids);
+        $response = $this->client->mget(array_keys($idKeyPairs));
 
-        if ($response === false) {
-            return false;
-        }
-
-        $items = [];
-        $packedItems = array_combine(array_values($idKeyPairs), $response);
-
-        foreach ($packedItems as $key => $packed) {
-            $items[$key] = isset($packed) ? $this->unpack($packed) : $default;
-        }
-
-        return $items;
+        return array_map(
+            function ($packed) use ($default) {
+                return $packed !== false ? $this->unpack($packed) : $default;
+            },
+            array_combine(array_values($idKeyPairs), $response)
+        );
     }
 
     /**
@@ -160,7 +120,7 @@ class Predis extends AbstractCache
      */
     public function has($key)
     {
-        return $this->execCommand('EXISTS', $this->keyToId($key));
+        return $this->client->exists($this->keyToId($key)) !== 0;
     }
 
     /**
@@ -178,12 +138,12 @@ class Predis extends AbstractCache
         $ttlSeconds = $this->ttlToSeconds($ttl);
 
         if (isset($ttlSeconds) && $ttlSeconds <= 0) {
-            return $this->execCommand('DEL', [$id]);
+            return $this->client->del($id);
         }
 
         return !isset($ttlSeconds)
-            ? $this->execCommand('SET', $id, $packed)
-            : $this->execCommand('SETEX', $id, $ttlSeconds, $packed);
+            ? $this->client->set($id, $packed)
+            : $this->client->setex($id, $ttlSeconds, $packed);
     }
 
     /**
@@ -209,7 +169,7 @@ class Predis extends AbstractCache
         $ttlSeconds = $this->ttlToSeconds($ttl);
 
         if (isset($ttlSeconds) && $ttlSeconds <= 0) {
-            return $this->execCommand('DEL', array_keys($dictionary));
+            return $this->client->del(array_keys($dictionary));
         }
 
         return $this->msetExpire($dictionary, $ttlSeconds);
@@ -222,7 +182,7 @@ class Predis extends AbstractCache
     {
         $id = $this->keyToId($key);
 
-        return $this->execCommand('DEL', [$id]) !== false;
+        return $this->client->del($id) !== false;
     }
 
     /**
@@ -232,7 +192,7 @@ class Predis extends AbstractCache
     {
         $ids = array_keys($this->mapKeysToIds($keys));
 
-        return empty($ids) || $this->execCommand('DEL', $ids) !== false;
+        return empty($ids) || $this->client->del($ids) !== false;
     }
 
     /**
@@ -240,6 +200,6 @@ class Predis extends AbstractCache
      */
     public function clear()
     {
-        return $this->execCommand('FLUSHDB');
+        return $this->client->flushDB();
     }
 }
