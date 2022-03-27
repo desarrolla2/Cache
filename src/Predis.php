@@ -128,7 +128,7 @@ class Predis extends AbstractCache
         $id = $this->keyToId($key);
         $response = $this->execCommand('GET', $id);
 
-        return !empty($response) ? $this->unpack($response) : $default;
+        return $response !== false ? $this->unpack($response) : $default;
     }
 
     /**

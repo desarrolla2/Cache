@@ -95,7 +95,7 @@ class Redis extends AbstractCache
     {
         $response = $this->client->get($this->keyToId($key));
 
-        return !empty($response) ? $this->unpack($response) : $default;
+        return $response !== false ? $this->unpack($response) : $default;
     }
 
     /**
