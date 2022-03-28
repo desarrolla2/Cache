@@ -46,7 +46,7 @@
         "phpunit/phpunit": "^8.3 || ^9.0",
         "phpstan/phpstan": "^0.12.29",
         "symfony/phpunit-bridge": "^5.2",
-        "mikey179/vfsstream": "v1.6.8"
+        "mikey179/vfsstream": "v1.6.10"
     },
     "autoload": {
         "psr-4": {

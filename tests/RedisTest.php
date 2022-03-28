@@ -26,7 +26,7 @@ class RedisTest extends AbstractCacheTest
      */
     protected $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!\extension_loaded('redis')) {
             $this->markTestSkipped('Redis extension not available.');
@@ -44,7 +44,7 @@ class RedisTest extends AbstractCacheTest
         parent::setUp();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 
