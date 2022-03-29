@@ -47,6 +47,8 @@ class PredisTest extends AbstractCacheTest
     {
         parent::tearDown();
 
-        $this->client->disconnect();
+        if ($this->client) {
+            $this->client->disconnect();
+        }
     }
 }
