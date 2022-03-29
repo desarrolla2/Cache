@@ -121,15 +121,25 @@ class File extends AbstractFile
      */
     public function get($key, $default = null)
     {
-        if (!$this->has($key)) {
+        $cacheFile = $this->getFilename($key);
+        
+        if (!file_exists($cacheFile)) {
             return $default;
         }
-
-        $cacheFile = $this->getFilename($key);
-        $packed = $this->readFile($cacheFile);
-
+        
         if ($this->ttlStrategy === 'embed') {
-            $packed = substr($packed, strpos($packed, "\n") + 1);
+            [$ttl, $packed] = explode("\n", $this->readFile($cacheFile), 2);
+        } else {
+            $ttl = $this->getTtl($cacheFile);
+        }
+
+        if ((int)$ttl <= time()) {
+            $this->deleteFile($cacheFile);
+            return $default;
+        }
+        
+        if (!isset($packed)) {
+            $packed = $this->readFile($cacheFile); // Other ttl strategy than embed
         }
         
         return $this->unpack($packed);
