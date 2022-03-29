@@ -95,7 +95,7 @@ class Redis extends AbstractCache
     {
         $response = $this->client->get($this->keyToId($key));
 
-        return $response !== false ? $this->unpack($response) : $default;
+        return empty($response) ? $this->unpack($response) : $default;
     }
 
     /**
@@ -109,7 +109,7 @@ class Redis extends AbstractCache
 
         return array_map(
             function ($packed) use ($default) {
-                return $packed !== false ? $this->unpack($packed) : $default;
+                return empty($packed) ? $this->unpack($packed) : $default;
             },
             array_combine(array_values($idKeyPairs), $response)
         );
