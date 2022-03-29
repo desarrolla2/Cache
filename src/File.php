@@ -82,7 +82,7 @@ class File extends AbstractFile
                     ? (int)file_get_contents("$cacheFile.ttl")
                     : PHP_INT_MAX;
             case 'mtime':
-                return $this->getTtl($cacheFile) > 0 ? filemtime($cacheFile) + $this->ttl : PHP_INT_MAX;
+                return $this->ttl > 0 ? filemtime($cacheFile) + $this->ttl : PHP_INT_MAX;
         }
 
         throw new \InvalidArgumentException("Invalid TTL strategy '{$this->ttlStrategy}'");
