@@ -33,6 +33,13 @@ class MemcachedTest extends AbstractCacheTest
             );
         }
 
+        // See https://github.com/php-memcached-dev/php-memcached/issues/509
+        if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+            $this->markTestSkipped(
+                'The Memcached extension is does not work with PHP 8.1 yet.'
+            );
+        }
+
         list($host, $port) = explode(':', CACHE_TESTS_MEMCACHED_SERVER) + [1 => 11211];
 
         $adapter = new Memcached();
