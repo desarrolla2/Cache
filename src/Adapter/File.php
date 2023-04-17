@@ -87,7 +87,17 @@ class File extends AbstractAdapter
             ]
         );
         if (!file_put_contents($cacheFile, $item)) {
-            throw new CacheException(sprintf('Error saving data with the key "%s" to the cache file.', $key));
+            $directory = dirname($cacheFile);
+            if (!is_dir($directory)) {
+                throw new CacheException(sprintf('The directory "%s" does not exist', $directory));
+            }
+            if (!is_writable($directory)) {
+                throw new CacheException(sprintf('Cannot write to directory "%s"', $directory));
+            }
+            if (!is_writable($cacheFile)) {
+                throw new CacheException(sprintf('Cannot write to file "%s"', $directory));
+            }
+            throw new CacheException(sprintf('An error occurred saving the data "%s" to cache file.', $key));
         }
     }
 
@@ -136,10 +146,10 @@ class File extends AbstractAdapter
     protected function getFileName($key)
     {
         return $this->cacheDir.
-        DIRECTORY_SEPARATOR.
-        self::CACHE_FILE_PREFIX.
-        $this->getKey($key).
-        self::CACHE_FILE_SUBFIX;
+            DIRECTORY_SEPARATOR.
+            self::CACHE_FILE_PREFIX.
+            $this->getKey($key).
+            self::CACHE_FILE_SUBFIX;
     }
 
     protected function getValueFromCache($key)
@@ -147,12 +157,12 @@ class File extends AbstractAdapter
         $path = $this->getFileName($key);
 
         if (!file_exists($path)) {
-            return;
+            return null;
         }
 
         $data = $this->unPack(file_get_contents($path));
         if (!$data || !$this->validateDataFromCache($data) || $this->ttlHasExpired($data['ttl'])) {
-            return;
+            return null;
         }
 
         return $data['value'];
