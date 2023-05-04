@@ -95,7 +95,7 @@ class File extends AbstractAdapter
                 throw new CacheException(sprintf('Cannot write to directory "%s"', $directory));
             }
             if (!is_writable($cacheFile)) {
-                throw new CacheException(sprintf('Cannot write to file "%s"', $directory));
+                throw new CacheException(sprintf('Cannot write to file "%s"', $cacheFile));
             }
             throw new CacheException(sprintf('An error occurred saving the data "%s" to cache file.', $key));
         }
